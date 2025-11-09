@@ -7,8 +7,8 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.project.blog.global.exception.AuthenticationException;
-import com.project.blog.global.exception.ErrorCode;
+import com.project.blog.global.error.code.ErrorCode;
+import com.project.blog.global.error.exception.AuthenticationException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
