@@ -25,13 +25,13 @@ public class Profile extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false, unique = true, length = 20)
+    @Column(nullable = false, unique = true, length = 8)
     private String nickname;
 
     @Column(nullable = false, unique = true, length = 30)
     private String blogName;
 
-    private String avatarImageName;
+    private String avatar;
 
     @OneToOne(mappedBy = "profile")
     private Account account;
