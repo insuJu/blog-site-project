@@ -29,7 +29,7 @@ public class JwtService {
                 "refreshToken", refreshToken);
     }
 
-    public Map<String, String> refreshTokens(String refreshToken) {
+    public Map<String, String> reissueAccessToken(String refreshToken) {
         jwtProvider.validateToken(refreshToken);
         String username = jwtProvider.extractClaims(refreshToken).getSubject();
 
@@ -37,6 +37,6 @@ public class JwtService {
 
         return Map.of(
                 "accessToken", newAccessToken,
-                "refreshToken", refreshToken);  
+                "refreshToken", refreshToken);
     }
 }

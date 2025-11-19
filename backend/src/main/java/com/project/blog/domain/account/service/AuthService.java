@@ -52,7 +52,7 @@ public class AuthService {
 
         refreshTokenService.validateRefreshToken(account.getId(), refreshToken);
 
-        Map<String, String> tokens = jwtService.refreshTokens(refreshToken);
+        Map<String, String> tokens = jwtService.reissueAccessToken(refreshToken);
 
         jwtCookieService.addTokenToCookie(res, tokens);
     }
