@@ -35,6 +35,10 @@ public class JwtProvider {
 
     private Key key;
 
+    public long getRefreshTokenExpirationSeconds() {
+        return refreshTokenExpirationSeconds;
+    }
+
     @PostConstruct
     public void init() {
         byte[] bytes = Base64.getDecoder().decode(secretKey);

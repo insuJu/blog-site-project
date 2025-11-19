@@ -1,8 +1,11 @@
 package com.project.blog.global.security.jwt;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
+
+import com.project.blog.domain.account.service.RefreshTokenService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -11,10 +14,15 @@ import lombok.RequiredArgsConstructor;
 public class JwtService {
 
     private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
 
-    public Map<String, String> generateTokens(String username) {
+    public Map<String, String> generateTokens(String username, int accountId) {
         String accessToken = jwtProvider.createAccessToken(username);
         String refreshToken = jwtProvider.createRefreshToken(username);
+
+        LocalDateTime expiresAt = LocalDateTime.now()
+                .plusSeconds(jwtProvider.getRefreshTokenExpirationSeconds());
+        refreshTokenService.saveRefreshToken(accountId, refreshToken, expiresAt);
 
         return Map.of(
                 "accessToken", accessToken,
