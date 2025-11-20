@@ -2,7 +2,6 @@ package com.project.blog.global.security.filter;
 
 import java.io.IOException;
 
-import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -33,9 +32,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            @NonNull HttpServletRequest req,
-            @NonNull HttpServletResponse res,
-            @NonNull FilterChain chain) throws IOException, ServletException {
+            HttpServletRequest req,
+            HttpServletResponse res,
+            FilterChain chain) throws IOException, ServletException {
         try {
             processAuthentication(req);
             chain.doFilter(req, res);
@@ -57,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void handleAuthenticationException(
-            HttpServletResponse res, 
+            HttpServletResponse res,
             AuthenticationException e) throws IOException {
         writeErrorResponse(res, e.getErrorCode());
     }
@@ -69,7 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void writeErrorResponse(HttpServletResponse res, ErrorCode errorCode) throws IOException {
         ErrorResDto errorResponse = ErrorResDto.of(
-                errorCode.getCode(), 
+                errorCode.getCode(),
                 errorCode.getMessage());
 
         res.setStatus(errorCode.getStatus().value());
