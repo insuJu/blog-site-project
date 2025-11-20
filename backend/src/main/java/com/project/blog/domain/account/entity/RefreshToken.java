@@ -43,21 +43,7 @@ public class RefreshToken extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime expiresAt;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean revoked = false;
-
     // methods
-    public void revoke() {
-        this.revoked = true;
-    }
-
-    public void updateToken(String tokenHash, LocalDateTime expiresAt) {
-        this.tokenHash = tokenHash;
-        this.expiresAt = expiresAt;
-        this.revoked = false;
-    }
-
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiresAt);
     }

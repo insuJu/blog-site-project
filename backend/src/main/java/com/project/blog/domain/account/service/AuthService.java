@@ -58,7 +58,7 @@ public class AuthService {
     }
 
     public void logout(com.project.blog.global.security.service.AuthenticatedUser authenticatedUser, HttpServletResponse res) {
-        refreshTokenService.revokeRefreshToken(authenticatedUser.getAccount().getId());
+        refreshTokenService.deleteRefreshToken(authenticatedUser.getAccount().getId());
 
         jwtCookieService.clearTokenFromCookie(res);
     }

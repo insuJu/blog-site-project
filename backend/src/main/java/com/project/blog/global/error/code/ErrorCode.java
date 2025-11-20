@@ -17,7 +17,6 @@ public enum ErrorCode {
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "AUTH006", "리프레시 토큰을 찾을 수 없습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH007", "유효하지 않은 리프레시 토큰입니다."),
     EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH008", "리프레시 토큰이 만료되었습니다."),
-    REVOKED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH009", "로그아웃된 리프레시 토큰입니다."),
 
     // Account
     ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "ACCOUNT001", "계정을 찾을 수 없습니다."),

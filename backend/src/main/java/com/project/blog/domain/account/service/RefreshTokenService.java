@@ -35,18 +35,15 @@ public class RefreshTokenService {
         String tokenHash = hashToken(token);
 
         refreshTokenRepository.findById(accountId)
-                .ifPresentOrElse(
-                        existingToken -> existingToken.updateToken(tokenHash, expiresAt),
-                        () -> {
-                            RefreshToken refreshToken = RefreshToken.builder()
-                                    .accountId(accountId)
-                                    .account(account)
-                                    .tokenHash(tokenHash)
-                                    .expiresAt(expiresAt)
-                                    .revoked(false)
-                                    .build();
-                            refreshTokenRepository.save(refreshToken);
-                        });
+                .ifPresent(refreshTokenRepository::delete);
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .accountId(accountId)
+                .account(account)
+                .tokenHash(tokenHash)
+                .expiresAt(expiresAt)
+                .build();
+        refreshTokenRepository.save(refreshToken);
     }
 
     public void validateRefreshToken(int accountId, String token) {
@@ -59,19 +56,14 @@ public class RefreshTokenService {
             throw new AuthenticationException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-        if (refreshToken.isRevoked()) {
-            throw new AuthenticationException(ErrorCode.REVOKED_REFRESH_TOKEN);
-        }
-
         if (refreshToken.isExpired()) {
             throw new AuthenticationException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
     }
 
     @Transactional
-    public void revokeRefreshToken(int accountId) {
-        refreshTokenRepository.findById(accountId)
-                .ifPresent(RefreshToken::revoke);
+    public void deleteRefreshToken(int accountId) {
+        refreshTokenRepository.deleteById(accountId);
     }
 
     private String hashToken(String token) {
