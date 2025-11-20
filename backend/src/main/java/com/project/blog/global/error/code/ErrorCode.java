@@ -23,6 +23,11 @@ public enum ErrorCode {
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "ACCOUNT002", "이미 사용 중인 아이디입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "ACCOUNT003", "이미 사용 중인 이메일입니다."),
 
+    // Profile
+    PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "PROFILE001", "프로필을 찾을 수 없습니다."),
+    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "PROFILE002", "이미 사용 중인 닉네임입니다."),
+    DUPLICATE_BLOGNAME(HttpStatus.CONFLICT, "PROFILE003", "이미 사용 중인 블로그명입니다."),
+
     // Validation
     INPUT_VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION001", "입력값 검증에 실패했습니다."),
     INPUT_BUSINESS_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION002", "입력값 유효성 검증에 실패했습니다."),
