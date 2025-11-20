@@ -10,6 +10,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,8 +47,8 @@ public class Account extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private LoginType loginType;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "profile_id")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "profile_id", nullable = false, unique = true)
     private Profile profile;
 
     // methods
@@ -59,25 +60,4 @@ public class Account extends BaseTimeEntity {
         this.password = password;
     }
 
-    public void setProfile(Profile profile) {
-        if (profile == null) {
-            removeProfile();
-            return;
-        }
-
-        this.profile = profile;
-        if (profile.getAccount() != this) {
-            profile.setAccount(this);
-        }
-    }
-
-    public void removeProfile() {
-        if (this.profile != null) {
-            Profile temp = this.profile;
-            this.profile = null;
-            if (temp.getAccount() == this) {
-                temp.removeAccount();
-            }
-        }
-    }
 }

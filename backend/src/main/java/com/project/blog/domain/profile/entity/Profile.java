@@ -1,6 +1,5 @@
 package com.project.blog.domain.profile.entity;
 
-import com.project.blog.domain.account.entity.Account;
 import com.project.blog.global.entity.BaseTimeEntity;
 
 import jakarta.persistence.Column;
@@ -8,7 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,33 +31,16 @@ public class Profile extends BaseTimeEntity {
 
     private String avatar;
 
-    @OneToOne(mappedBy = "profile")
-    private Account account;
-
     // methods
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
 
-    public void setAccount(Account account) {
-        if (account == null) {
-            removeAccount();
-            return;
-        }
-
-        this.account = account;
-        if (account.getProfile() != this) {
-            account.setProfile(this);
-        }
+    public void updateBlogName(String blogName) {
+        this.blogName = blogName;
     }
 
-    public void removeAccount() {
-        if (this.account != null) {
-            Account temp = this.account;
-            this.account = null;
-            if (temp.getProfile() == this) {
-                temp.removeProfile();
-            }
-        }
+    public void updateAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }
