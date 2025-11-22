@@ -1,6 +1,7 @@
 package com.project.blog.global.security.filter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,10 +32,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.equals("/api/auth/refresh");
+    }
+
+    @Override
     protected void doFilterInternal(
             HttpServletRequest req,
             HttpServletResponse res,
             FilterChain chain) throws IOException, ServletException {
+
         try {
             processAuthentication(req);
             chain.doFilter(req, res);
@@ -48,12 +56,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void processAuthentication(HttpServletRequest req) {
-        jwtCookieService.getAccessToken(req)
-                .ifPresent(token -> {
-                    jwtProvider.validateToken(token);
-                    authenticationService.authenticateWithJwt(token);
-                });
+    Optional<String> accessToken = jwtCookieService.getAccessToken(req);
+
+    if (accessToken.isPresent()) {
+        String token = accessToken.get();
+        jwtProvider.validateToken(token);
+        authenticationService.authenticateWithJwt(token);
+        return;
     }
+
+    Optional<String> refreshToken = jwtCookieService.getRefreshToken(req);
+    if (refreshToken.isPresent()) {
+        throw new AuthenticationException(ErrorCode.EXPIRED_TOKEN);
+    }
+
+    throw new AuthenticationException(ErrorCode.INVALID_TOKEN);
+}
 
     private void handleAuthenticationException(
             HttpServletResponse res,

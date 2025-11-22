@@ -38,7 +38,6 @@ public class RefreshTokenService {
                 .ifPresent(refreshTokenRepository::delete);
 
         RefreshToken refreshToken = RefreshToken.builder()
-                .accountId(accountId)
                 .account(account)
                 .tokenHash(tokenHash)
                 .expiresAt(expiresAt)
