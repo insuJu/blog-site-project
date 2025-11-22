@@ -1,6 +1,7 @@
 package com.project.blog.global.security.filter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,10 +32,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
 
+    private static final List<String> EXCLUDED_PATHS = List.of(
+            "/api/auth/refresh",
+            "/api/auth/login",
+            "/api/users/signup");
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return path.equals("/api/auth/refresh");
+        return EXCLUDED_PATHS.contains(path);
     }
 
     @Override
@@ -56,22 +62,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void processAuthentication(HttpServletRequest req) {
-    Optional<String> accessToken = jwtCookieService.getAccessToken(req);
+        Optional<String> accessToken = jwtCookieService.getAccessToken(req);
 
-    if (accessToken.isPresent()) {
-        String token = accessToken.get();
-        jwtProvider.validateToken(token);
-        authenticationService.authenticateWithJwt(token);
-        return;
+        if (accessToken.isPresent()) {
+            String token = accessToken.get();
+            jwtProvider.validateToken(token);
+            authenticationService.authenticateWithJwt(token);
+            return;
+        }
+
+        Optional<String> refreshToken = jwtCookieService.getRefreshToken(req);
+        if (refreshToken.isPresent()) {
+            throw new AuthenticationException(ErrorCode.EXPIRED_TOKEN);
+        }
+
+        throw new AuthenticationException(ErrorCode.INVALID_TOKEN);
     }
-
-    Optional<String> refreshToken = jwtCookieService.getRefreshToken(req);
-    if (refreshToken.isPresent()) {
-        throw new AuthenticationException(ErrorCode.EXPIRED_TOKEN);
-    }
-
-    throw new AuthenticationException(ErrorCode.INVALID_TOKEN);
-}
 
     private void handleAuthenticationException(
             HttpServletResponse res,
