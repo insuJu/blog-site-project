@@ -50,23 +50,27 @@ public final class ValidationConstants {
     public static final String MSG_USERNAME_NO_SPACE = "아이디는 공백을 포함할 수 없습니다.";
     public static final String MSG_USERNAME_NO_HANGUL = "아이디에 한글을 포함할 수 없습니다.";
 
+    public static final String MSG_NEW_EMAIL_REQUIRED = "새로운 이메일 주소를 입력해주세요.";
     public static final String MSG_EMAIL_REQUIRED = "이메일은 필수 입력값입니다.";
     public static final String MSG_EMAIL_SIZE = "이메일은 최대 50자까지 가능합니다.";
     public static final String MSG_EMAIL_FORMAT = "유효하지 않은 이메일 형식입니다.";
     public static final String MSG_EMAIL_NO_SPACE = "이메일은 공백을 포함할 수 없습니다.";
 
+    public static final String MSG_NEW_NICKNAME_REQUIRED = "새로운 닉네임을 입력해주세요.";
     public static final String MSG_NICKNAME_REQUIRED = "닉네임을 입력해주세요.";
     public static final String MSG_NICKNAME_SIZE = "닉네임은 2~8자여야 합니다.";
     public static final String MSG_NICKNAME_FORMAT = "닉네임은 영문/한글/숫자/특수문자만 가능합니다.";
     public static final String MSG_NICKNAME_NO_SPACE = "닉네임은 공백을 포함할 수 없습니다.";
 
+    public static final String MSG_NEW_PASSWORD_REQUIRED = "새로운 비밀번호를 입력해주세요.";
+    public static final String MSG_CURRENT_PASSWORD_REQUIRED = "현재 비밀번호를 입력해주세요.";
     public static final String MSG_PASSWORD_REQUIRED = "비밀번호는 필수 입력값입니다.";
     public static final String MSG_PASSWORD_SIZE = "비밀번호는 8~20자여야 합니다.";
     public static final String MSG_PASSWORD_FORMAT = "비밀번호는 영문+숫자, 영문+특수문자, 숫자+특수문자 중 하나의 조합이어야 합니다.";
     public static final String MSG_PASSWORD_NO_SPACE = "비밀번호는 공백을 포함할 수 없습니다.";
     public static final String MSG_PASSWORD_NO_HANGUL = "비밀번호에 한글을 사용할 수 없습니다.";
 
-    public static final String MSG_BLOGNAME_REQUIRED = "블로그명을 입력해주세요.";
+    public static final String MSG_NEW_BLOGNAME_REQUIRED = "새로운 블로그명을 입력해주세요.";
     public static final String MSG_BLOGNAME_SIZE = "블로그명은 2~30자여야 합니다.";
 
     public static final String MSG_AVATAR_REQUIRED = "아바타 파일은 필수입니다.";
