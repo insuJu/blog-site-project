@@ -82,22 +82,7 @@ class AuthServiceTest {
                 .loginType(LoginType.LOCAL)
                 .build();
 
-        loginReqDto = createLoginReqDto("testuser", "password123");
-    }
-
-    private LoginReqDto createLoginReqDto(String username, String password) {
-        try {
-            LoginReqDto dto = LoginReqDto.class.getDeclaredConstructor().newInstance();
-            java.lang.reflect.Field usernameField = LoginReqDto.class.getDeclaredField("username");
-            java.lang.reflect.Field passwordField = LoginReqDto.class.getDeclaredField("password");
-            usernameField.setAccessible(true);
-            passwordField.setAccessible(true);
-            usernameField.set(dto, username);
-            passwordField.set(dto, password);
-            return dto;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        loginReqDto = new LoginReqDto("testuser", "password123");
     }
 
     @Nested

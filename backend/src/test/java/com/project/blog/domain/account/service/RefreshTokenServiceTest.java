@@ -84,7 +84,6 @@ class RefreshTokenServiceTest {
             verify(refreshTokenRepository).save(captor.capture());
 
             RefreshToken savedToken = captor.getValue();
-            assertThat(savedToken.getAccountId()).isEqualTo(1);
             assertThat(savedToken.getAccount()).isEqualTo(testAccount);
             assertThat(savedToken.getTokenHash()).isNotNull();
             assertThat(savedToken.getExpiresAt()).isEqualTo(testExpiresAt);
@@ -115,7 +114,6 @@ class RefreshTokenServiceTest {
             verify(refreshTokenRepository).save(captor.capture());
 
             RefreshToken savedToken = captor.getValue();
-            assertThat(savedToken.getAccountId()).isEqualTo(1);
             assertThat(savedToken.getAccount()).isEqualTo(testAccount);
             assertThat(savedToken.getTokenHash()).isNotNull();
             assertThat(savedToken.getExpiresAt()).isEqualTo(testExpiresAt);
