@@ -3,6 +3,7 @@ FROM gradle:8.5-jdk21-alpine AS builder
 WORKDIR /app
 COPY backend/build.gradle backend/settings.gradle backend/gradlew ./
 COPY backend/gradle ./gradle
+RUN chmod +x ./gradlew
 RUN ./gradlew dependencies --no-daemon || true
 COPY backend/src ./src
 RUN ./gradlew clean build -x test --no-daemon
