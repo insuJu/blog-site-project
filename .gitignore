@@ -28,3 +28,9 @@ out/
 .env.test.local
 .env.production.local
 .claude/
+
+# Personal docs
+.docs/
+
+# Windows artifacts
+nul
