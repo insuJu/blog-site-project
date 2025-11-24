@@ -30,7 +30,7 @@ public final class ValidationConstants {
 
     public static final String NICKNAME_PATTERN = "^[A-Za-z가-힣\\d!-/:-@\\[-`{-~]+$";
 
-    public static final String PASSWORD_PATTERN = "^(?=.*[a-zA-Z])(?=.*[0-9])|(?=.*[a-zA-Z])(?=.*[@#$%^&+=!])|(?=.*[0-9])(?=.*[@#$%^&+=!]).+$";
+    public static final String PASSWORD_PATTERN = "^(?:(?=.*[a-zA-Z])(?=.*[0-9])|(?=.*[a-zA-Z])(?=.*[@#$%^&+=!])|(?=.*[0-9])(?=.*[@#$%^&+=!])).+$";
 
     public static final String BLOGNAME_PATTERN = "^.+$";
 
@@ -66,7 +66,7 @@ public final class ValidationConstants {
     public static final String MSG_CURRENT_PASSWORD_REQUIRED = "현재 비밀번호를 입력해주세요.";
     public static final String MSG_PASSWORD_REQUIRED = "비밀번호는 필수 입력값입니다.";
     public static final String MSG_PASSWORD_SIZE = "비밀번호는 8~20자여야 합니다.";
-    public static final String MSG_PASSWORD_FORMAT = "비밀번호는 영문+숫자, 영문+특수문자, 숫자+특수문자 중 하나의 조합이어야 합니다.";
+    public static final String MSG_PASSWORD_FORMAT = "비밀번호는 영문, 숫자, 특수문자 중 최소 두 가지를 조합해야 합니다.";
     public static final String MSG_PASSWORD_NO_SPACE = "비밀번호는 공백을 포함할 수 없습니다.";
     public static final String MSG_PASSWORD_NO_HANGUL = "비밀번호에 한글을 사용할 수 없습니다.";
 

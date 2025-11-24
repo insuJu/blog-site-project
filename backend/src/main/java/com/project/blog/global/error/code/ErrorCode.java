@@ -22,11 +22,16 @@ public enum ErrorCode {
     ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "ACCOUNT001", "계정을 찾을 수 없습니다."),
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "ACCOUNT002", "이미 사용 중인 아이디입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "ACCOUNT003", "이미 사용 중인 이메일입니다."),
+    INCORRECT_PASSWORD(HttpStatus.BAD_REQUEST, "ACCOUNT004", "현재 비밀번호가 일치하지 않습니다."),
+    SAME_PASSWORD(HttpStatus.BAD_REQUEST, "ACCOUNT005", "새 비밀번호가 현재 비밀번호와 동일합니다."),
+    SAME_EMAIL(HttpStatus.BAD_REQUEST, "ACCOUNT006", "새 이메일이 현재 이메일과 동일합니다."),
 
     // Profile
     PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "PROFILE001", "프로필을 찾을 수 없습니다."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "PROFILE002", "이미 사용 중인 닉네임입니다."),
     DUPLICATE_BLOGNAME(HttpStatus.CONFLICT, "PROFILE003", "이미 사용 중인 블로그명입니다."),
+    SAME_NICKNAME(HttpStatus.BAD_REQUEST, "PROFILE004", "새 닉네임이 현재 닉네임과 동일합니다."),
+    SAME_BLOGNAME(HttpStatus.BAD_REQUEST, "PROFILE005", "새 블로그명이 현재 블로그명과 동일합니다."),
 
     // Validation
     INPUT_VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION001", "입력값 검증에 실패했습니다."),
