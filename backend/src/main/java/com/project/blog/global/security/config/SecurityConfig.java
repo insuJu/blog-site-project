@@ -15,7 +15,7 @@ import org.springframework.web.filter.CorsFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.blog.global.security.filter.JwtAuthenticationFilter;
-import com.project.blog.global.security.jwt.JwtCookieService;
+import com.project.blog.global.security.jwt.JwtCookieUtil;
 import com.project.blog.global.security.jwt.JwtProvider;
 import com.project.blog.global.security.service.AuthenticationService;
 
@@ -28,7 +28,7 @@ public class SecurityConfig {
 
     private final ObjectMapper objectMapper;
     private final AuthenticationService authenticationService;
-    private final JwtCookieService jwtCookieService;
+    private final JwtCookieUtil jwtCookieUtil;
     private final JwtProvider jwtProvider;
     private final CorsFilter corsFilter;
 
@@ -53,7 +53,7 @@ public class SecurityConfig {
     JwtAuthenticationFilter jwtAuthenticationFilter() {
         return JwtAuthenticationFilter.builder()
                 .authenticationService(authenticationService)
-                .jwtCookieService(jwtCookieService)
+                .jwtCookieUtil(jwtCookieUtil)
                 .objectMapper(objectMapper)
                 .jwtProvider(jwtProvider)
                 .build();

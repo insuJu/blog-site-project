@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.blog.global.error.code.ErrorCode;
 import com.project.blog.global.error.dto.ErrorResDto;
 import com.project.blog.global.error.exception.AuthenticationException;
-import com.project.blog.global.security.jwt.JwtCookieService;
+import com.project.blog.global.security.jwt.JwtCookieUtil;
 import com.project.blog.global.security.jwt.JwtProvider;
 import com.project.blog.global.security.service.AuthenticationService;
 
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthenticationService authenticationService;
-    private final JwtCookieService jwtCookieService;
+    private final JwtCookieUtil jwtCookieUtil;
     private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
 
@@ -62,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void processAuthentication(HttpServletRequest req) {
-        Optional<String> accessToken = jwtCookieService.getAccessToken(req);
+        Optional<String> accessToken = jwtCookieUtil.getAccessToken(req);
 
         if (accessToken.isPresent()) {
             String token = accessToken.get();
@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        Optional<String> refreshToken = jwtCookieService.getRefreshToken(req);
+        Optional<String> refreshToken = jwtCookieUtil.getRefreshToken(req);
         if (refreshToken.isPresent()) {
             throw new AuthenticationException(ErrorCode.EXPIRED_TOKEN);
         }
@@ -86,7 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void handleBadCredentialsException(HttpServletResponse res) throws IOException {
-        jwtCookieService.clearTokenFromCookie(res);
+        jwtCookieUtil.clearTokenFromCookie(res);
         writeErrorResponse(res, ErrorCode.INVALID_CREDENTIALS);
     }
 

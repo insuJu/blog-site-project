@@ -27,7 +27,7 @@ import com.project.blog.domain.account.enums.RoleType;
 import com.project.blog.domain.account.repository.AccountRepository;
 import com.project.blog.global.error.code.ErrorCode;
 import com.project.blog.global.error.exception.BusinessException;
-import com.project.blog.global.security.jwt.JwtCookieService;
+import com.project.blog.global.security.jwt.JwtCookieUtil;
 import com.project.blog.global.security.jwt.JwtProvider;
 import com.project.blog.global.security.jwt.JwtService;
 import com.project.blog.global.security.service.AuthenticationService;
@@ -51,7 +51,7 @@ class AuthServiceTest {
     private JwtService jwtService;
 
     @Mock
-    private JwtCookieService jwtCookieService;
+    private JwtCookieUtil jwtCookieUtil;
 
     @Mock
     private JwtProvider jwtProvider;
@@ -108,7 +108,7 @@ class AuthServiceTest {
             verify(accountRepository).findByUsername("testuser");
             verify(authenticationService).authenticateWithPassword(loginReqDto);
             verify(jwtService).generateTokens("testuser", 1);
-            verify(jwtCookieService).addTokenToCookie(response, tokens);
+            verify(jwtCookieUtil).addTokenToCookie(response, tokens);
         }
 
         @Test
@@ -144,7 +144,7 @@ class AuthServiceTest {
                     "refreshToken", "new.refresh.token"
             );
 
-            when(jwtCookieService.getRefreshToken(request)).thenReturn(Optional.of(refreshToken));
+            when(jwtCookieUtil.getRefreshToken(request)).thenReturn(Optional.of(refreshToken));
             when(jwtProvider.extractClaims(refreshToken)).thenReturn(claims);
             when(accountRepository.findByUsername("testuser")).thenReturn(Optional.of(testAccount));
             when(jwtService.reissueAccessToken(refreshToken)).thenReturn(newTokens);
@@ -153,20 +153,20 @@ class AuthServiceTest {
             authService.refresh(request, response);
 
             // then
-            verify(jwtCookieService).getRefreshToken(request);
+            verify(jwtCookieUtil).getRefreshToken(request);
             verify(jwtProvider).validateToken(refreshToken);
             verify(jwtProvider).extractClaims(refreshToken);
             verify(accountRepository).findByUsername("testuser");
             verify(refreshTokenService).validateRefreshToken(1, refreshToken);
             verify(jwtService).reissueAccessToken(refreshToken);
-            verify(jwtCookieService).addTokenToCookie(response, newTokens);
+            verify(jwtCookieUtil).addTokenToCookie(response, newTokens);
         }
 
         @Test
         @DisplayName("RefreshToken이 쿠키에 없을 때 예외 발생")
         void refreshWithoutToken() {
             // given
-            when(jwtCookieService.getRefreshToken(request)).thenReturn(Optional.empty());
+            when(jwtCookieUtil.getRefreshToken(request)).thenReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> authService.refresh(request, response))
@@ -185,7 +185,7 @@ class AuthServiceTest {
             Claims claims = org.mockito.Mockito.mock(Claims.class);
             when(claims.getSubject()).thenReturn("nonexistent");
 
-            when(jwtCookieService.getRefreshToken(request)).thenReturn(Optional.of(refreshToken));
+            when(jwtCookieUtil.getRefreshToken(request)).thenReturn(Optional.of(refreshToken));
             when(jwtProvider.extractClaims(refreshToken)).thenReturn(claims);
             when(accountRepository.findByUsername("nonexistent")).thenReturn(Optional.empty());
 
@@ -214,7 +214,7 @@ class AuthServiceTest {
 
             // then
             verify(refreshTokenService).deleteRefreshToken(1);
-            verify(jwtCookieService).clearTokenFromCookie(response);
+            verify(jwtCookieUtil).clearTokenFromCookie(response);
         }
     }
 }

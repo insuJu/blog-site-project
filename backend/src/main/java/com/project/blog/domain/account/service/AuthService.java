@@ -9,7 +9,7 @@ import com.project.blog.domain.account.entity.Account;
 import com.project.blog.domain.account.repository.AccountRepository;
 import com.project.blog.global.error.code.ErrorCode;
 import com.project.blog.global.error.exception.BusinessException;
-import com.project.blog.global.security.jwt.JwtCookieService;
+import com.project.blog.global.security.jwt.JwtCookieUtil;
 import com.project.blog.global.security.jwt.JwtProvider;
 import com.project.blog.global.security.jwt.JwtService;
 import com.project.blog.global.security.service.AuthenticationService;
@@ -25,7 +25,7 @@ public class AuthService {
     private final AccountRepository accountRepository;
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;
-    private final JwtCookieService jwtCookieService;
+    private final JwtCookieUtil jwtCookieUtil;
     private final JwtProvider jwtProvider;
     private final RefreshTokenService refreshTokenService;
 
@@ -37,11 +37,11 @@ public class AuthService {
 
         Map<String, String> tokens = jwtService.generateTokens(reqDto.getUsername(), account.getId());
 
-        jwtCookieService.addTokenToCookie(res, tokens);
+        jwtCookieUtil.addTokenToCookie(res, tokens);
     }
 
     public void refresh(HttpServletRequest req, HttpServletResponse res) {
-        String refreshToken = jwtCookieService.getRefreshToken(req)
+        String refreshToken = jwtCookieUtil.getRefreshToken(req)
             .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_TOKEN));
 
         jwtProvider.validateToken(refreshToken);
@@ -54,12 +54,12 @@ public class AuthService {
 
         Map<String, String> tokens = jwtService.reissueAccessToken(refreshToken);
 
-        jwtCookieService.addTokenToCookie(res, tokens);
+        jwtCookieUtil.addTokenToCookie(res, tokens);
     }
 
     public void logout(com.project.blog.global.security.service.AuthenticatedUser authenticatedUser, HttpServletResponse res) {
         refreshTokenService.deleteRefreshToken(authenticatedUser.getAccount().getId());
 
-        jwtCookieService.clearTokenFromCookie(res);
+        jwtCookieUtil.clearTokenFromCookie(res);
     }
 }
