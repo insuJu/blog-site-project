@@ -16,9 +16,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class JwtCookieService {
+public class JwtCookieUtil {
     private static final String ACCESS_TOKEN_NAME = "accessToken";
     private static final String REFRESH_TOKEN_NAME = "refreshToken";
+
+    @Value("${app.cookie.same-site}")
+    private String sameSite;
+
+    @Value("${app.cookie.secure}")
+    private boolean secure;
 
     @Value("${jwt.access.expiration.seconds}")
     private long accessTokenExpirationSeconds;
@@ -56,13 +62,18 @@ public class JwtCookieService {
                 createCookie(REFRESH_TOKEN_NAME, "", 0));
     }
 
-    private String createCookie(String name, String value, long maxAge) {
-        return ResponseCookie.from(name, URLEncoder.encode(value, StandardCharsets.UTF_8))
+    public String createCookie(String name, String value, long maxAge) {
+        ResponseCookie.ResponseCookieBuilder builder = ResponseCookie
+                .from(name, URLEncoder.encode(value, StandardCharsets.UTF_8))
                 .path("/")
                 .maxAge(Duration.ofSeconds(maxAge))
                 .httpOnly(true)
-                .sameSite("Strict")
-                .build()
-                .toString();
+                .sameSite(sameSite);
+
+        if (secure) {
+            builder.secure(true);
+        }
+
+        return builder.build().toString();
     }
 }
