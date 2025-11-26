@@ -47,7 +47,7 @@ public class Account extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private LoginType loginType;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profile_id", nullable = false, unique = true)
     private Profile profile;
 
