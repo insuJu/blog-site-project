@@ -1,0 +1,29 @@
+/* ==================== */
+/* Layout Container     */
+/* ==================== */
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg-primary);
+}
+
+/* ==================== */
+/* Main Content         */
+/* ==================== */
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-xl);
+}
+
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
+@media (max-width: 768px) {
+  .main {
+    padding: var(--spacing-md);
+  }
+}

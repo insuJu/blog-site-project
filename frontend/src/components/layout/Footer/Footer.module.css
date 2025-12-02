@@ -1,0 +1,48 @@
+/* ==================== */
+/* Footer Container     */
+/* ==================== */
+.footer {
+  margin-top: auto;
+  padding: 2rem 0;
+  background: #F8F9FA;
+  border-top: 1px solid #E9ECEF;
+}
+
+/* ==================== */
+/* Inner Container      */
+/* ==================== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ==================== */
+/* Content Section      */
+/* ==================== */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Copyright Text */
+.copyright {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6C757D;
+}
+
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  .content {
+    gap: 0.75rem;
+  }
+}
