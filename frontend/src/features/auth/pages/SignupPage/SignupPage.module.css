@@ -1,0 +1,43 @@
+/* ==================== */
+/* Page Container       */
+/* ==================== */
+.page-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
+}
+
+/* ==================== */
+/* Form Wrapper         */
+/* ==================== */
+.form-wrapper {
+  max-width: 400px;
+  width: 100%;
+  padding: 40px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+
+/* ==================== */
+/* Switch Text          */
+/* ==================== */
+.switch-text {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+}
+
+/* Link */
+.switch-text a {
+  font-weight: bold;
+  color: #667eea;
+  text-decoration: none;
+}
+
+.switch-text a:hover {
+  text-decoration: underline;
+}
