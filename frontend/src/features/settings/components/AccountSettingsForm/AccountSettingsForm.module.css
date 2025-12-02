@@ -1,0 +1,201 @@
+/* ===================================== */
+/* Section Layout                        */
+/* ===================================== */
+.setting-section {
+  padding: 2rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.setting-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Section Header */
+.setting-section h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+/* ===================================== */
+/* Form Group                            */
+/* ===================================== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Form Label */
+.form-group label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* ===================================== */
+/* Input Container                       */
+/* ===================================== */
+.input-button-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ===================================== */
+/* Form Input                            */
+/* ===================================== */
+.form-group input {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-group input:disabled {
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #4c6ef5;
+  box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.1);
+}
+
+.form-group input::placeholder {
+  color: #9ca3af;
+}
+
+/* ===================================== */
+/* Error Message                         */
+/* ===================================== */
+.error {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+
+/* ===================================== */
+/* Password Change Section               */
+/* ===================================== */
+.password-change {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ===================================== */
+/* Buttons                               */
+/* ===================================== */
+.edit-button,
+.save-button,
+.cancel-button,
+.next-button {
+  flex-shrink: 0;
+  padding: 0.625rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Edit Button */
+.edit-button {
+  background: #bae6fd;
+  color: #0c4a6e;
+}
+
+.edit-button:hover {
+  background: #7dd3fc;
+  box-shadow: 0 2px 8px rgba(125, 211, 252, 0.3);
+  transform: translateY(-1px);
+}
+
+.edit-button:active {
+  transform: translateY(0);
+}
+
+/* Save Button */
+.save-button {
+  background: #a7f3d0;
+  color: #065f46;
+}
+
+.save-button:hover {
+  background: #6ee7b7;
+  box-shadow: 0 2px 8px rgba(110, 231, 183, 0.3);
+  transform: translateY(-1px);
+}
+
+.save-button:active {
+  transform: translateY(0);
+}
+
+/* Cancel Button */
+.cancel-button {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.cancel-button:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.cancel-button:active {
+  transform: translateY(0);
+}
+
+/* Next Button */
+.next-button {
+  background: #ddd6fe;
+  color: #5b21b6;
+}
+
+.next-button:hover:not(:disabled) {
+  background: #c4b5fd;
+  box-shadow: 0 2px 8px rgba(196, 181, 253, 0.3);
+  transform: translateY(-1px);
+}
+
+.next-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.next-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===================================== */
+/* Media Queries                         */
+/* ===================================== */
+@media (max-width: 768px) {
+  .setting-section {
+    padding: 1.5rem;
+  }
+
+  .setting-section h2 {
+    font-size: 1.25rem;
+  }
+
+  .input-button-wrapper {
+    flex-wrap: wrap;
+  }
+}
