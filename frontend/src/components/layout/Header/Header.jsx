@@ -91,7 +91,7 @@ const Header = () => {
                       </Link>
                       <Link
                         to="/settings"
-                        className={`${styles.dropdownItem} ${styles.showWhenNavHidden}`}
+                        className={styles.dropdownItem}
                         onClick={() => setDropdownOpen(false)}
                       >
                         설정
