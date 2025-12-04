@@ -1,0 +1,451 @@
+/* ==================== */
+/* Page Container       */
+/* ==================== */
+.categoryListPage {
+  min-height: calc(100vh - 64px);
+  padding: 3rem 0;
+  background: #f8f9fa;
+}
+
+/* ==================== */
+/* Inner Container      */
+/* ==================== */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ==================== */
+/* Header Section       */
+/* ==================== */
+.header {
+  margin-bottom: 2rem;
+}
+
+/* Main Title */
+.mainTitle {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #212529;
+}
+
+/* Subtitle */
+.subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+/* ==================== */
+/* Create Section       */
+/* ==================== */
+.createSection {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+}
+
+/* Create Title */
+.createTitle {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+/* Create Form */
+.createForm {
+  display: grid;
+  grid-template-columns: 180px 1fr auto;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+/* Label */
+.label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #6c757d;
+}
+
+/* Parent Select */
+.parentSelect {
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: white;
+  color: #495057;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.parentSelect:hover {
+  border-color: #adb5bd;
+}
+
+.parentSelect:focus {
+  outline: none;
+  border-color: #4C6EF5;
+  box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.08);
+}
+
+/* Create Input */
+.createInput {
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.createInput:hover {
+  border-color: #adb5bd;
+}
+
+.createInput:focus {
+  outline: none;
+  border-color: #4C6EF5;
+  box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.08);
+}
+
+.createInput::placeholder {
+  color: #adb5bd;
+}
+
+/* Create Button */
+.createButton {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  background: #212529;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.createButton:hover {
+  background: #343a40;
+}
+
+.createButton:active {
+  transform: scale(0.98);
+}
+
+/* ==================== */
+/* Category List        */
+/* ==================== */
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ==================== */
+/* Category Card        */
+/* ==================== */
+.categoryCard {
+  padding: 1rem 1.25rem;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.categoryCard:hover {
+  border-color: #dee2e6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Depth Styles */
+.categoryCard[data-depth="0"] {
+  border-left: 3px solid #212529;
+}
+
+.categoryCard[data-depth="1"] {
+  margin-left: 1.5rem;
+  border-left: 3px solid #495057;
+  background: #f8f9fa;
+}
+
+.categoryCard[data-depth="2"] {
+  margin-left: 3rem;
+  border-left: 3px solid #6c757d;
+  background: #f1f3f5;
+}
+
+/* Category Header */
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Category Info */
+.categoryInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.categoryDetails {
+  flex: 1;
+}
+
+/* Category Name */
+.categoryName {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+/* Category Meta */
+.categoryMeta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.8125rem;
+  color: #868e96;
+}
+
+.postCount,
+.childCount {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* ==================== */
+/* Category Actions     */
+/* ==================== */
+.categoryActions {
+  display: flex;
+  gap: 0.375rem;
+}
+
+/* Action Button */
+.actionButton {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background: white;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actionButton:hover {
+  border-color: #adb5bd;
+  background: #f8f9fa;
+}
+
+/* Delete Button */
+.deleteButton:hover {
+  border-color: #fa5252;
+  color: #fa5252;
+  background: #fff5f5;
+}
+
+/* Add Child Button */
+.addChildButton {
+  color: #4C6EF5;
+  border-color: #4C6EF5;
+}
+
+.addChildButton:hover {
+  background: #f8f9ff;
+}
+
+/* ==================== */
+/* Child Form           */
+/* ==================== */
+.childForm {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Child Input */
+.childInput {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.childInput:focus {
+  outline: none;
+  border-color: #4C6EF5;
+  box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.08);
+}
+
+/* Child Button */
+.childButton {
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: white;
+  background: #212529;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.childButton:hover {
+  background: #343a40;
+}
+
+/* Cancel Button */
+.cancelButton {
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #6c757d;
+  background: #f8f9fa;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelButton:hover {
+  background: #e9ecef;
+}
+
+/* ==================== */
+/* Empty State          */
+/* ==================== */
+.emptyState {
+  padding: 3rem 2rem;
+  text-align: center;
+  color: #6c757d;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+}
+
+.emptyTitle {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.emptyText {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #868e96;
+}
+
+/* ==================== */
+/* Loading State        */
+/* ==================== */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: #6c757d;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 1rem;
+  border: 3px solid #e9ecef;
+  border-top-color: #212529;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* ==================== */
+/* Error State          */
+/* ==================== */
+.error {
+  padding: 1.5rem;
+  text-align: center;
+  color: #fa5252;
+  background: #fff5f5;
+  border: 1px solid #ffc9c9;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+/* ==================== */
+/* Animations           */
+/* ==================== */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
+@media (max-width: 768px) {
+  .categoryListPage {
+    padding: 2rem 0;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .mainTitle {
+    font-size: 1.5rem;
+  }
+
+  .createSection {
+    padding: 1rem;
+  }
+
+  .createForm {
+    grid-template-columns: 1fr;
+  }
+
+  .createButton {
+    align-self: stretch;
+  }
+
+  .categoryCard[data-depth="1"] {
+    margin-left: 1rem;
+  }
+
+  .categoryCard[data-depth="2"] {
+    margin-left: 2rem;
+  }
+
+  .categoryHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .categoryActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
