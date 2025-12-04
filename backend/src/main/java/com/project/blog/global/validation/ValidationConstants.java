@@ -22,6 +22,14 @@ public final class ValidationConstants {
     public static final int BLOGNAME_MIN_LENGTH = 2;
     public static final int BLOGNAME_MAX_LENGTH = 30;
 
+    public static final int POST_TITLE_MAX_LENGTH = 200;
+
+    public static final int COMMENT_CONTENT_MAX_LENGTH = 1000;
+
+    public static final int CATEGORY_NAME_MAX_LENGTH = 50;
+
+    public static final int TAG_NAME_MAX_LENGTH = 30;
+
     // ==================== Regex Patterns ====================
 
     public static final String USERNAME_PATTERN = "^[a-zA-Z0-9]+$";
@@ -76,4 +84,17 @@ public final class ValidationConstants {
     public static final String MSG_AVATAR_REQUIRED = "아바타 파일은 필수입니다.";
 
     public static final String MSG_CODE_REQUIRED = "인증 코드는 필수 입력값입니다.";
+
+    public static final String MSG_POST_TITLE_REQUIRED = "제목은 필수입니다.";
+    public static final String MSG_POST_TITLE_SIZE = "제목은 200자를 초과할 수 없습니다.";
+    public static final String MSG_POST_CONTENT_REQUIRED = "내용은 필수입니다.";
+
+    public static final String MSG_COMMENT_CONTENT_REQUIRED = "댓글 내용은 필수입니다.";
+    public static final String MSG_COMMENT_CONTENT_SIZE = "댓글은 1000자를 초과할 수 없습니다.";
+
+    public static final String MSG_CATEGORY_NAME_REQUIRED = "카테고리 이름은 필수입니다.";
+    public static final String MSG_CATEGORY_NAME_SIZE = "카테고리 이름은 50자를 초과할 수 없습니다.";
+
+    public static final String MSG_TAG_NAME_REQUIRED = "태그 이름은 필수입니다.";
+    public static final String MSG_TAG_NAME_SIZE = "태그 이름은 30자를 초과할 수 없습니다.";
 }

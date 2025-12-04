@@ -33,6 +33,33 @@ public enum ErrorCode {
     SAME_NICKNAME(HttpStatus.BAD_REQUEST, "PROFILE004", "새 닉네임이 현재 닉네임과 동일합니다."),
     SAME_BLOGNAME(HttpStatus.BAD_REQUEST, "PROFILE005", "새 블로그명이 현재 블로그명과 동일합니다."),
 
+    // Category
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY001", "카테고리를 찾을 수 없습니다."),
+    DUPLICATE_CATEGORY_NAME(HttpStatus.CONFLICT, "CATEGORY002", "이미 사용 중인 카테고리 이름입니다."),
+    PARENT_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY003", "부모 카테고리를 찾을 수 없습니다."),
+    CANNOT_DELETE_CATEGORY_WITH_CHILDREN(HttpStatus.BAD_REQUEST, "CATEGORY004", "하위 카테고리가 있는 카테고리는 삭제할 수 없습니다."),
+    CIRCULAR_CATEGORY_REFERENCE(HttpStatus.BAD_REQUEST, "CATEGORY005", "순환 참조가 발생할 수 있는 부모 카테고리입니다."),
+    MAX_CATEGORY_DEPTH_EXCEEDED(HttpStatus.BAD_REQUEST, "CATEGORY006", "카테고리는 2단계까지만 생성할 수 있습니다."),
+
+    // Tag
+    TAG_NOT_FOUND(HttpStatus.NOT_FOUND, "TAG001", "태그를 찾을 수 없습니다."),
+    DUPLICATE_TAG_NAME(HttpStatus.CONFLICT, "TAG002", "이미 사용 중인 태그 이름입니다."),
+
+    // Post
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST001", "게시글을 찾을 수 없습니다."),
+    POST_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, "POST002", "게시글 수정 권한이 없습니다."),
+    POST_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "POST003", "게시글 삭제 권한이 없습니다."),
+
+    // Comment
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT001", "댓글을 찾을 수 없습니다."),
+    COMMENT_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, "COMMENT002", "댓글 수정 권한이 없습니다."),
+    COMMENT_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "COMMENT003", "댓글 삭제 권한이 없습니다."),
+    COMMENT_POST_MISMATCH(HttpStatus.BAD_REQUEST, "COMMENT005", "부모 댓글이 다른 게시글에 속해 있습니다."),
+    COMMENT_ACCESS_FORBIDDEN(HttpStatus.FORBIDDEN, "COMMENT006", "비공개 댓글 조회 권한이 없습니다."),
+
+    // Like
+    LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "LIKE001", "좋아요를 찾을 수 없습니다."),
+
     // Validation
     INPUT_VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION001", "입력값 검증에 실패했습니다."),
     INPUT_BUSINESS_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION002", "입력값 유효성 검증에 실패했습니다."),
