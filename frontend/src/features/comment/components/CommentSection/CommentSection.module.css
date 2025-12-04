@@ -1,0 +1,79 @@
+/* ==================== */
+/* Section Container    */
+/* ==================== */
+.commentSection {
+  padding: 2.5rem;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* ==================== */
+/* Section Header       */
+/* ==================== */
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 2rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212529;
+}
+
+/* Comment Count */
+.count {
+  font-size: 1.25rem;
+  color: #4C6EF5;
+}
+
+/* ==================== */
+/* Comment Form Wrapper */
+/* ==================== */
+.commentFormWrapper {
+  margin-bottom: 2.5rem;
+}
+
+/* ==================== */
+/* Comment List         */
+/* ==================== */
+.commentList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Empty State */
+.empty {
+  padding: 3rem 0;
+  font-size: 1rem;
+  color: #868e96;
+  text-align: center;
+}
+
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
+@media (max-width: 768px) {
+  .commentSection {
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .count {
+    font-size: 1.1rem;
+  }
+
+  .textarea {
+    padding: 0.875rem;
+    font-size: 0.95rem;
+  }
+
+  .submitButton {
+    width: 100%;
+  }
+}

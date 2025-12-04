@@ -1,0 +1,149 @@
+/* ==================== */
+/* Reply Container      */
+/* ==================== */
+.reply {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Avatar */
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* Reply Content */
+.replyContent {
+  flex: 1;
+}
+
+/* ==================== */
+/* Reply Header         */
+/* ==================== */
+.replyHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Author Name */
+.author {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+/* Date */
+.date {
+  font-size: 0.85rem;
+  color: #868e96;
+}
+
+/* Private Badge */
+.privateBadge {
+  font-size: 0.8rem;
+  padding: 0.2rem 0.5rem;
+  background: #fff5f5;
+  border: 1px solid #ffc9c9;
+  border-radius: 4px;
+  color: #fa5252;
+  font-weight: 600;
+}
+
+/* ==================== */
+/* Reply Text           */
+/* ==================== */
+.text {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #333;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ==================== */
+/* Reply Actions        */
+/* ==================== */
+.replyActions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Action Buttons */
+.likeButton,
+.deleteButton {
+  padding: 0.375rem 0.75rem;
+  background: transparent;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Like Button */
+.likeButton {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.likeButton:hover {
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+.likeButton.liked {
+  background: #fff5f5;
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+/* Delete Button */
+.deleteButton:hover {
+  border-color: #fa5252;
+  color: #fa5252;
+}
+
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
+@media (max-width: 768px) {
+  .reply {
+    gap: 0.75rem;
+  }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  .text {
+    font-size: 0.9rem;
+  }
+
+  .replyActions {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .likeButton,
+  .deleteButton {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+}
