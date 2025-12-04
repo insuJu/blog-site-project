@@ -1,0 +1,63 @@
+/* ==================== */
+/* Page Container       */
+/* ==================== */
+.indexPage {
+  min-height: calc(100vh - 70px);
+  padding: 3rem 0;
+  background: #f8f9fa;
+}
+
+/* ==================== */
+/* Inner Container      */
+/* ==================== */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 3rem;
+}
+
+/* ==================== */
+/* Header Section       */
+/* ==================== */
+.header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+/* Subtitle */
+.subtitle {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #6c757d;
+}
+
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .indexPage {
+    padding: 2rem 0;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .header {
+    margin-bottom: 2rem;
+  }
+
+  .mainTitle {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,144 @@
+/* ==================== */
+/* Card Container       */
+/* ==================== */
+.card {
+  padding: 2rem;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  transition: all 0.3s;
+}
+
+.card:hover {
+  border-color: #dee2e6;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+}
+
+/* Card Link */
+.cardLink {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ==================== */
+/* Category Badge       */
+/* ==================== */
+.category {
+  display: inline-block;
+  margin-bottom: 1rem;
+  padding: 0.25rem 0.75rem;
+  background: #E7F5FF;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1971C2;
+}
+
+/* ==================== */
+/* Title Section        */
+/* ==================== */
+.title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #212529;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardLink:hover .title {
+  color: #4C6EF5;
+}
+
+/* Private Badge */
+.privateBadge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fa5252;
+}
+
+/* ==================== */
+/* Preview Section      */
+/* ==================== */
+.preview {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #6c757d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==================== */
+/* Tags Section         */
+/* ==================== */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tag {
+  font-size: 0.875rem;
+  color: #868e96;
+}
+
+/* ==================== */
+/* Meta Information     */
+/* ==================== */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #868e96;
+}
+
+/* Author */
+.author {
+  font-weight: 500;
+  color: #495057;
+}
+
+/* Separator */
+.separator {
+  color: #dee2e6;
+}
+
+/* Date and Stats */
+.date,
+.stats {
+  color: #868e96;
+}
+
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
+@media (max-width: 768px) {
+  .card {
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .preview {
+    font-size: 0.95rem;
+  }
+
+  .meta {
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+  }
+}

@@ -1,0 +1,37 @@
+import {
+  BsCode,
+  BsCodeSlash,
+  BsEye,
+  BsHr,
+  BsImage,
+  BsLink45Deg,
+  BsListOl,
+  BsListUl,
+  BsTypeBold,
+  BsTypeH1,
+  BsTypeH2,
+  BsTypeH3,
+  BsTypeItalic,
+  BsTypeStrikethrough,
+  BsTypeUnderline,
+  BsQuote
+} from 'react-icons/bs';
+
+export const Icons = {
+  Bold: () => <BsTypeBold size={16} />,
+  Italic: () => <BsTypeItalic size={16} />,
+  Underline: () => <BsTypeUnderline size={16} />,
+  Strikethrough: () => <BsTypeStrikethrough size={16} />,
+  Heading1: () => <BsTypeH1 size={16} />,
+  Heading2: () => <BsTypeH2 size={16} />,
+  Heading3: () => <BsTypeH3 size={16} />,
+  ListUL: () => <BsListUl size={16} />,
+  ListOL: () => <BsListOl size={16} />,
+  Quote: () => <BsQuote size={16} />,
+  Code: () => <BsCode size={16} />,
+  CodeBlock: () => <BsCodeSlash size={16} />,
+  Link: () => <BsLink45Deg size={16} />,
+  Image: () => <BsImage size={16} />,
+  Eye: () => <BsEye size={16} />,
+  Hr: () => <BsHr size={16} />,
+};

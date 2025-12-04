@@ -1,0 +1,78 @@
+/* ==================== */
+/* Toolbar Container    */
+/* ==================== */
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-top: none;
+}
+
+/* Toolbar Group */
+.toolbarGroup {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* Toolbar Spacer */
+.toolbarSpacer {
+  flex: 1;
+}
+
+/* Toolbar Divider */
+.toolbarDivider {
+  width: 1px;
+  height: 24px;
+  margin: 0 0.5rem;
+  background: #dee2e6;
+}
+
+/* ==================== */
+/* Toolbar Buttons      */
+/* ==================== */
+.toolbarButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 32px;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toolbarButton:hover {
+  background: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+.toolbarButton.active {
+  background: #e7f5ff;
+  border-color: #4C6EF5;
+  color: #1971c2;
+}
+
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
+@media (max-width: 768px) {
+  .toolbar {
+    padding: 0.5rem;
+  }
+
+  .toolbarButton {
+    padding: 0.4rem 0.6rem;
+    min-width: 32px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+}

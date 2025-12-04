@@ -1,0 +1,98 @@
+/* ==================== */
+/* Page Container       */
+/* ==================== */
+.tagPostsPage {
+  min-height: 100vh;
+  padding: 2rem 0;
+  background: #f8f9fa;
+}
+
+/* ==================== */
+/* Inner Container      */
+/* ==================== */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ==================== */
+/* Header Section       */
+/* ==================== */
+.header {
+  margin-bottom: 2rem;
+}
+
+/* Back Button */
+.backButton {
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  color: #495057;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.backButton:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+/* Title */
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 0.5rem;
+}
+
+.tagSymbol {
+  color: #4C6EF5;
+}
+
+/* Subtitle */
+.subtitle {
+  font-size: 1rem;
+  color: #868e96;
+}
+
+/* ==================== */
+/* Message States       */
+/* ==================== */
+.errorMessage,
+.emptyMessage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.errorMessage p,
+.emptyMessage p {
+  font-size: 1.1rem;
+  color: #868e96;
+}
+
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
+@media (max-width: 768px) {
+  .tagPostsPage {
+    padding: 1rem 0;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+}

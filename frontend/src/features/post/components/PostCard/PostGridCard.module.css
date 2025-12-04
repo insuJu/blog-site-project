@@ -1,0 +1,171 @@
+/* ==================== */
+/* Card Container       */
+/* ==================== */
+.gridCard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 340px;
+  margin-bottom: 0.5rem;
+  padding: 1.75rem;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s;
+}
+
+.gridCard:hover {
+  border-color: #dee2e6;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px);
+}
+
+/* Card Link */
+.cardLink {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Card Content */
+.cardContent {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+/* ==================== */
+/* Category Badge       */
+/* ==================== */
+.category {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 0.375rem 0.875rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.02em;
+}
+
+/* ==================== */
+/* Title Section        */
+/* ==================== */
+.title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  min-height: 2.8em;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #212529;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardLink:hover .title {
+  color: #4C6EF5;
+}
+
+/* ==================== */
+/* Preview Section      */
+/* ==================== */
+.preview {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  flex: 1;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #6c757d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==================== */
+/* Tags Section         */
+/* ==================== */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.tag {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #868e96;
+}
+
+/* ==================== */
+/* Card Footer          */
+/* ==================== */
+.cardFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f3f5;
+}
+
+/* Author */
+.author {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+/* Meta Info */
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #868e96;
+}
+
+.date {
+  color: #adb5bd;
+}
+
+/* Stats */
+.stats {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.stats span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
+@media (max-width: 768px) {
+  .gridCard {
+    min-height: 280px;
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.1rem;
+  }
+
+  .preview {
+    font-size: 0.85rem;
+  }
+
+  .meta {
+    font-size: 0.75rem;
+  }
+}
