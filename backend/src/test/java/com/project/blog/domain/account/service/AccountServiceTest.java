@@ -48,7 +48,9 @@ class AccountServiceTest {
     private AccountService accountService;
 
     private Account testAccount;
+
     private Profile testProfile;
+
     private AuthenticatedUser authenticatedUser;
 
     private static final String TEST_USERNAME = "testuser";
@@ -60,13 +62,13 @@ class AccountServiceTest {
     @BeforeEach
     void setUp() {
         testProfile = Profile.builder()
-                .id(1)
+                .id(1L)
                 .nickname(TEST_NICKNAME)
                 .blogName(TEST_NICKNAME + "의 블로그")
                 .build();
 
         testAccount = Account.builder()
-                .id(1)
+                .id(1L)
                 .username(TEST_USERNAME)
                 .password(ENCODED_PASSWORD)
                 .email(TEST_EMAIL)
@@ -110,7 +112,7 @@ class AccountServiceTest {
             // given
             SignupReqDto reqDto = new SignupReqDto("newuser", "newpassword123!", "new@example.com", "newnick");
             Profile newProfile = Profile.builder()
-                    .id(2)
+                    .id(2L)
                     .nickname("newnick")
                     .blogName("newnick의 블로그")
                     .build();

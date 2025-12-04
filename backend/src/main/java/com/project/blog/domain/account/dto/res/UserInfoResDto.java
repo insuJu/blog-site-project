@@ -12,7 +12,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class UserInfoResDto {
-        private int id;
+        private Long id;
         private String username;
         private String email;
         private RoleType roleType;
@@ -22,7 +22,7 @@ public class UserInfoResDto {
         @Getter
         @Builder
         public static class ProfileInfo {
-                private int id;
+                private Long id;
                 private String nickname;
                 private String blogName;
                 private String avatar;

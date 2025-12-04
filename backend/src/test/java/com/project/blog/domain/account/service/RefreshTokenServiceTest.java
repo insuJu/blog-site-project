@@ -44,13 +44,15 @@ class RefreshTokenServiceTest {
     private RefreshTokenService refreshTokenService;
 
     private Account testAccount;
+
     private String testToken;
+
     private LocalDateTime testExpiresAt;
 
     @BeforeEach
     void setUp() {
         testAccount = Account.builder()
-                .id(1)
+                .id(1L)
                 .username("testuser")
                 .password("encodedPassword")
                 .email("test@example.com")
@@ -70,14 +72,13 @@ class RefreshTokenServiceTest {
         @DisplayName("새로운 RefreshToken 저장 성공")
         void saveNewRefreshToken() {
             // given
-            when(accountRepository.findById(1)).thenReturn(Optional.of(testAccount));
-            when(refreshTokenRepository.findById(1)).thenReturn(Optional.empty());
+            when(accountRepository.findById(1L)).thenReturn(Optional.of(testAccount));
+            when(refreshTokenRepository.findById(1L)).thenReturn(Optional.empty());
 
             // when
-            refreshTokenService.saveRefreshToken(1, testToken, testExpiresAt);
-
+            refreshTokenService.saveRefreshToken(1L, testToken, testExpiresAt);
             // then
-            verify(refreshTokenRepository).findById(1);
+            verify(refreshTokenRepository).findById(1L);
             verify(refreshTokenRepository, never()).delete(any());
 
             ArgumentCaptor<RefreshToken> captor = ArgumentCaptor.forClass(RefreshToken.class);
@@ -94,20 +95,19 @@ class RefreshTokenServiceTest {
         void saveRefreshTokenWhenTokenAlreadyExists() {
             // given
             RefreshToken existingToken = RefreshToken.builder()
-                    .accountId(1)
+                    .accountId(1L)
                     .account(testAccount)
                     .tokenHash("oldHash")
                     .expiresAt(LocalDateTime.now().plusDays(1))
                     .build();
 
-            when(accountRepository.findById(1)).thenReturn(Optional.of(testAccount));
-            when(refreshTokenRepository.findById(1)).thenReturn(Optional.of(existingToken));
+            when(accountRepository.findById(1L)).thenReturn(Optional.of(testAccount));
+            when(refreshTokenRepository.findById(1L)).thenReturn(Optional.of(existingToken));
 
             // when
-            refreshTokenService.saveRefreshToken(1, testToken, testExpiresAt);
-
+            refreshTokenService.saveRefreshToken(1L, testToken, testExpiresAt);
             // then
-            verify(refreshTokenRepository).findById(1);
+            verify(refreshTokenRepository).findById(1L);
             verify(refreshTokenRepository).delete(existingToken);
 
             ArgumentCaptor<RefreshToken> captor = ArgumentCaptor.forClass(RefreshToken.class);
@@ -123,10 +123,10 @@ class RefreshTokenServiceTest {
         @DisplayName("존재하지 않는 Account ID로 저장 시도 시 예외 발생")
         void saveWithNonExistentAccount() {
             // given
-            when(accountRepository.findById(1)).thenReturn(Optional.empty());
+            when(accountRepository.findById(1L)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> refreshTokenService.saveRefreshToken(1, testToken, testExpiresAt))
+            assertThatThrownBy(() -> refreshTokenService.saveRefreshToken(1L, testToken, testExpiresAt))
                     .isInstanceOf(BusinessException.class)
                     .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ACCOUNT_NOT_FOUND);
 
@@ -145,26 +145,26 @@ class RefreshTokenServiceTest {
         void validateValidToken() {
             // given
             RefreshToken validToken = RefreshToken.builder()
-                    .accountId(1)
+                    .accountId(1L)
                     .account(testAccount)
                     .tokenHash(hashToken(testToken))
                     .expiresAt(LocalDateTime.now().plusDays(7))
                     .build();
 
-            when(refreshTokenRepository.findById(1)).thenReturn(Optional.of(validToken));
+            when(refreshTokenRepository.findById(1L)).thenReturn(Optional.of(validToken));
 
             // when & then
-            refreshTokenService.validateRefreshToken(1, testToken);
+            refreshTokenService.validateRefreshToken(1L, testToken);
         }
 
         @Test
         @DisplayName("존재하지 않는 RefreshToken 검증 시 예외 발생")
         void validateNonExistentToken() {
             // given
-            when(refreshTokenRepository.findById(1)).thenReturn(Optional.empty());
+            when(refreshTokenRepository.findById(1L)).thenReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> refreshTokenService.validateRefreshToken(1, testToken))
+            assertThatThrownBy(() -> refreshTokenService.validateRefreshToken(1L, testToken))
                     .isInstanceOf(AuthenticationException.class)
                     .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INVALID_REFRESH_TOKEN);
         }
@@ -174,16 +174,16 @@ class RefreshTokenServiceTest {
         void validateInvalidTokenHash() {
             // given
             RefreshToken invalidToken = RefreshToken.builder()
-                    .accountId(1)
+                    .accountId(1L)
                     .account(testAccount)
                     .tokenHash("wrongHash")
                     .expiresAt(LocalDateTime.now().plusDays(7))
                     .build();
 
-            when(refreshTokenRepository.findById(1)).thenReturn(Optional.of(invalidToken));
+            when(refreshTokenRepository.findById(1L)).thenReturn(Optional.of(invalidToken));
 
             // when & then
-            assertThatThrownBy(() -> refreshTokenService.validateRefreshToken(1, testToken))
+            assertThatThrownBy(() -> refreshTokenService.validateRefreshToken(1L, testToken))
                     .isInstanceOf(AuthenticationException.class)
                     .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INVALID_REFRESH_TOKEN);
         }
@@ -193,16 +193,16 @@ class RefreshTokenServiceTest {
         void validateExpiredToken() {
             // given
             RefreshToken expiredToken = RefreshToken.builder()
-                    .accountId(1)
+                    .accountId(1L)
                     .account(testAccount)
                     .tokenHash(hashToken(testToken))
                     .expiresAt(LocalDateTime.now().minusDays(1))
                     .build();
 
-            when(refreshTokenRepository.findById(1)).thenReturn(Optional.of(expiredToken));
+            when(refreshTokenRepository.findById(1L)).thenReturn(Optional.of(expiredToken));
 
             // when & then
-            assertThatThrownBy(() -> refreshTokenService.validateRefreshToken(1, testToken))
+            assertThatThrownBy(() -> refreshTokenService.validateRefreshToken(1L, testToken))
                     .isInstanceOf(AuthenticationException.class)
                     .hasFieldOrPropertyWithValue("errorCode", ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
@@ -216,10 +216,10 @@ class RefreshTokenServiceTest {
         @DisplayName("RefreshToken 삭제 성공")
         void deleteToken() {
             // when
-            refreshTokenService.deleteRefreshToken(1);
+            refreshTokenService.deleteRefreshToken(1L);
 
             // then
-            verify(refreshTokenRepository).deleteById(1);
+            verify(refreshTokenRepository).deleteById(1L);
         }
     }
 

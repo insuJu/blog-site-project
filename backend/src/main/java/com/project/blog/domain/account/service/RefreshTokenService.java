@@ -28,7 +28,7 @@ public class RefreshTokenService {
     private final AccountRepository accountRepository;
 
     @Transactional
-    public void saveRefreshToken(int accountId, String token, LocalDateTime expiresAt) {
+    public void saveRefreshToken(Long accountId, String token, LocalDateTime expiresAt) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
 
@@ -45,7 +45,7 @@ public class RefreshTokenService {
         refreshTokenRepository.save(refreshToken);
     }
 
-    public void validateRefreshToken(int accountId, String token) {
+    public void validateRefreshToken(Long accountId, String token) {
         String tokenHash = hashToken(token);
 
         RefreshToken refreshToken = refreshTokenRepository.findById(accountId)
@@ -61,7 +61,7 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public void deleteRefreshToken(int accountId) {
+    public void deleteRefreshToken(Long accountId) {
         refreshTokenRepository.deleteById(accountId);
     }
 

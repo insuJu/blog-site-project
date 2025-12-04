@@ -56,13 +56,13 @@ class ProfileServiceTest {
     @BeforeEach
     void setUp() {
         testProfile = Profile.builder()
-                .id(1)
+                .id(1L)
                 .nickname(TEST_NICKNAME)
                 .blogName(TEST_BLOG_NAME)
                 .build();
 
         testAccount = Account.builder()
-                .id(1)
+                .id(1L)
                 .username(TEST_USERNAME)
                 .password(ENCODED_PASSWORD)
                 .email(TEST_EMAIL)
@@ -165,7 +165,7 @@ class ProfileServiceTest {
         void updateNicknameWithoutProfile() {
             // given
             Account accountWithoutProfile = Account.builder()
-                    .id(2)
+                    .id(2L)
                     .username("user2")
                     .password("encodedPassword")
                     .email("user2@example.com")
@@ -176,7 +176,7 @@ class ProfileServiceTest {
             AuthenticatedUser userWithoutProfile = new AuthenticatedUser(accountWithoutProfile);
             NicknameUpdateReqDto reqDto = new NicknameUpdateReqDto("newnickname");
 
-            when(accountRepository.findById(2)).thenReturn(Optional.of(accountWithoutProfile));
+            when(accountRepository.findById(2L)).thenReturn(Optional.of(accountWithoutProfile));
 
             // when & then
             assertThatThrownBy(() -> profileService.updateNickname(reqDto, userWithoutProfile))
@@ -269,7 +269,7 @@ class ProfileServiceTest {
         void updateBlogNameWithoutProfile() {
             // given
             Account accountWithoutProfile = Account.builder()
-                    .id(2)
+                    .id(2L)
                     .username("user2")
                     .password("encodedPassword")
                     .email("user2@example.com")
@@ -280,7 +280,7 @@ class ProfileServiceTest {
             AuthenticatedUser userWithoutProfile = new AuthenticatedUser(accountWithoutProfile);
             BlogNameUpdateReqDto reqDto = new BlogNameUpdateReqDto("newblogname");
 
-            when(accountRepository.findById(2)).thenReturn(Optional.of(accountWithoutProfile));
+            when(accountRepository.findById(2L)).thenReturn(Optional.of(accountWithoutProfile));
 
             // when & then
             assertThatThrownBy(() -> profileService.updateBlogName(reqDto, userWithoutProfile))

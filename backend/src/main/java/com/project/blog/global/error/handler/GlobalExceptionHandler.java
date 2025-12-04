@@ -47,9 +47,9 @@ public class GlobalExceptionHandler {
         if (e instanceof MethodArgumentNotValidException) {
             ((MethodArgumentNotValidException) e).getBindingResult().getFieldErrors().stream()
                     .sorted((e1, e2) -> {
-                        int priority1 = getInputValidationPriority(e1.getCode());
-                        int priority2 = getInputValidationPriority(e2.getCode());
-                        return Integer.compare(priority1, priority2);
+                        long priority1 = getInputValidationPriority(e1.getCode());
+                        long priority2 = getInputValidationPriority(e2.getCode());
+                        return Long.compare(priority1, priority2);
                     })
                     .forEach(error -> errors.putIfAbsent(error.getField(), error.getDefaultMessage()));
         }
@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
-    private int getInputValidationPriority(String code) {
+    private long getInputValidationPriority(String code) {
         if (code == null)
             return 999;
 

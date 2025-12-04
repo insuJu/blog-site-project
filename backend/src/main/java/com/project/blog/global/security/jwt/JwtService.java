@@ -16,7 +16,7 @@ public class JwtService {
     private final JwtProvider jwtProvider;
     private final RefreshTokenService refreshTokenService;
 
-    public Map<String, String> generateTokens(String username, int accountId) {
+    public Map<String, String> generateTokens(String username, Long accountId) {
         String accessToken = jwtProvider.createAccessToken(username);
         String refreshToken = jwtProvider.createRefreshToken(username);
 

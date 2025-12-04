@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,13 +20,12 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class RefreshToken extends BaseTimeEntity {
-    // fields
     @Id
-    private Integer accountId;
+    private Long accountId;
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
@@ -43,7 +43,6 @@ public class RefreshToken extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime expiresAt;
 
-    // methods
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiresAt);
     }

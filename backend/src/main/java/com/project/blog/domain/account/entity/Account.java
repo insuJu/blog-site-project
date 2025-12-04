@@ -16,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,14 +24,13 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class Account extends BaseTimeEntity {
-    // fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(nullable = false, unique = true, length = 20)
     private String username;
@@ -51,7 +51,6 @@ public class Account extends BaseTimeEntity {
     @JoinColumn(name = "profile_id", nullable = false, unique = true)
     private Profile profile;
 
-    // methods
     public void updateEmail(String email) {
         this.email = email;
     }

@@ -82,7 +82,7 @@ public class ProfileService {
                 profile.updateBlogName(newBlogName);
         }
 
-        private Account findAccountById(int accountId) {
+        private Account findAccountById(Long accountId) {
                 return accountRepository.findById(accountId)
                                 .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
         }

@@ -2,7 +2,7 @@ package com.project.blog.domain.account.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,8 +30,8 @@ import com.project.blog.global.error.exception.BusinessException;
 import com.project.blog.global.security.jwt.JwtCookieUtil;
 import com.project.blog.global.security.jwt.JwtProvider;
 import com.project.blog.global.security.jwt.JwtService;
-import com.project.blog.global.security.service.AuthenticationService;
 import com.project.blog.global.security.service.AuthenticatedUser;
+import com.project.blog.global.security.service.AuthenticationService;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -69,12 +69,13 @@ class AuthServiceTest {
     private AuthService authService;
 
     private Account testAccount;
+
     private LoginReqDto loginReqDto;
 
     @BeforeEach
     void setUp() {
         testAccount = Account.builder()
-                .id(1)
+                .id(1L)
                 .username("testuser")
                 .password("encodedPassword")
                 .email("test@example.com")
@@ -99,7 +100,7 @@ class AuthServiceTest {
             );
 
             when(accountRepository.findByUsername("testuser")).thenReturn(Optional.of(testAccount));
-            when(jwtService.generateTokens("testuser", 1)).thenReturn(tokens);
+            when(jwtService.generateTokens("testuser", 1L)).thenReturn(tokens);
 
             // when
             authService.login(loginReqDto, response);
@@ -107,7 +108,7 @@ class AuthServiceTest {
             // then
             verify(accountRepository).findByUsername("testuser");
             verify(authenticationService).authenticateWithPassword(loginReqDto);
-            verify(jwtService).generateTokens("testuser", 1);
+            verify(jwtService).generateTokens("testuser", 1L);
             verify(jwtCookieUtil).addTokenToCookie(response, tokens);
         }
 
@@ -123,7 +124,7 @@ class AuthServiceTest {
                     .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ACCOUNT_NOT_FOUND);
 
             verify(authenticationService, times(0)).authenticateWithPassword(any());
-            verify(jwtService, times(0)).generateTokens(anyString(), anyInt());
+            verify(jwtService, times(0)).generateTokens(anyString(), anyLong());
         }
     }
 
@@ -157,7 +158,7 @@ class AuthServiceTest {
             verify(jwtProvider).validateToken(refreshToken);
             verify(jwtProvider).extractClaims(refreshToken);
             verify(accountRepository).findByUsername("testuser");
-            verify(refreshTokenService).validateRefreshToken(1, refreshToken);
+            verify(refreshTokenService).validateRefreshToken(1L, refreshToken);
             verify(jwtService).reissueAccessToken(refreshToken);
             verify(jwtCookieUtil).addTokenToCookie(response, newTokens);
         }
@@ -174,7 +175,7 @@ class AuthServiceTest {
                     .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INVALID_TOKEN);
 
             verify(jwtProvider, times(0)).validateToken(anyString());
-            verify(refreshTokenService, times(0)).validateRefreshToken(anyInt(), anyString());
+            verify(refreshTokenService, times(0)).validateRefreshToken(anyLong(), anyString());
         }
 
         @Test
@@ -195,7 +196,7 @@ class AuthServiceTest {
                     .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ACCOUNT_NOT_FOUND);
 
             verify(jwtProvider).validateToken(refreshToken);
-            verify(refreshTokenService, times(0)).validateRefreshToken(anyInt(), anyString());
+            verify(refreshTokenService, times(0)).validateRefreshToken(anyLong(), anyString());
         }
     }
 
@@ -213,7 +214,7 @@ class AuthServiceTest {
             authService.logout(authenticatedUser, response);
 
             // then
-            verify(refreshTokenService).deleteRefreshToken(1);
+            verify(refreshTokenService).deleteRefreshToken(1L);
             verify(jwtCookieUtil).clearTokenFromCookie(response);
         }
     }
