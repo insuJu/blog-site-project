@@ -1,0 +1,151 @@
+package com.project.blog.domain.category.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.project.blog.domain.category.dto.req.CategoryReqDto;
+import com.project.blog.domain.category.dto.res.CategoryResDto;
+import com.project.blog.domain.category.entity.Category;
+import com.project.blog.domain.category.repository.CategoryRepository;
+import com.project.blog.global.error.code.ErrorCode;
+import com.project.blog.global.error.exception.BusinessException;
+import com.project.blog.global.error.util.ErrorUtil;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class CategoryService {
+    private final CategoryRepository categoryRepository;
+
+    @Transactional
+    public CategoryResDto createCategory(CategoryReqDto reqDto) {
+        String name = reqDto.getName();
+        Long parentId = reqDto.getParentId();
+
+        Map<String, String> errors = new HashMap<>();
+
+        ErrorUtil.addErrorIf(errors,
+                categoryRepository.existsByNameAndParentId(name, parentId),
+                "name",
+                () -> ErrorCode.DUPLICATE_CATEGORY_NAME.getMessage());
+
+        Category parent = null;
+        if (parentId != null) {
+            parent = categoryRepository.findById(parentId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.PARENT_CATEGORY_NOT_FOUND));
+
+            ErrorUtil.addErrorIf(errors,
+                    parent.getParent() != null,
+                    "parentId",
+                    () -> ErrorCode.MAX_CATEGORY_DEPTH_EXCEEDED.getMessage());
+        }
+
+        ErrorUtil.throwIfNotEmpty(errors);
+
+        Category category = Category.builder()
+                .name(name)
+                .parent(parent)
+                .build();
+
+        Category savedCategory = categoryRepository.save(category);
+        return CategoryResDto.fromWithoutChildren(savedCategory);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CategoryResDto> getAllCategories() {
+        List<Category> topLevelCategories = categoryRepository.findByParentIsNull();
+        return topLevelCategories.stream()
+                .map(CategoryResDto::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public CategoryResDto getCategoryById(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+        return CategoryResDto.from(category);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CategoryResDto> getCategoriesByParentId(Long parentId) {
+        categoryRepository.findById(parentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PARENT_CATEGORY_NOT_FOUND));
+
+        List<Category> children = categoryRepository.findByParentId(parentId);
+        return children.stream()
+                .map(CategoryResDto::fromWithoutChildren)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public CategoryResDto updateCategory(Long id, CategoryReqDto reqDto) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        String name = reqDto.getName();
+        Long parentId = reqDto.getParentId();
+
+        Map<String, String> errors = new HashMap<>();
+
+        if (!category.getName().equals(name)) {
+            ErrorUtil.addErrorIf(errors,
+                    categoryRepository.existsByNameAndParentIdAndIdNot(name, parentId, id),
+                    "name",
+                    () -> ErrorCode.DUPLICATE_CATEGORY_NAME.getMessage());
+        }
+
+        Category newParent = null;
+        if (parentId != null) {
+            newParent = categoryRepository.findById(parentId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.PARENT_CATEGORY_NOT_FOUND));
+
+            if (parentId.equals(id)) {
+                errors.put("parentId", ErrorCode.CIRCULAR_CATEGORY_REFERENCE.getMessage());
+            }
+
+            if (isDescendant(category, newParent)) {
+                errors.put("parentId", ErrorCode.CIRCULAR_CATEGORY_REFERENCE.getMessage());
+            }
+
+            ErrorUtil.addErrorIf(errors,
+                    newParent.getParent() != null,
+                    "parentId",
+                    () -> ErrorCode.MAX_CATEGORY_DEPTH_EXCEEDED.getMessage());
+        }
+
+        ErrorUtil.throwIfNotEmpty(errors);
+
+        category.updateName(name);
+        category.updateParent(newParent);
+
+        return CategoryResDto.fromWithoutChildren(category);
+    }
+
+    @Transactional
+    public void deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        if (!category.getChildren().isEmpty()) {
+            throw new BusinessException(ErrorCode.CANNOT_DELETE_CATEGORY_WITH_CHILDREN);
+        }
+
+        categoryRepository.delete(category);
+    }
+
+    private boolean isDescendant(Category currentCategory, Category targetCategory) {
+        if (targetCategory.getParent() == null) {
+            return false;
+        }
+        if (targetCategory.getParent().getId().equals(currentCategory.getId())) {
+            return true;
+        }
+        return isDescendant(currentCategory, targetCategory.getParent());
+    }
+}
