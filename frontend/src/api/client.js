@@ -50,7 +50,7 @@ client.interceptors.response.use(
       } catch (refreshError) {
         isRefreshing = false;
         refreshSubscribers = [];
-        window.location.href = "/";
+        
         return Promise.reject(refreshError);
       }
     }
