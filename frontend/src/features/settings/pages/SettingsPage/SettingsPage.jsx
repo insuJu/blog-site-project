@@ -33,11 +33,6 @@ const SettingsPage = () => {
   return (
     <div className={styles["settings-page"]}>
       <div className={styles.container}>
-        <div className={styles.header}>
-          <h1>설정</h1>
-          <p className={styles.subtitle}>계정 및 프로필 정보를 관리하세요</p>
-        </div>
-
         {successMessage && (
           <div className={styles["success-message"]}>
             <FiCheckCircle size={20} />

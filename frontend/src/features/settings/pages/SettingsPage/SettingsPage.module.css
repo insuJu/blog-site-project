@@ -1,15 +1,15 @@
-/* ===================================== */
-/* Page Root                             */
-/* ===================================== */
+/* ==================== */
+/* Page Container       */
+/* ==================== */
 .settings-page {
   min-height: 100vh;
   padding: 2rem 1rem;
   background: #F8F9FA;
 }
 
-/* ===================================== */
-/* Main Container                        */
-/* ===================================== */
+/* ==================== */
+/* Main Container       */
+/* ==================== */
 .container {
   max-width: 800px;
   margin: 0 auto;
@@ -20,34 +20,10 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
-/* ===================================== */
-/* Header Section                        */
-/* ===================================== */
-.header {
-  margin-bottom: 2.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 2px solid #f0f0f0;
-  text-align: center;
-}
-
-.header h1 {
-  margin-bottom: 0.5rem;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #212529;
-}
-
-/* Subtitle */
-.subtitle {
-  font-size: 1rem;
-  color: #868E96;
-}
-
-/* ===================================== */
-/* Message Components                    */
-/* ===================================== */
-.success-message,
-.error-message {
+/* ==================== */
+/* Success Message      */
+/* ==================== */
+.success-message {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -55,10 +31,6 @@
   padding: 1rem 1.25rem;
   border-radius: 8px;
   font-size: 0.95rem;
-}
-
-/* Success Message */
-.success-message {
   background-color: #ecfdf5;
   color: #065f46;
   border: 1px solid #a7f3d0;
@@ -69,8 +41,17 @@
   color: #10b981;
 }
 
-/* Error Message */
+/* ==================== */
+/* Error Message        */
+/* ==================== */
 .error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
   background-color: #fef2f2;
   color: #991b1b;
   border: 1px solid #fecaca;
@@ -81,15 +62,11 @@
   color: #ef4444;
 }
 
-/* ===================================== */
-/* Media Queries                         */
-/* ===================================== */
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
 @media (max-width: 768px) {
   .container {
     padding: 1.5rem;
-  }
-
-  .header h1 {
-    font-size: 1.5rem;
   }
 }
