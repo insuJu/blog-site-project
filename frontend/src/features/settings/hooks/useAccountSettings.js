@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { accountApi } from "../api/accountApi";
+import { updateEmail, updatePassword } from "../api/accountApi";
 import { useAuth } from "../../../contexts/AuthContext";
 
 export const useAccountSettings = () => {
@@ -73,7 +73,7 @@ export const useAccountSettings = () => {
     setSuccessMessage("");
 
     try {
-      await accountApi.updateEmail({ newEmail: formData.email });
+      await updateEmail({ newEmail: formData.email });
       updateUser({ ...user, email: formData.email });
       setEditMode((prev) => ({ ...prev, email: false }));
       setSuccessMessage("이메일이 성공적으로 변경되었습니다.");
@@ -106,7 +106,7 @@ export const useAccountSettings = () => {
     }
 
     try {
-      await accountApi.updatePassword({
+      await updatePassword({
         currentPassword: formData.currentPassword,
         newPassword: formData.newPassword,
       });

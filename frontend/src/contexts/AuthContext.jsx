@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { authApi } from '../features/auth/api/authApi';
+import { login as apiLogin, logout as apiLogout, getCurrentUser } from '../features/auth/api/authApi';
 
 const AuthContext = createContext(null);
 
@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const response = await authApi.getCurrentUser();
+        const response = await getCurrentUser();
         if (response.data?.data) {
           setUser(response.data.data);
         } else {
@@ -27,8 +27,8 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (credentials) => {
-    const response = await authApi.login(credentials);
-    const userResponse = await authApi.getCurrentUser();
+    const response = await apiLogin(credentials);
+    const userResponse = await getCurrentUser();
     if (userResponse.data?.data) {
       setUser(userResponse.data.data);
     }
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await authApi.logout();
+    await apiLogout();
     setUser(null);
   };
 

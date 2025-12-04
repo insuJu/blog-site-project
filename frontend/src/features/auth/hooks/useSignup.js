@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authApi } from '../api/authApi';
+import { signup as apiSignup } from '../api/authApi';
 
 export const useSignup = () => {
   const navigate = useNavigate();
@@ -39,17 +39,17 @@ export const useSignup = () => {
     });
 
     try {
-      await authApi.signup(formData);
-      navigate('/login');
+      await apiSignup(formData);
+      navigate('/');
       return true;
     } catch (err) {
       if (err.response?.data?.errors) {
         setErrors(err.response.data.errors);
       } else {
-        console.error('Non-field error occurred:', err.response?.data?.message || err.message || 'Unknown error');
+        console.error('Signup failed:', err.response?.data?.message || err.message || 'Unknown error');
       }
       return false;
-    } finally {
+    } finally{
       setIsLoading(false);
     }
   };

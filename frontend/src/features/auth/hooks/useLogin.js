@@ -38,7 +38,7 @@ export const useLogin = () => {
       if (err.response?.data?.errors) {
         setErrors(err.response.data.errors);
       } else {
-        console.error('Non-field error occurred:', err.response?.data?.message || err.message || 'Unknown error');
+        console.error('Login failed:', err.response?.data?.message || err.message || 'Unknown error');
       }
       return false;
     } finally {

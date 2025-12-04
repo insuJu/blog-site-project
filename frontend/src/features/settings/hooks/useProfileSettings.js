@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { profileApi } from "../api/profileApi";
+import { updateNickname, updateBlogName } from "../api/profileApi";
 import { useAuth } from "../../../contexts/AuthContext";
 
 export const useProfileSettings = () => {
@@ -46,7 +46,7 @@ export const useProfileSettings = () => {
     setSuccessMessage("");
 
     try {
-      await profileApi.updateNickname({ newNickname: formData.nickname });
+      await updateNickname({ newNickname: formData.nickname });
       updateUser({
         ...user,
         profile: { ...user.profile, nickname: formData.nickname },
@@ -69,7 +69,7 @@ export const useProfileSettings = () => {
     setSuccessMessage("");
 
     try {
-      await profileApi.updateBlogName({ newBlogName: formData.blogName });
+      await updateBlogName({ newBlogName: formData.blogName });
       updateUser({
         ...user,
         profile: { ...user.profile, blogName: formData.blogName },

@@ -1,15 +1,13 @@
 import client from '../../../api/client';
 
-export const authApi = {
-  login: (credentials) =>
-    client.post('/auth/login', credentials),
+export const login = (credentials) =>
+  client.post('/auth/login', credentials);
 
-  signup: (userData) =>
-    client.post('/users/signup', userData),
+export const signup = (userData) =>
+  client.post('/users/signup', userData);
 
-  logout: () =>
-    client.post('/auth/logout'),
+export const logout = () =>
+  client.post('/auth/logout');
 
-  getCurrentUser: () =>
-    client.get('/users/me')
-};
+export const getCurrentUser = () =>
+  client.get('/users/me');

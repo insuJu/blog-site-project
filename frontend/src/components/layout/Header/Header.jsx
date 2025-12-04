@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { FiChevronDown, FiUser } from "react-icons/fi";
 import { Link, useLocation } from "react-router-dom";
-import { FiUser, FiChevronDown } from "react-icons/fi";
 import { useAuth } from "../../../contexts/AuthContext";
-import { useLogout } from "../../../features/auth/hooks/useLogout";
 import AuthModal from "../../../features/auth/components/AuthModal/AuthModal";
+import { useLogout } from "../../../features/auth/hooks/useLogout";
 import styles from "./Header.module.css";
 
 const Header = () => {
@@ -64,11 +64,24 @@ const Header = () => {
             >
               홈
             </Link>
+            <Link
+              to="/my-blog"
+              className={`${styles.navLink} ${
+                location.pathname === "/my-blog" ? styles.active : ""
+              }`}
+            >
+              내 블로그
+            </Link>
           </nav>
 
           <div className={styles.rightSection}>
             {isAuthenticated && user ? (
               <>
+                {location.pathname === "/my-blog" && (
+                  <Link to="/posts/write" className={styles.writeButton}>
+                    글쓰기
+                  </Link>
+                )}
                 <div className={styles.profileContainer} ref={dropdownRef}>
                   <button
                     className={styles.avatarButton}
@@ -83,18 +96,18 @@ const Header = () => {
                   {dropdownOpen && (
                     <div className={styles.dropdown}>
                       <Link
-                        to="/"
-                        className={`${styles.dropdownItem} ${styles.showWhenNavHidden}`}
-                        onClick={() => setDropdownOpen(false)}
-                      >
-                        홈
-                      </Link>
-                      <Link
                         to="/settings"
                         className={styles.dropdownItem}
                         onClick={() => setDropdownOpen(false)}
                       >
                         설정
+                      </Link>
+                      <Link
+                        to="/categories"
+                        className={styles.dropdownItem}
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        카테고리
                       </Link>
                       <button
                         onClick={handleLogout}

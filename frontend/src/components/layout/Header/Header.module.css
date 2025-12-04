@@ -40,7 +40,17 @@
 }
 
 .logo:hover {
-  color: #4C6EF5;
+  color: #4c6ef5;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: scale(1.1) rotate(-2deg) translateY(0);
+  }
+  50% {
+    transform: scale(1.1) rotate(-2deg) translateY(-10px);
+  }
 }
 
 /* ==================== */
@@ -52,33 +62,48 @@
   gap: 2rem;
 }
 
-/* Nav Links */
 .navLink {
   position: relative;
   font-size: 1rem;
   font-weight: 500;
   color: #495057;
   text-decoration: none;
-  transition: color 0.2s;
+  transition: color 0.3s;
+}
+
+.navLink::after {
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
 }
 
 .navLink:hover {
-  color: #4C6EF5;
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.navLink:hover::after {
+  width: 100%;
 }
 
 .navLink.active {
   font-weight: 600;
-  color: #4C6EF5;
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .navLink.active::after {
-  content: '';
-  position: absolute;
-  bottom: -20px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #4C6EF5;
+  width: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
 }
 
 /* ==================== */
@@ -88,6 +113,21 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+/* ==================== */
+/* Write Button         */
+/* ==================== */
+.writeButton {
+  padding: 0.5rem 1.25rem;
+  background: transparent;
+  color: #212529;
+  text-decoration: none;
+  border: 1.5px solid #212529;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
 }
 
 /* Profile Dropdown */
@@ -111,19 +151,19 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  background: #E9ECEF;
+  background: #e9ecef;
   color: #495057;
   border-radius: 50%;
   transition: all 0.2s;
 }
 
 .avatarButton:hover .avatar {
-  background: #DEE2E6;
+  background: #dee2e6;
   transform: scale(1.05);
 }
 
 .dropdownIcon {
-  color: #6C757D;
+  color: #6c757d;
   transition: all 0.2s;
 }
 
@@ -189,6 +229,12 @@
   display: none;
 }
 
+@media (min-width: 768px) {
+  .writeButton {
+    display: inline-block;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 1rem;
@@ -197,10 +243,6 @@
 
   .logo {
     font-size: 1.25rem;
-  }
-
-  .nav {
-    display: none;
   }
 
   .showWhenNavHidden {
