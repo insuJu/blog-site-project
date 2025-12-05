@@ -16,7 +16,6 @@ const PostDetailPage = () => {
   const handleLike = async () => {
     if (!user) {
       alert("로그인이 필요합니다.");
-      navigate("/login");
       return;
     }
     await toggleLike();
