@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../../contexts/AuthContext";
-import CommentSection from "../../components/CommentSection/CommentSection";
-import { useComments } from "../../hooks/useComments";
+import CommentSection from "../../../comment/components/CommentSection/CommentSection";
+import { useComments } from "../../../comment/hooks/useComments";
 import { usePost } from "../../hooks/usePost";
 import styles from "./PostDetailPage.module.css";
 import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
