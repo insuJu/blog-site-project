@@ -33,9 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
 
     private static final List<String> EXCLUDED_PATHS = List.of(
-            "/api/auth/refresh",
-            "/api/auth/login",
-            "/api/users/signup");
+            "/api/auth/refresh");
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -75,8 +73,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (refreshToken.isPresent()) {
             throw new AuthenticationException(ErrorCode.EXPIRED_TOKEN);
         }
-
-        throw new AuthenticationException(ErrorCode.INVALID_TOKEN);
     }
 
     private void handleAuthenticationException(
