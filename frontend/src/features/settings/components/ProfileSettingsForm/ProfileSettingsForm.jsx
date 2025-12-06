@@ -12,7 +12,6 @@ const ProfileSettingsForm = ({
 }) => {
   return (
     <section className={styles["setting-section"]}>
-      <h2>프로필</h2>
 
       <div className={styles["form-group"]}>
         <label>닉네임</label>

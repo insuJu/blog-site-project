@@ -14,7 +14,6 @@ const AccountSettingsForm = ({
 }) => {
   return (
     <section className={styles["setting-section"]}>
-      <h2>계정</h2>
 
       <div className={styles["form-group"]}>
         <label>이메일</label>

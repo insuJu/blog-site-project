@@ -2,7 +2,7 @@
 /* Section Container    */
 /* ==================== */
 .setting-section {
-  margin-bottom: 2.5rem;
+  /* margin-bottom: 2.5rem; */
   padding: 2rem;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
@@ -11,14 +11,6 @@
 
 .setting-section:last-child {
   margin-bottom: 0;
-}
-
-/* Section Header */
-.setting-section h2 {
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #212529;
 }
 
 /* ==================== */
