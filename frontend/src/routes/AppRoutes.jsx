@@ -3,14 +3,13 @@ import Footer from "../components/layout/Footer/Footer";
 import Header from "../components/layout/Header/Header";
 import Layout from "../components/layout/Layout";
 import ProtectedRoute from "../components/routes/ProtectedRoute";
-import ChatPage from "../features/chat/pages/ChatPage/ChatPage";
 import CategoryListPage from "../features/category/pages/CategoryListPage/CategoryListPage";
+import EditPage from "../features/post/pages/EditPage/EditPage";
 import IndexPage from "../features/post/pages/IndexPage/IndexPage";
 import MyBlogPage from "../features/post/pages/MyBlogPage/MyBlogPage";
 import PostDetailPage from "../features/post/pages/PostDetailPage/PostDetailPage";
-import WritePage from "../features/post/pages/WritePage/WritePage";
-import EditPage from "../features/post/pages/EditPage/EditPage";
 import TagPostsPage from "../features/post/pages/TagPostsPage/TagPostsPage";
+import WritePage from "../features/post/pages/WritePage/WritePage";
 import SettingsPage from "../features/settings/pages/SettingsPage/SettingsPage";
 
 const AppRoutes = () => {
