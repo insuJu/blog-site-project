@@ -63,11 +63,9 @@ const PostDetailPage = () => {
     return `${year}.${month}.${day} ${hours}:${minutes}`;
   };
 
-  // 마크다운을 HTML로 변환
   const renderContent = (content) => {
     if (!content) return "";
 
-    // 이미 완전히 변환된 HTML인지 확인 (h 태그도 있고, 코드블록도 pre/code로 변환되어 있으면)
     const hasHtmlHeadings =
       content.includes("<h1>") ||
       content.includes("<h2>") ||
@@ -75,23 +73,19 @@ const PostDetailPage = () => {
     const hasConvertedCodeBlocks = content.includes("<pre><code");
     const hasRawCodeBlocks = content.includes("```");
 
-    // HTML 헤딩이 있고, 코드블록이 이미 변환되었고, 원본 마크다운 코드블록이 없으면 완료된 것
     if (hasHtmlHeadings && hasConvertedCodeBlocks && !hasRawCodeBlocks) {
       return content;
     }
 
     let html = content;
-
-    // <br> 태그를 줄바꿈으로 변환 (마크다운 처리를 위해)
+    
     html = html.replace(/<br\s*\/?>/gi, "\n");
 
-    // 각 줄의 앞뒤 공백 정리 (코드블록 처리하기 전에 먼저 정리!)
     html = html
       .split("\n")
       .map((line) => line.trim())
       .join("\n");
 
-    // 1. 코드블록 처리 (먼저 처리해서 보존)
     const codeBlocks = [];
     html = html.replace(/```(\w+)?\s*\n([\s\S]*?)```/g, (match, lang, code) => {
       const placeholder = `___CODE_BLOCK_${codeBlocks.length}___`;
@@ -103,7 +97,6 @@ const PostDetailPage = () => {
       return placeholder;
     });
 
-    // 2. 인라인 코드 처리
     const inlineCodes = [];
     html = html.replace(/`([^`]+)`/g, (match, code) => {
       const placeholder = `___INLINE_CODE_${inlineCodes.length}___`;
@@ -111,17 +104,14 @@ const PostDetailPage = () => {
       return placeholder;
     });
 
-    // 3. 제목 처리 (순서 중요: ###을 먼저 처리)
     html = html.replace(/^###\s+(.+)$/gm, "<h3>$1</h3>");
     html = html.replace(/^##\s+(.+)$/gm, "<h2>$1</h2>");
     html = html.replace(/^#\s+(.+)$/gm, "<h1>$1</h1>");
 
-    // 4. 볼드, 이탤릭, 취소선
     html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
     html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
     html = html.replace(/~~(.+?)~~/g, "<del>$1</del>");
 
-    // 5. 링크와 이미지
     html = html.replace(
       /!\[([^\]]*)\]\(([^)]+)\)/g,
       '<img src="$2" alt="$1" />'
@@ -131,31 +121,24 @@ const PostDetailPage = () => {
       '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
     );
 
-    // 6. 리스트
     html = html.replace(/^- (.+)$/gm, "<li>$1</li>");
     html = html.replace(/(<li>[\s\S]*?<\/li>)/g, "<ul>$1</ul>");
 
-    // 7. 인용구
     html = html.replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>");
 
-    // 8. 줄바꿈 처리
     html = html
       .split("\n\n")
       .map((para) => {
-        // 이미 태그로 감싸진 경우 그대로
         if (para.trim().startsWith("<")) {
           return para;
         }
-        // 빈 줄이면 스킵
         if (!para.trim()) {
           return "";
         }
-        // 일반 텍스트는 p 태그로 감싸기
         return `<p>${para.replace(/\n/g, "<br>")}</p>`;
       })
       .join("\n");
 
-    // 9. placeholder 복원
     inlineCodes.forEach((code, index) => {
       html = html.replace(`___INLINE_CODE_${index}___`, code);
     });
