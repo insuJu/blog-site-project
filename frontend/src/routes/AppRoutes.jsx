@@ -8,6 +8,7 @@ import EditPage from "../features/post/pages/EditPage/EditPage";
 import IndexPage from "../features/post/pages/IndexPage/IndexPage";
 import MyBlogPage from "../features/post/pages/MyBlogPage/MyBlogPage";
 import PostDetailPage from "../features/post/pages/PostDetailPage/PostDetailPage";
+import SearchResultPage from "../features/post/pages/SearchResultPage/SearchResultPage";
 import TagPostsPage from "../features/post/pages/TagPostsPage/TagPostsPage";
 import WritePage from "../features/post/pages/WritePage/WritePage";
 import SettingsPage from "../features/settings/pages/SettingsPage/SettingsPage";
@@ -98,6 +99,17 @@ const AppRoutes = () => {
           <>
             <Header />
             <TagPostsPage />
+            <Footer />
+          </>
+        }
+      />
+
+      <Route
+        path="/search"
+        element={
+          <>
+            <Header />
+            <SearchResultPage />
             <Footer />
           </>
         }
