@@ -100,6 +100,19 @@ public class PostController {
                                 .build());
         }
 
+        @GetMapping("/author/{authorId}/search")
+        public ResponseEntity<ApiResDto<Page<PostResDto>>> searchPostsByAuthor(
+                        @PathVariable("authorId") Long authorId,
+                        @RequestParam String keyword,
+                        @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                        @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+                Long requesterId = (authenticatedUser != null) ? authenticatedUser.getAccount().getId() : null;
+                Page<PostResDto> posts = postService.searchPostsByAuthor(authorId, keyword, pageable, requesterId);
+                return ResponseEntity.ok(ApiResDto.<Page<PostResDto>>builder()
+                                .data(posts)
+                                .build());
+        }
+
         @PutMapping("/{id}")
         public ResponseEntity<ApiResDto<PostResDto>> updatePost(
                         @PathVariable("id") Long id,

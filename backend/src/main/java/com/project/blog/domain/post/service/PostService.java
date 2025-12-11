@@ -100,6 +100,17 @@ public class PostService {
         return posts.map(PostResDto::from);
     }
 
+    @Transactional(readOnly = true)
+    public Page<PostResDto> searchPostsByAuthor(Long authorId, String keyword, Pageable pageable, Long requesterId) {
+        Page<Post> posts;
+        if (requesterId != null && requesterId.equals(authorId)) {
+            posts = postRepository.searchByAuthorIdAndTitleOrContent(authorId, keyword, pageable);
+        } else {
+            posts = postRepository.searchPublicByAuthorIdAndTitleOrContent(authorId, keyword, pageable);
+        }
+        return posts.map(PostResDto::from);
+    }
+
     @Transactional
     public PostResDto updatePost(Long id, PostReqDto reqDto, AuthenticatedUser authenticatedUser) {
         Post post = postRepository.findById(id)
