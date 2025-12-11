@@ -67,7 +67,7 @@ const MyBlogPage = () => {
       setPosts(allPosts);
     } else {
       setPosts(
-        allPosts.filter((post) => post.category?.name === selectedCategory)
+        allPosts.filter((post) => post.category?.id === selectedCategory)
       );
     }
   }, [selectedCategory, allPosts]);
