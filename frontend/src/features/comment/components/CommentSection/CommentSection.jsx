@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../../../contexts/AuthContext';
-import { useComment } from '../../hooks/useComment';
 import { useLike } from '../../../like/hooks/useLike';
+import { useComment } from '../../hooks/useComment';
 import CommentForm from '../CommentForm/CommentForm';
 import CommentItem from '../CommentItem/CommentItem';
 import styles from './CommentSection.module.css';
@@ -166,8 +166,8 @@ const CommentSection = ({ postId, comments: commentsHook, postAuthorId }) => {
                 onCancelReply: handleCancelReply
               }}
               replyActions={{
-                onDeleteReply: (commentId, replyId) => handleDeleteComment(replyId),
-                onLikeReply: (commentId, replyId) => handleToggleLike(replyId)
+                onDeleteReply: (_commentId, replyId) => handleDeleteComment(replyId),
+                onLikeReply: (_commentId, replyId) => handleToggleLike(replyId)
               }}
             />
           ))
