@@ -37,6 +37,13 @@ export const searchPosts = async (keyword, params = {}) => {
   return response.data.data;
 };
 
+export const searchPostsByAuthor = async (authorId, keyword, params = {}) => {
+  const response = await client.get(`/posts/author/${authorId}/search`, {
+    params: { keyword, ...params }
+  });
+  return response.data.data;
+};
+
 export const updatePost = async (id, postData) => {
   const response = await client.put(`/posts/${id}`, postData);
   return response.data.data;

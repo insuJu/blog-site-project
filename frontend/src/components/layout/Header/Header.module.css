@@ -158,7 +158,6 @@
 }
 
 .avatarButton:hover .avatar {
-  background: #dee2e6;
   transform: scale(1.05);
 }
 

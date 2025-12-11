@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 import AuthModal from "../../../features/auth/components/AuthModal/AuthModal";
 import { useLogout } from "../../../features/auth/hooks/useLogout";
+import SearchBar from "./SearchBar";
 import styles from "./Header.module.css";
 
 const Header = () => {
@@ -75,6 +76,7 @@ const Header = () => {
           </nav>
 
           <div className={styles.rightSection}>
+            <SearchBar />
             {isAuthenticated && user ? (
               <>
                 {location.pathname === "/my-blog" && (
