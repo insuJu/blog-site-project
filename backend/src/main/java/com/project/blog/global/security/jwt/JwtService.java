@@ -1,6 +1,5 @@
 package com.project.blog.global.security.jwt;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -20,9 +19,8 @@ public class JwtService {
         String accessToken = jwtProvider.createAccessToken(username);
         String refreshToken = jwtProvider.createRefreshToken(username);
 
-        LocalDateTime expiresAt = LocalDateTime.now()
-                .plusSeconds(jwtProvider.getRefreshTokenExpirationSeconds());
-        refreshTokenService.saveRefreshToken(accountId, refreshToken, expiresAt);
+        long expirationSeconds = jwtProvider.getRefreshTokenExpirationSeconds();
+        refreshTokenService.saveRefreshToken(accountId, refreshToken, expirationSeconds);
 
         return Map.of(
                 "accessToken", accessToken,
