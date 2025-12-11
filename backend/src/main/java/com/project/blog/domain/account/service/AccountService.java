@@ -68,9 +68,12 @@ public class AccountService {
         public void updateEmail(EmailUpdateReqDto reqDto, AuthenticatedUser authenticatedUser) {
                 Account currentAccount = authenticatedUser.getAccount();
                 String newEmail = reqDto.getNewEmail();
+                String currentPassword = reqDto.getCurrentPassword();
 
                 Map<String, String> errors = new HashMap<>();
 
+                ErrorUtil.addErrorIf(errors, !passwordEncoder.matches(currentPassword, currentAccount.getPassword()), "currentPassword",
+                                () -> ErrorCode.INCORRECT_PASSWORD.getMessage());
                 ErrorUtil.addErrorIf(errors, currentAccount.getEmail().equals(newEmail), "newEmail",
                                 () -> ErrorCode.SAME_EMAIL.getMessage());
                 ErrorUtil.addErrorIf(errors, accountRepository.existsByEmail(newEmail), "newEmail",

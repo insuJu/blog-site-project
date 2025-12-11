@@ -185,23 +185,48 @@ class AccountServiceTest {
         void updateEmailSuccess() {
             // given
             String newEmail = "newemail@example.com";
-            EmailUpdateReqDto reqDto = new EmailUpdateReqDto(newEmail);
+            EmailUpdateReqDto reqDto = new EmailUpdateReqDto(newEmail, TEST_PASSWORD);
 
+            when(passwordEncoder.matches(TEST_PASSWORD, ENCODED_PASSWORD)).thenReturn(true);
             when(accountRepository.existsByEmail(newEmail)).thenReturn(false);
 
             // when
             accountService.updateEmail(reqDto, authenticatedUser);
 
             // then
+            verify(passwordEncoder).matches(TEST_PASSWORD, ENCODED_PASSWORD);
             verify(accountRepository).existsByEmail(newEmail);
             assertThat(testAccount.getEmail()).isEqualTo(newEmail);
+        }
+
+        @Test
+        @DisplayName("현재 비밀번호가 틀렸을 때 예외 발생")
+        void updateEmailWithIncorrectPassword() {
+            // given
+            String newEmail = "newemail@example.com";
+            EmailUpdateReqDto reqDto = new EmailUpdateReqDto(newEmail, "wrongpassword");
+
+            when(passwordEncoder.matches("wrongpassword", ENCODED_PASSWORD)).thenReturn(false);
+
+            // when & then
+            assertThatThrownBy(() -> accountService.updateEmail(reqDto, authenticatedUser))
+                    .isInstanceOf(InputBusinessException.class)
+                    .satisfies(ex -> {
+                        InputBusinessException exception = (InputBusinessException) ex;
+                        assertThat(exception.getErrors()).containsEntry("currentPassword",
+                                ErrorCode.INCORRECT_PASSWORD.getMessage());
+                    });
+
+            verify(passwordEncoder).matches("wrongpassword", ENCODED_PASSWORD);
         }
 
         @Test
         @DisplayName("현재 이메일과 동일할 때 업데이트 시도 시 예외 발생")
         void updateEmailWithSameEmail() {
             // given
-            EmailUpdateReqDto reqDto = new EmailUpdateReqDto(TEST_EMAIL);
+            EmailUpdateReqDto reqDto = new EmailUpdateReqDto(TEST_EMAIL, TEST_PASSWORD);
+
+            when(passwordEncoder.matches(TEST_PASSWORD, ENCODED_PASSWORD)).thenReturn(true);
 
             // when & then
             assertThatThrownBy(() -> accountService.updateEmail(reqDto, authenticatedUser))
@@ -211,6 +236,8 @@ class AccountServiceTest {
                         assertThat(exception.getErrors()).containsEntry("newEmail",
                                 ErrorCode.SAME_EMAIL.getMessage());
                     });
+
+            verify(passwordEncoder).matches(TEST_PASSWORD, ENCODED_PASSWORD);
         }
 
         @Test
@@ -218,8 +245,9 @@ class AccountServiceTest {
         void updateEmailWithDuplicateEmail() {
             // given
             String duplicateEmail = "duplicate@example.com";
-            EmailUpdateReqDto reqDto = new EmailUpdateReqDto(duplicateEmail);
+            EmailUpdateReqDto reqDto = new EmailUpdateReqDto(duplicateEmail, TEST_PASSWORD);
 
+            when(passwordEncoder.matches(TEST_PASSWORD, ENCODED_PASSWORD)).thenReturn(true);
             when(accountRepository.existsByEmail(duplicateEmail)).thenReturn(true);
 
             // when & then
@@ -231,6 +259,7 @@ class AccountServiceTest {
                                 ErrorCode.DUPLICATE_EMAIL.getMessage());
                     });
 
+            verify(passwordEncoder).matches(TEST_PASSWORD, ENCODED_PASSWORD);
             verify(accountRepository).existsByEmail(duplicateEmail);
         }
     }

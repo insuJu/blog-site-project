@@ -19,4 +19,7 @@ public class EmailUpdateReqDto {
     @Pattern(regexp = EMAIL_PATTERN, message = MSG_EMAIL_FORMAT)
     @Pattern(regexp = NO_SPACE_PATTERN, message = MSG_EMAIL_NO_SPACE)
     private String newEmail;
+
+    @NotBlank(message = MSG_CURRENT_PASSWORD_REQUIRED)
+    private String currentPassword;
 }
