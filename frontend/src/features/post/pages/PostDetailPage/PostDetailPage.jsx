@@ -5,20 +5,37 @@ import { useComments } from "../../../comment/hooks/useComments";
 import { usePost } from "../../hooks/usePost";
 import styles from "./PostDetailPage.module.css";
 import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
+import { useLike } from "../../../like/hooks/useLike";
+import { useEffect } from "react";
 
 const PostDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { post, loading, error, liked, toggleLike, update, remove, reload } = usePost(id);
+  const { post, loading, error, update, remove, reload } = usePost(id);
+  const { liked, toggle: toggleLike, checkLiked } = useLike('post', id);
   const comments = useComments(id);
+
+  useEffect(() => {
+    if (id && user) {
+      checkLiked();
+    }
+  }, [id, user, checkLiked]);
 
   const handleLike = async () => {
     if (!user) {
       alert("로그인이 필요합니다.");
       return;
     }
-    await toggleLike();
+
+    const scrollPosition = window.scrollY;
+
+    await toggleLike(id);
+    await reload();
+
+    requestAnimationFrame(() => {
+      window.scrollTo(0, scrollPosition);
+    });
   };
 
   const handleEdit = () => {
