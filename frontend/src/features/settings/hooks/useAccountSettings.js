@@ -11,6 +11,7 @@ export const useAccountSettings = () => {
 
   const [formData, setFormData] = useState({
     email: "",
+    emailCurrentPassword: "",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
@@ -46,7 +47,11 @@ export const useAccountSettings = () => {
     setErrors({});
 
     if (field === "email") {
-      setFormData((prev) => ({ ...prev, email: originalEmail }));
+      setFormData((prev) => ({
+        ...prev,
+        email: originalEmail,
+        emailCurrentPassword: ""
+      }));
     }
 
     if (field === "password") {
@@ -72,10 +77,19 @@ export const useAccountSettings = () => {
     setErrors({});
     setSuccessMessage("");
 
+    if (!formData.emailCurrentPassword) {
+      setErrors({ emailCurrentPassword: "비밀번호를 입력해주세요." });
+      return;
+    }
+
     try {
-      await updateEmail({ newEmail: formData.email });
+      await updateEmail({
+        newEmail: formData.email,
+        currentPassword: formData.emailCurrentPassword
+      });
       updateUser({ ...user, email: formData.email });
       setEditMode((prev) => ({ ...prev, email: false }));
+      setFormData((prev) => ({ ...prev, emailCurrentPassword: "" }));
       setSuccessMessage("이메일이 성공적으로 변경되었습니다.");
     } catch (error) {
       if (error.response?.data?.errors) {

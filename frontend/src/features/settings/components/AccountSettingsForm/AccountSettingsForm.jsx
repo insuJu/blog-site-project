@@ -17,16 +17,13 @@ const AccountSettingsForm = ({
 
       <div className={styles["form-group"]}>
         <label>이메일</label>
-        <div className={styles["input-button-wrapper"]}>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            disabled={!editMode.email}
-            placeholder="이메일 주소를 입력하세요"
-          />
-          {!editMode.email ? (
+        {!editMode.email ? (
+          <div className={styles["input-button-wrapper"]}>
+            <input
+              type="email"
+              value={formData.email}
+              disabled
+            />
             <button
               onClick={() => handleEdit("email")}
               className={styles["edit-button"]}
@@ -34,8 +31,29 @@ const AccountSettingsForm = ({
             >
               수정
             </button>
-          ) : (
-            <>
+          </div>
+        ) : (
+          <>
+            <div className={styles["input-button-wrapper"]}>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="새 이메일 주소를 입력하세요"
+              />
+            </div>
+            {errors.newEmail && (
+              <span className={styles.error}>{errors.newEmail}</span>
+            )}
+            <div className={styles["input-button-wrapper"]}>
+              <input
+                type="password"
+                name="emailCurrentPassword"
+                value={formData.emailCurrentPassword}
+                onChange={handleChange}
+                placeholder="현재 비밀번호를 입력하세요"
+              />
               <button
                 onClick={handleSaveEmail}
                 className={styles["save-button"]}
@@ -50,11 +68,14 @@ const AccountSettingsForm = ({
               >
                 취소
               </button>
-            </>
-          )}
-        </div>
-        {errors.newEmail && (
-          <span className={styles.error}>{errors.newEmail}</span>
+            </div>
+            {errors.emailCurrentPassword && (
+              <span className={styles.error}>{errors.emailCurrentPassword}</span>
+            )}
+            {errors.currentPassword && (
+              <span className={styles.error}>{errors.currentPassword}</span>
+            )}
+          </>
         )}
       </div>
 
