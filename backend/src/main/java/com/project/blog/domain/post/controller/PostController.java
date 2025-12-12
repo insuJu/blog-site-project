@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.project.blog.domain.post.dto.req.PostReqDto;
 import com.project.blog.domain.post.dto.res.PostResDto;
 import com.project.blog.domain.post.service.PostService;
 import com.project.blog.global.dto.ApiResDto;
+import com.project.blog.global.file.service.FileService;
 import com.project.blog.global.security.service.AuthenticatedUser;
 
 import jakarta.validation.Valid;
@@ -30,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostController {
         private final PostService postService;
+        private final FileService fileService;
 
         @PostMapping
         public ResponseEntity<ApiResDto<PostResDto>> createPost(
@@ -130,5 +133,15 @@ public class PostController {
                         @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
                 postService.deletePost(id, authenticatedUser);
                 return ResponseEntity.ok(ApiResDto.<Void>builder().build());
+        }
+
+        @PostMapping("/images")
+        public ResponseEntity<ApiResDto<String>> uploadImage(
+                        @RequestParam("file") MultipartFile file,
+                        @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+                String imageUrl = fileService.uploadPostImage(file);
+                return ResponseEntity.ok(ApiResDto.<String>builder()
+                                .data(imageUrl)
+                                .build());
         }
 }
