@@ -34,3 +34,5 @@ out/
 
 # Windows artifacts
 nul
+
+backend/uploads/
