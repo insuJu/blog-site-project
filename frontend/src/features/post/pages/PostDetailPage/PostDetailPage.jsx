@@ -89,8 +89,9 @@ const PostDetailPage = () => {
       content.includes("<h3>");
     const hasConvertedCodeBlocks = content.includes("<pre><code");
     const hasRawCodeBlocks = content.includes("```");
+    const hasHtmlImages = content.includes("<img");
 
-    if (hasHtmlHeadings && hasConvertedCodeBlocks && !hasRawCodeBlocks) {
+    if ((hasHtmlHeadings && hasConvertedCodeBlocks && !hasRawCodeBlocks) || hasHtmlImages) {
       return content;
     }
 
@@ -185,6 +186,7 @@ const PostDetailPage = () => {
   }
 
   const isAuthor = user && user.id === post.author.id;
+  const authorBlogUrl = isAuthor ? '/my-blog' : `/users/${post.author.id}/blog`;
 
   return (
     <div className={styles.postDetailPage}>
@@ -202,13 +204,23 @@ const PostDetailPage = () => {
 
             <div className={styles.meta}>
               <div className={styles.authorInfo}>
-                <div className={styles.avatar}>
-                  {post.author.nickname.charAt(0)}
-                </div>
+                <Link
+                  to={authorBlogUrl}
+                  className={styles.avatar}
+                >
+                  {post.author.avatar ? (
+                    <img src={post.author.avatar} alt={post.author.nickname} className={styles.avatarImage} />
+                  ) : (
+                    post.author.nickname.charAt(0)
+                  )}
+                </Link>
                 <div className={styles.authorDetails}>
-                  <span className={styles.authorName}>
+                  <Link
+                    to={authorBlogUrl}
+                    className={styles.authorName}
+                  >
                     {post.author.nickname}
-                  </span>
+                  </Link>
                   <span className={styles.date}>
                     {formatDate(post.createdAt)}
                   </span>

@@ -90,7 +90,11 @@ const Header = () => {
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                   >
                     <div className={styles.avatar}>
-                      <FiUser size={24} />
+                      {user?.profile?.avatar ? (
+                        <img src={user.profile.avatar} alt={user.profile.nickname} className={styles.avatarImage} />
+                      ) : (
+                        <FiUser size={24} />
+                      )}
                     </div>
                     <FiChevronDown className={styles.dropdownIcon} size={12} />
                   </button>

@@ -9,8 +9,8 @@ import styles from "./MyBlogPage.module.css";
 const MyBlogPage = () => {
   const { user } = useAuth();
   const { posts: postsData, loading } = usePosts({
-    type: 'author',
-    authorId: user?.id
+    type: "author",
+    authorId: user?.id,
   });
   const { categories: categoriesData } = useCategories();
 
@@ -28,8 +28,7 @@ const MyBlogPage = () => {
     const postsByCategory = {};
     allPosts.forEach((post) => {
       const categoryName = post.category?.name || "기타";
-      postsByCategory[categoryName] =
-        (postsByCategory[categoryName] || 0) + 1;
+      postsByCategory[categoryName] = (postsByCategory[categoryName] || 0) + 1;
     });
 
     const categoryList = [
@@ -85,11 +84,19 @@ const MyBlogPage = () => {
           <div className={styles.profileHeader}>
             <div className={styles.profileInfo}>
               <div className={styles.avatar}>
-                {user?.nickname ? user.nickname.charAt(0) : "U"}
+                {user.profile?.avatar ? (
+                  <img
+                    src={user.profile.avatar}
+                    alt={user.profile.nickname}
+                    className={styles.avatarImage}
+                  />
+                ) : (
+                  user.profile.nickname.charAt(0)
+                )}
               </div>
               <div className={styles.userInfo}>
                 <h1 className={styles.nickname}>
-                  {user?.nickname || "닉네임"}
+                  {user.profile?.nickname || "닉네임"}
                 </h1>
                 <p className={styles.bio}>개발과 일상을 기록하는 공간입니다.</p>
               </div>

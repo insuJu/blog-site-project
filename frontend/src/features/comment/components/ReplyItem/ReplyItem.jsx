@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { IoIosHeart } from 'react-icons/io';
 import { formatRelativeDate } from '../../../../utils/dateFormat';
 import styles from './ReplyItem.module.css';
@@ -12,17 +13,28 @@ const ReplyItem = ({
   const isReplyAuthor = currentUser && currentUser.id === reply.author.id;
   const isPostAuthor = currentUser && currentUser.id === postAuthorId;
   const canSeePrivate = isReplyAuthor || isPostAuthor;
+  const authorBlogUrl = isReplyAuthor ? '/my-blog' : `/users/${reply.author.id}/blog`;
 
   return (
     <div className={styles.reply}>
-      <div className={styles.avatar}>
-        {reply.author.nickname.charAt(0)}
-      </div>
+      <Link
+        to={authorBlogUrl}
+        className={styles.avatar}
+      >
+        {reply.author.avatar ? (
+          <img src={reply.author.avatar} alt={reply.author.nickname} className={styles.avatarImage} />
+        ) : (
+          reply.author.nickname.charAt(0)
+        )}
+      </Link>
       <div className={styles.replyContent}>
         <div className={styles.replyHeader}>
-          <span className={styles.author}>
+          <Link
+            to={authorBlogUrl}
+            className={styles.author}
+          >
             {reply.author.nickname}
-          </span>
+          </Link>
           <span className={styles.date}>
             {formatRelativeDate(reply.createdAt)}
           </span>
