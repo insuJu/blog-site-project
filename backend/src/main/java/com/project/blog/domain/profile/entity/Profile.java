@@ -31,7 +31,6 @@ public class Profile extends BaseTimeEntity {
 
     private String avatar;
 
-    // methods
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }

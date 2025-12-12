@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.project.blog.domain.account.entity.Account;
 import com.project.blog.domain.account.repository.AccountRepository;
@@ -15,6 +16,7 @@ import com.project.blog.domain.profile.repository.ProfileRepository;
 import com.project.blog.global.error.code.ErrorCode;
 import com.project.blog.global.error.exception.BusinessException;
 import com.project.blog.global.error.util.ErrorUtil;
+import com.project.blog.global.file.service.FileService;
 import com.project.blog.global.security.service.AuthenticatedUser;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ public class ProfileService {
 
         private final ProfileRepository profileRepository;
         private final AccountRepository accountRepository;
+        private final FileService fileService;
 
         public Profile createProfile(String nickname) {
                 Map<String, String> errors = new HashMap<>();
@@ -80,6 +83,17 @@ public class ProfileService {
                 ErrorUtil.throwIfNotEmpty(errors);
 
                 profile.updateBlogName(newBlogName);
+        }
+
+        @Transactional
+        public void updateAvatar(MultipartFile file, AuthenticatedUser authenticatedUser) {
+                Account account = findAccountById(authenticatedUser.getAccount().getId());
+                Profile profile = account.getProfile();
+                if (profile == null)
+                        throw new BusinessException(ErrorCode.PROFILE_NOT_FOUND);
+
+                String avatarUrl = fileService.uploadAvatar(file);
+                profile.updateAvatar(avatarUrl);
         }
 
         private Account findAccountById(Long accountId) {

@@ -1,6 +1,7 @@
 package com.project.blog.domain.comment.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -71,39 +72,22 @@ public class CommentService {
     }
 
     private CommentResDto filterPrivateComments(Comment comment, Long currentUserId, Long postAuthorId) {
-        // 비공개 댓글이고, 작성자도 아니고 게시글 작성자도 아니면 null 반환
-        if (!comment.isPublic() && currentUserId != null &&
-            !comment.getAuthor().getId().equals(currentUserId) &&
-            !comment.getAuthor().getId().equals(postAuthorId)) {
-            return null;
+
+        if (!comment.isPublic()) {
+            if (currentUserId == null)
+                return null;
+            if (!comment.getAuthor().getId().equals(currentUserId) &&
+                    !comment.getAuthor().getId().equals(postAuthorId)) {
+                return null;
+            }
         }
 
-        // 비공개 댓글이고 로그인하지 않은 사용자면 null 반환
-        if (!comment.isPublic() && currentUserId == null) {
-            return null;
-        }
-
-        // 자식 댓글도 필터링
         List<CommentResDto> filteredChildren = comment.getChildren().stream()
                 .map(child -> filterPrivateComments(child, currentUserId, postAuthorId))
-                .filter(child -> child != null)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        return CommentResDto.builder()
-                .id(comment.getId())
-                .content(comment.getContent())
-                .author(CommentResDto.AuthorInfo.builder()
-                        .id(comment.getAuthor().getId())
-                        .username(comment.getAuthor().getUsername())
-                        .nickname(comment.getAuthor().getProfile().getNickname())
-                        .build())
-                .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
-                .children(filteredChildren)
-                .likeCount(comment.getLikeCount())
-                .isPublic(comment.isPublic())
-                .createdAt(comment.getCreatedAt())
-                .modifiedAt(comment.getModifiedAt())
-                .build();
+        return CommentResDto.from(comment, filteredChildren);
     }
 
     @Transactional(readOnly = true)
@@ -113,14 +97,13 @@ public class CommentService {
             throw new BusinessException(ErrorCode.COMMENT_NOT_FOUND);
         }
 
-        // 비공개 댓글 권한 체크
         if (!comment.isPublic()) {
             Long currentUserId = authenticatedUser != null ? authenticatedUser.getAccount().getId() : null;
             Long commentAuthorId = comment.getAuthor().getId();
             Long postAuthorId = comment.getPost().getAuthor().getId();
 
             if (currentUserId == null ||
-                (!currentUserId.equals(commentAuthorId) && !currentUserId.equals(postAuthorId))) {
+                    (!currentUserId.equals(commentAuthorId) && !currentUserId.equals(postAuthorId))) {
                 throw new BusinessException(ErrorCode.COMMENT_ACCESS_FORBIDDEN);
             }
         }
@@ -153,7 +136,7 @@ public class CommentService {
         if (!comment.getAuthor().getId().equals(authenticatedUser.getAccount().getId())) {
             throw new BusinessException(ErrorCode.COMMENT_DELETE_FORBIDDEN);
         }
-        
+
         commentRepository.delete(comment);
     }
 }

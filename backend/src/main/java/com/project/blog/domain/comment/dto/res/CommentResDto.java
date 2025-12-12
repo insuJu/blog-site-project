@@ -34,6 +34,7 @@ public class CommentResDto {
                 private Long id;
                 private String username;
                 private String nickname;
+                private String avatar;
         }
 
         public static CommentResDto from(Comment comment) {
@@ -49,6 +50,25 @@ public class CommentResDto {
                                 .children(comment.getChildren().stream()
                                                 .map(CommentResDto::from)
                                                 .collect(Collectors.toList()))
+                                .likeCount(comment.getLikeCount())
+                                .isPublic(comment.isPublic())
+                                .createdAt(comment.getCreatedAt())
+                                .modifiedAt(comment.getModifiedAt())
+                                .build();
+        }
+
+        public static CommentResDto from(Comment comment, List<CommentResDto> children) {
+                return CommentResDto.builder()
+                                .id(comment.getId())
+                                .content(comment.getContent())
+                                .author(AuthorInfo.builder()
+                                                .id(comment.getAuthor().getId())
+                                                .username(comment.getAuthor().getUsername())
+                                                .nickname(comment.getAuthor().getProfile().getNickname())
+                                                .avatar(comment.getAuthor().getProfile().getAvatar())
+                                                .build())
+                                .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
+                                .children(children)
                                 .likeCount(comment.getLikeCount())
                                 .isPublic(comment.isPublic())
                                 .createdAt(comment.getCreatedAt())

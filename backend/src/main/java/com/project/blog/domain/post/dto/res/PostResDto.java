@@ -37,6 +37,7 @@ public class PostResDto {
                 private Long id;
                 private String username;
                 private String nickname;
+                private String avatar;
         }
 
         @Getter
@@ -68,6 +69,7 @@ public class PostResDto {
                                                 .id(post.getAuthor().getId())
                                                 .username(post.getAuthor().getUsername())
                                                 .nickname(post.getAuthor().getProfile().getNickname())
+                                                .avatar(post.getAuthor().getProfile().getAvatar())
                                                 .build())
                                 .category(post.getCategory() != null
                                                 ? CategoryInfo.builder()
