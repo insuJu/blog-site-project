@@ -46,4 +46,18 @@ public class UserInfoResDto {
                                                 .build())
                                 .build();
         }
+
+        public static UserInfoResDto from(Account account) {
+                Profile profile = account.getProfile();
+
+                return UserInfoResDto.builder()
+                                .id(account.getId())
+                                .profile(ProfileInfo.builder()
+                                                .id(profile.getId())
+                                                .nickname(profile.getNickname())
+                                                .blogName(profile.getBlogName())
+                                                .avatar(profile.getAvatar())
+                                                .build())
+                                .build();
+        }
 }

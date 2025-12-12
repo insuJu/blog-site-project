@@ -18,6 +18,7 @@ import com.project.blog.domain.account.repository.AccountRepository;
 import com.project.blog.domain.profile.entity.Profile;
 import com.project.blog.domain.profile.service.ProfileService;
 import com.project.blog.global.error.code.ErrorCode;
+import com.project.blog.global.error.exception.BusinessException;
 import com.project.blog.global.error.util.ErrorUtil;
 import com.project.blog.global.security.service.AuthenticatedUser;
 
@@ -32,6 +33,12 @@ public class AccountService {
 
         public UserInfoResDto getUserInfo(AuthenticatedUser authenticatedUser) {
                 return UserInfoResDto.from(authenticatedUser);
+        }
+
+        public UserInfoResDto getUserInfoById(Long userId) {
+                Account account = accountRepository.findById(userId)
+                                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+                return UserInfoResDto.from(account);
         }
 
         @Transactional
