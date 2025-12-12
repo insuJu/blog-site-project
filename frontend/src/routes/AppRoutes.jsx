@@ -10,6 +10,7 @@ import MyBlogPage from "../features/post/pages/MyBlogPage/MyBlogPage";
 import PostDetailPage from "../features/post/pages/PostDetailPage/PostDetailPage";
 import SearchResultPage from "../features/post/pages/SearchResultPage/SearchResultPage";
 import TagPostsPage from "../features/post/pages/TagPostsPage/TagPostsPage";
+import UserBlogPage from "../features/post/pages/UserBlogPage/UserBlogPage";
 import WritePage from "../features/post/pages/WritePage/WritePage";
 import SettingsPage from "../features/settings/pages/SettingsPage/SettingsPage";
 
@@ -79,6 +80,17 @@ const AppRoutes = () => {
             <MyBlogPage />
             <Footer />
           </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/users/:userId/blog"
+        element={
+          <>
+            <Header />
+            <UserBlogPage />
+            <Footer />
+          </>
         }
       />
 
