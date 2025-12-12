@@ -52,3 +52,15 @@ export const updatePost = async (id, postData) => {
 export const deletePost = async (id) => {
   await client.delete(`/posts/${id}`);
 };
+
+export const uploadPostImage = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await client.post('/posts/images', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data.data;
+};
