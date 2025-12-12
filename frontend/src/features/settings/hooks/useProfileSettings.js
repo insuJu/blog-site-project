@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { updateNickname, updateBlogName } from "../api/profileApi";
+import { updateNickname, updateBlogName, updateAvatar } from "../api/profileApi";
 import { useAuth } from "../../../contexts/AuthContext";
 
 export const useProfileSettings = () => {
@@ -88,6 +88,29 @@ export const useProfileSettings = () => {
     }
   };
 
+  const handleAvatarUpload = async (file) => {
+    setErrors({});
+    setSuccessMessage("");
+
+    try {
+      await updateAvatar(file);
+      updateUser({
+        ...user,
+        profile: { ...user.profile, avatar: URL.createObjectURL(file) },
+      });
+      setSuccessMessage("프로필 이미지가 성공적으로 변경되었습니다.");
+    } catch (error) {
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else {
+        setErrors({
+          general:
+            error.response?.data?.message || "이미지 업로드에 실패했습니다.",
+        });
+      }
+    }
+  };
+
   return {
     editMode,
     formData,
@@ -99,5 +122,6 @@ export const useProfileSettings = () => {
     handleChange,
     handleSaveNickname,
     handleSaveBlogName,
+    handleAvatarUpload,
   };
 };

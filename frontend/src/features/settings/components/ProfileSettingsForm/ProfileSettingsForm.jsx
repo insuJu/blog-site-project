@@ -1,17 +1,53 @@
+import { useRef } from "react";
 import styles from "./ProfileSettingsForm.module.css";
 
 const ProfileSettingsForm = ({
   formData,
   editMode,
   errors,
+  avatarUrl,
   handleChange,
   handleEdit,
   handleCancel,
   handleSaveNickname,
   handleSaveBlogName,
+  handleAvatarUpload,
 }) => {
+  const fileInputRef = useRef(null);
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleAvatarUpload(file);
+    }
+  };
+
+  const getAvatarDisplay = () => {
+    if (avatarUrl) {
+      return <img src={avatarUrl} alt="Avatar" className={styles.avatarImage} />;
+    }
+    return <span className={styles.avatarPlaceholder}>+</span>;
+  };
+
   return (
     <section className={styles["setting-section"]}>
+      <div className={styles["avatar-section"]}>
+        <div className={styles.avatarWrapper} onClick={handleAvatarClick}>
+          {getAvatarDisplay()}
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+        />
+        <p className={styles.avatarHint}>클릭하여 프로필 이미지 변경</p>
+      </div>
 
       <div className={styles["form-group"]}>
         <label>닉네임</label>

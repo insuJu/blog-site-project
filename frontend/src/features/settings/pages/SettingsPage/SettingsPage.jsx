@@ -51,6 +51,7 @@ const SettingsPage = () => {
           formData={profileSettings.formData}
           editMode={profileSettings.editMode}
           errors={profileSettings.errors}
+          avatarUrl={user?.profile?.avatar}
           handleChange={profileSettings.handleChange}
           handleEdit={profileSettings.handleEdit}
           handleCancel={(field) =>
@@ -61,6 +62,7 @@ const SettingsPage = () => {
           }
           handleSaveNickname={profileSettings.handleSaveNickname}
           handleSaveBlogName={profileSettings.handleSaveBlogName}
+          handleAvatarUpload={profileSettings.handleAvatarUpload}
         />
 
         <AccountSettingsForm
