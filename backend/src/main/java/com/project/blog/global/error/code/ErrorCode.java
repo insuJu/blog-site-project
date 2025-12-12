@@ -59,6 +59,12 @@ public enum ErrorCode {
     // Like
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "LIKE001", "좋아요를 찾을 수 없습니다."),
 
+    // File
+    FILE_IS_EMPTY(HttpStatus.BAD_REQUEST, "FILE001", "파일이 비어있습니다."),
+    INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "FILE002", "이미지 파일만 업로드 가능합니다."),
+    FILE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "FILE003", "파일 크기는 5MB를 초과할 수 없습니다."),
+    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE004", "파일 업로드에 실패했습니다."),
+
     // Validation
     INPUT_VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION001", "입력값 검증에 실패했습니다."),
     INPUT_BUSINESS_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION002", "입력값 유효성 검증에 실패했습니다."),
