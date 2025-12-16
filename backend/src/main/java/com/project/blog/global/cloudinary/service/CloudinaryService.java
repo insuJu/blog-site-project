@@ -2,13 +2,13 @@ package com.project.blog.global.cloudinary.service;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
 import com.project.blog.global.error.code.ErrorCode;
 import com.project.blog.global.error.exception.BusinessException;
@@ -21,67 +21,73 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CloudinaryService implements FileService {
 
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+    private static final String AVATAR_FOLDER = "blog/avatars";
+    private static final String POST_FOLDER = "blog/posts";
+
+    private static final int AVATAR_SIZE = 48;
+
     private final Cloudinary cloudinary;
 
-    @SuppressWarnings("unchecked")
+    @Override
     public String uploadAvatar(MultipartFile file) {
-        validateFile(file);
+        validateImage(file);
 
-        try {
-            String publicId = "avatars/" + UUID.randomUUID().toString();
+        Transformation<?> avatarTransform = new Transformation<>()
+                .width(AVATAR_SIZE)
+                .height(AVATAR_SIZE)
+                .crop("fill")
+                .gravity("face");
 
-            Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(),
-                    ObjectUtils.asMap(
-                            "public_id", publicId,
-                            "folder", "blog/avatars",
-                            "resource_type", "image",
-                            "transformation", ObjectUtils.asMap(
-                                    "width", 48,
-                                    "height", 48,
-                                    "crop", "fill",
-                                    "gravity", "face")));
+        return upload(file, AVATAR_FOLDER, avatarTransform);
+    }
 
-            return (String) uploadResult.get("secure_url");
-        } catch (IOException e) {
-            throw new BusinessException(ErrorCode.FILE_UPLOAD_FAILED);
-        }
+    @Override
+    public String uploadPostImage(MultipartFile file) {
+        validateImage(file);
+
+        Transformation<?> postTransform = new Transformation<>()
+                .quality("auto")
+                .fetchFormat("auto");
+
+        return upload(file, POST_FOLDER, postTransform);
     }
 
     @SuppressWarnings("unchecked")
-    public String uploadPostImage(MultipartFile file) {
-        validateFile(file);
-
+    private String upload(
+            MultipartFile file,
+            String folder,
+            Transformation<?> transformation
+    ) {
         try {
-            String publicId = "posts/" + UUID.randomUUID().toString();
-
-            Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(),
+            Map<String, Object> result = cloudinary.uploader().upload(
+                    file.getBytes(),
                     ObjectUtils.asMap(
-                            "public_id", publicId,
-                            "folder", "blog/posts",
+                            "folder", folder,
                             "resource_type", "image",
-                            "transformation", ObjectUtils.asMap(
-                                    "quality", "auto",
-                                    "fetch_format", "auto")));
+                            "transformation", transformation
+                    )
+            );
 
-            return (String) uploadResult.get("secure_url");
+            return (String) result.get("secure_url");
         } catch (IOException e) {
             throw new BusinessException(ErrorCode.FILE_UPLOAD_FAILED);
         }
     }
 
-    private void validateFile(MultipartFile file) {
+    private void validateImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new BusinessException(ErrorCode.FILE_IS_EMPTY);
+        }
+
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new BusinessException(ErrorCode.FILE_SIZE_EXCEEDED);
         }
 
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new BusinessException(ErrorCode.INVALID_FILE_TYPE);
-        }
-
-        long maxSize = 5 * 1024 * 1024;
-        if (file.getSize() > maxSize) {
-            throw new BusinessException(ErrorCode.FILE_SIZE_EXCEEDED);
         }
     }
 }
