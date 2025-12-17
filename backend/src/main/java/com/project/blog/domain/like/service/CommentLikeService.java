@@ -1,6 +1,8 @@
 package com.project.blog.domain.like.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.project.blog.domain.account.entity.Account;
 import com.project.blog.domain.comment.entity.Comment;
 import com.project.blog.domain.comment.repository.CommentRepository;
+import com.project.blog.domain.like.dto.res.MyLikeResDto;
 import com.project.blog.domain.like.entity.CommentLike;
 import com.project.blog.domain.like.repository.CommentLikeRepository;
 import com.project.blog.global.error.code.ErrorCode;
@@ -50,5 +53,14 @@ public class CommentLikeService {
     public boolean isCommentLiked(Long commentId, AuthenticatedUser authenticatedUser) {
         Account account = authenticatedUser.getAccount();
         return commentLikeRepository.existsByAccountIdAndCommentId(account.getId(), commentId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MyLikeResDto> getMyCommentLikes(AuthenticatedUser authenticatedUser) {
+        Long accountId = authenticatedUser.getAccount().getId();
+        List<CommentLike> commentLikes = commentLikeRepository.findByAccountIdWithComment(accountId);
+        return commentLikes.stream()
+                .map(MyLikeResDto::fromCommentLike)
+                .collect(Collectors.toList());
     }
 }

@@ -1,5 +1,7 @@
 package com.project.blog.domain.post.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -132,6 +134,14 @@ public class PostController {
                         @PathVariable("id") Long id,
                         @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
                 postService.deletePost(id, authenticatedUser);
+                return ResponseEntity.ok(ApiResDto.<Void>builder().build());
+        }
+
+        @DeleteMapping
+        public ResponseEntity<ApiResDto<Void>> deletePosts(
+                        @RequestBody List<Long> ids,
+                        @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+                postService.deletePosts(ids, authenticatedUser);
                 return ResponseEntity.ok(ApiResDto.<Void>builder().build());
         }
 

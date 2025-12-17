@@ -76,4 +76,10 @@ public class TagController {
         tagService.deleteTag(id);
         return ResponseEntity.ok(ApiResDto.<Void>builder().build());
     }
+
+    @DeleteMapping
+    public ResponseEntity<ApiResDto<Void>> deleteTags(@RequestBody List<Long> ids) {
+        tagService.deleteTags(ids);
+        return ResponseEntity.ok(ApiResDto.<Void>builder().build());
+    }
 }

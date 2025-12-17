@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.project.blog.domain.post.repository.PostRepository;
 import com.project.blog.domain.tag.dto.req.TagReqDto;
 import com.project.blog.domain.tag.dto.res.TagResDto;
 import com.project.blog.domain.tag.entity.Tag;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TagService {
     private final TagRepository tagRepository;
+    private final PostRepository postRepository;
 
     @Transactional
     public TagResDto createTag(TagReqDto reqDto) {
@@ -96,6 +98,27 @@ public class TagService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.TAG_NOT_FOUND));
 
         tagRepository.delete(tag);
+    }
+
+    @Transactional
+    public void deleteTags(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
+        List<Tag> tags = tagRepository.findAllById(ids);
+
+        if (tags.size() != ids.size()) {
+            throw new BusinessException(ErrorCode.TAG_NOT_FOUND);
+        }
+
+        for (Tag tag : tags) {
+            if (postRepository.existsByTagsId(tag.getId())) {
+                throw new BusinessException(ErrorCode.CANNOT_DELETE_TAG_WITH_POSTS);
+            }
+        }
+
+        tagRepository.deleteAll(tags);
     }
 
     @Transactional

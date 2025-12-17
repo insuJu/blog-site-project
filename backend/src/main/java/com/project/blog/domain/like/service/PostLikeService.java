@@ -1,11 +1,14 @@
 package com.project.blog.domain.like.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.blog.domain.account.entity.Account;
+import com.project.blog.domain.like.dto.res.MyLikeResDto;
 import com.project.blog.domain.like.entity.PostLike;
 import com.project.blog.domain.like.repository.PostLikeRepository;
 import com.project.blog.domain.post.entity.Post;
@@ -50,5 +53,14 @@ public class PostLikeService {
     public boolean isPostLiked(Long postId, AuthenticatedUser authenticatedUser) {
         Account account = authenticatedUser.getAccount();
         return postLikeRepository.existsByAccountIdAndPostId(account.getId(), postId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MyLikeResDto> getMyPostLikes(AuthenticatedUser authenticatedUser) {
+        Long accountId = authenticatedUser.getAccount().getId();
+        List<PostLike> postLikes = postLikeRepository.findByAccountIdWithPost(accountId);
+        return postLikes.stream()
+                .map(MyLikeResDto::fromPostLike)
+                .collect(Collectors.toList());
     }
 }

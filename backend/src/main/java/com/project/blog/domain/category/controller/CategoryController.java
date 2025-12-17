@@ -69,9 +69,9 @@ public class CategoryController {
                 .build());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResDto<Void>> deleteCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
+    @DeleteMapping
+    public ResponseEntity<ApiResDto<Void>> deleteCategories(@RequestBody List<Long> ids) {
+        categoryService.deleteCategories(ids);
         return ResponseEntity.ok(ApiResDto.<Void>builder().build());
     }
 }

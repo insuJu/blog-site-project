@@ -146,6 +146,28 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    @Transactional
+    public void deletePosts(List<Long> ids, AuthenticatedUser authenticatedUser) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
+        List<Post> posts = postRepository.findAllById(ids);
+
+        if (posts.size() != ids.size()) {
+            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
+        }
+
+        Long authorId = authenticatedUser.getAccount().getId();
+        for (Post post : posts) {
+            if (!post.getAuthor().getId().equals(authorId)) {
+                throw new BusinessException(ErrorCode.POST_DELETE_FORBIDDEN);
+            }
+        }
+
+        postRepository.deleteAll(posts);
+    }
+
     private Category findCategoryById(Long categoryId) {
         if (categoryId == null) {
             return null;

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.project.blog.domain.account.entity.Account;
 import com.project.blog.domain.comment.dto.req.CommentReqDto;
 import com.project.blog.domain.comment.dto.res.CommentResDto;
+import com.project.blog.domain.comment.dto.res.MyCommentResDto;
 import com.project.blog.domain.comment.entity.Comment;
 import com.project.blog.domain.comment.repository.CommentRepository;
 import com.project.blog.domain.post.entity.Post;
@@ -138,5 +139,36 @@ public class CommentService {
         }
 
         commentRepository.delete(comment);
+    }
+
+    @Transactional
+    public void deleteComments(List<Long> ids, AuthenticatedUser authenticatedUser) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
+        List<Comment> comments = commentRepository.findAllById(ids);
+
+        if (comments.size() != ids.size()) {
+            throw new BusinessException(ErrorCode.COMMENT_NOT_FOUND);
+        }
+
+        Long authorId = authenticatedUser.getAccount().getId();
+        for (Comment comment : comments) {
+            if (!comment.getAuthor().getId().equals(authorId)) {
+                throw new BusinessException(ErrorCode.COMMENT_DELETE_FORBIDDEN);
+            }
+        }
+
+        commentRepository.deleteAll(comments);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MyCommentResDto> getMyComments(AuthenticatedUser authenticatedUser) {
+        Long authorId = authenticatedUser.getAccount().getId();
+        List<Comment> comments = commentRepository.findByAuthorId(authorId);
+        return comments.stream()
+                .map(MyCommentResDto::from)
+                .collect(Collectors.toList());
     }
 }

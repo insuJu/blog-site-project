@@ -12,6 +12,7 @@ import com.project.blog.domain.category.dto.req.CategoryReqDto;
 import com.project.blog.domain.category.dto.res.CategoryResDto;
 import com.project.blog.domain.category.entity.Category;
 import com.project.blog.domain.category.repository.CategoryRepository;
+import com.project.blog.domain.post.repository.PostRepository;
 import com.project.blog.global.error.code.ErrorCode;
 import com.project.blog.global.error.exception.BusinessException;
 import com.project.blog.global.error.util.ErrorUtil;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final PostRepository postRepository;
 
     @Transactional
     public CategoryResDto createCategory(CategoryReqDto reqDto) {
@@ -128,15 +130,27 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategory(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
-
-        if (!category.getChildren().isEmpty()) {
-            throw new BusinessException(ErrorCode.CANNOT_DELETE_CATEGORY_WITH_CHILDREN);
+    public void deleteCategories(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
         }
 
-        categoryRepository.delete(category);
+        List<Category> categories = categoryRepository.findAllById(ids);
+
+        if (categories.size() != ids.size()) {
+            throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND);
+        }
+
+        for (Category category : categories) {
+            if (!category.getChildren().isEmpty()) {
+                throw new BusinessException(ErrorCode.CANNOT_DELETE_CATEGORY_WITH_CHILDREN);
+            }
+            if (postRepository.existsByCategoryId(category.getId())) {
+                throw new BusinessException(ErrorCode.CANNOT_DELETE_CATEGORY_WITH_POSTS);
+            }
+        }
+
+        categoryRepository.deleteAll(categories);
     }
 
     private boolean isDescendant(Category currentCategory, Category targetCategory) {

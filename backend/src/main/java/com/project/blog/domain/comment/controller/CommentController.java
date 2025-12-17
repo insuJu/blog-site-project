@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.blog.domain.comment.dto.req.CommentReqDto;
 import com.project.blog.domain.comment.dto.res.CommentResDto;
+import com.project.blog.domain.comment.dto.res.MyCommentResDto;
 import com.project.blog.domain.comment.service.CommentService;
 import com.project.blog.global.dto.ApiResDto;
 import com.project.blog.global.security.service.AuthenticatedUser;
@@ -22,13 +23,13 @@ import com.project.blog.global.security.service.AuthenticatedUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@RequestMapping("/api/posts/{postId}/comments")
+@RequestMapping("/api")
 @RestController
 @RequiredArgsConstructor
 public class CommentController {
         private final CommentService commentService;
 
-        @PostMapping
+        @PostMapping("/posts/{postId}/comments")
         public ResponseEntity<ApiResDto<CommentResDto>> createComment(
                         @PathVariable("postId") Long postId,
                         @Valid @RequestBody CommentReqDto reqDto,
@@ -39,7 +40,7 @@ public class CommentController {
                                 .build());
         }
 
-        @GetMapping
+        @GetMapping("/posts/{postId}/comments")
         public ResponseEntity<ApiResDto<List<CommentResDto>>> getCommentsByPostId(
                         @PathVariable("postId") Long postId,
                         @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
@@ -49,7 +50,7 @@ public class CommentController {
                                 .build());
         }
 
-        @GetMapping("/{id}")
+        @GetMapping("/posts/{postId}/comments/{id}")
         public ResponseEntity<ApiResDto<CommentResDto>> getCommentById(
                         @PathVariable("postId") Long postId,
                         @PathVariable("id") Long id,
@@ -60,7 +61,7 @@ public class CommentController {
                                 .build());
         }
 
-        @PutMapping("/{id}")
+        @PutMapping("/posts/{postId}/comments/{id}")
         public ResponseEntity<ApiResDto<CommentResDto>> updateComment(
                         @PathVariable("postId") Long postId,
                         @PathVariable("id") Long id,
@@ -72,12 +73,30 @@ public class CommentController {
                                 .build());
         }
 
-        @DeleteMapping("/{id}")
+        @DeleteMapping("/posts/{postId}/comments/{id}")
         public ResponseEntity<ApiResDto<Void>> deleteComment(
                         @PathVariable("postId") Long postId,
                         @PathVariable("id") Long id,
                         @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
                 commentService.deleteComment(id, authenticatedUser);
                 return ResponseEntity.ok(ApiResDto.<Void>builder().build());
+        }
+
+        @DeleteMapping("/posts/{postId}/comments")
+        public ResponseEntity<ApiResDto<Void>> deleteComments(
+                        @PathVariable("postId") Long postId,
+                        @RequestBody List<Long> ids,
+                        @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+                commentService.deleteComments(ids, authenticatedUser);
+                return ResponseEntity.ok(ApiResDto.<Void>builder().build());
+        }
+
+        @GetMapping("/comments/me")
+        public ResponseEntity<ApiResDto<List<MyCommentResDto>>> getMyComments(
+                        @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+                List<MyCommentResDto> comments = commentService.getMyComments(authenticatedUser);
+                return ResponseEntity.ok(ApiResDto.<List<MyCommentResDto>>builder()
+                                .data(comments)
+                                .build());
         }
 }
