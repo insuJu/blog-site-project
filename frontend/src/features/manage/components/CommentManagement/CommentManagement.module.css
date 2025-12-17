@@ -1,0 +1,153 @@
+/* ==================== */
+/* Comment Management   */
+/* ==================== */
+.comment-management {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ==================== */
+/* Section              */
+/* ==================== */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+.count-badge {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #6C757D;
+  margin: 0.25rem 0 0 0.25rem;
+  vertical-align: baseline;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.select-all {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.delete-button {
+  padding: 0.5rem 1rem;
+  background: white;
+  color: #212529;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.delete-button:hover:not(:disabled) {
+  border-color: #adb5bd;
+  background: #f8f9fa;
+}
+
+.delete-button:disabled {
+  background: white;
+  color: #adb5bd;
+  border-color: #dee2e6;
+  cursor: not-allowed;
+}
+
+.loading,
+.empty {
+  text-align: center;
+  padding: 3rem;
+  color: #6c757d;
+  font-size: 1rem;
+}
+
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.comment-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.comment-item:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.comment-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.post-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.post-title:hover {
+  text-decoration: underline;
+}
+
+.comment-content {
+  font-size: 0.9rem;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.comment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.comment-meta span {
+  display: flex;
+  align-items: center;
+}

@@ -13,6 +13,7 @@ import TagPostsPage from "../features/post/pages/TagPostsPage/TagPostsPage";
 import UserBlogPage from "../features/post/pages/UserBlogPage/UserBlogPage";
 import WritePage from "../features/post/pages/WritePage/WritePage";
 import SettingsPage from "../features/settings/pages/SettingsPage/SettingsPage";
+import ManagePage from "../features/manage/pages/ManagePage/ManagePage";
 
 const AppRoutes = () => {
   return (
@@ -34,6 +35,17 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <SettingsPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/manage"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <ManagePage />
             </Layout>
           </ProtectedRoute>
         }
@@ -91,17 +103,6 @@ const AppRoutes = () => {
             <UserBlogPage />
             <Footer />
           </>
-        }
-      />
-
-      <Route
-        path="/categories"
-        element={
-          <ProtectedRoute>
-            <Header />
-            <CategoryListPage />
-            <Footer />
-          </ProtectedRoute>
         }
       />
 

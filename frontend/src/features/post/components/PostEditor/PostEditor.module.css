@@ -49,6 +49,7 @@
 
 /* Category Select */
 .categorySelect {
+  height: 100%;
   width: 100%;
   padding: 0.75rem 1rem;
   background: white;
@@ -58,11 +59,6 @@
   outline: none;
   cursor: pointer;
   transition: all 0.2s;
-}
-
-.categorySelect:focus {
-  border-color: #4C6EF5;
-  box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.1);
 }
 
 /* ==================== */

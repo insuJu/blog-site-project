@@ -91,7 +91,11 @@ const Header = () => {
                   >
                     <div className={styles.avatar}>
                       {user?.profile?.avatar ? (
-                        <img src={user.profile.avatar} alt={user.profile.nickname} className={styles.avatarImage} />
+                        <img
+                          src={user.profile.avatar}
+                          alt={user.profile.nickname}
+                          className={styles.avatarImage}
+                        />
                       ) : (
                         <FiUser size={24} />
                       )}
@@ -109,11 +113,11 @@ const Header = () => {
                         설정
                       </Link>
                       <Link
-                        to="/categories"
+                        to="/manage"
                         className={styles.dropdownItem}
                         onClick={() => setDropdownOpen(false)}
                       >
-                        카테고리
+                        관리
                       </Link>
                       <button
                         onClick={handleLogout}
