@@ -24,6 +24,15 @@ public enum ErrorCode {
     INCORRECT_PASSWORD(HttpStatus.BAD_REQUEST, "ACCOUNT004", "현재 비밀번호가 일치하지 않습니다."),
     SAME_PASSWORD(HttpStatus.BAD_REQUEST, "ACCOUNT005", "새 비밀번호가 현재 비밀번호와 동일합니다."),
     SAME_EMAIL(HttpStatus.BAD_REQUEST, "ACCOUNT006", "새 이메일이 현재 이메일과 동일합니다."),
+    USERNAME_NOT_FOUND_BY_EMAIL(HttpStatus.NOT_FOUND, "ACCOUNT007", "해당 이메일로 가입된 계정이 없습니다."),
+    ACCOUNT_ALREADY_DEACTIVATED(HttpStatus.BAD_REQUEST, "ACCOUNT008", "이미 비활성화된 계정입니다."),
+    ACCOUNT_NOT_DEACTIVATED(HttpStatus.BAD_REQUEST, "ACCOUNT009", "비활성화되지 않은 계정입니다."),
+    EMAIL_MISMATCH(HttpStatus.BAD_REQUEST, "ACCOUNT010", "이메일이 일치하지 않습니다."),
+
+    // Verification
+    VERIFICATION_CODE_EXPIRED(HttpStatus.BAD_REQUEST, "VERIFICATION001", "인증코드가 만료되었습니다."),
+    INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "VERIFICATION002", "인증코드가 일치하지 않습니다."),
+    VERIFICATION_CODE_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "VERIFICATION003", "인증코드 전송에 실패했습니다."),
 
     // Profile
     PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "PROFILE001", "프로필을 찾을 수 없습니다."),

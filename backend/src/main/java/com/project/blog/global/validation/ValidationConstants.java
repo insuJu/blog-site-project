@@ -50,6 +50,8 @@ public final class ValidationConstants {
 
     public static final String NO_HANGUL_PATTERN = "^[^ㄱ-ㅎㅏ-ㅣ가-힣]*$";
 
+    public static final String VERIFICATION_CODE_PATTERN = "^[0-9]{6}$";
+
     // ==================== Error Messages ====================
 
     public static final String MSG_USERNAME_REQUIRED = "아이디는 필수 입력값입니다.";
@@ -84,6 +86,8 @@ public final class ValidationConstants {
     public static final String MSG_AVATAR_REQUIRED = "아바타 파일은 필수입니다.";
 
     public static final String MSG_CODE_REQUIRED = "인증 코드는 필수 입력값입니다.";
+    public static final String MSG_VERIFICATION_CODE_REQUIRED = "인증코드를 입력해주세요.";
+    public static final String MSG_VERIFICATION_CODE_FORMAT = "인증코드는 6자리 숫자입니다.";
 
     public static final String MSG_POST_TITLE_REQUIRED = "제목은 필수입니다.";
     public static final String MSG_POST_TITLE_SIZE = "제목은 200자를 초과할 수 없습니다.";
