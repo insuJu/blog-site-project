@@ -2,8 +2,9 @@
 /* Section Container    */
 /* ==================== */
 .setting-section {
+  margin-top: 4rem;
   padding: 2rem;
-  background: #ffffff;
+  background: #fafafa;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
 }

@@ -61,6 +61,37 @@
 }
 
 /* ==================== */
+/* Links Section        */
+/* ==================== */
+.links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.linkButton {
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.linkButton:hover {
+  color: #667eea;
+  text-decoration: underline;
+}
+
+.separator {
+  font-size: 13px;
+  color: #ddd;
+}
+
+/* ==================== */
 /* Switch Elements      */
 /* ==================== */
 .switchText {

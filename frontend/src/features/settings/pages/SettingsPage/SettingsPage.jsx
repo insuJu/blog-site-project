@@ -3,8 +3,11 @@ import { FiCheckCircle, FiAlertCircle } from "react-icons/fi";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { useProfileSettings } from "../../hooks/useProfileSettings";
 import { useAccountSettings } from "../../hooks/useAccountSettings";
+import { useAccountDeactivation } from "../../hooks/useAccountDeactivation";
 import ProfileSettingsForm from "../../components/ProfileSettingsForm/ProfileSettingsForm";
 import AccountSettingsForm from "../../components/AccountSettingsForm/AccountSettingsForm";
+import AccountDeactivationSection from "../../components/AccountDeactivationSection/AccountDeactivationSection";
+import AccountDeactivationModal from "../../components/AccountDeactivationModal/AccountDeactivationModal";
 import styles from "./SettingsPage.module.css";
 
 const SettingsPage = () => {
@@ -12,6 +15,7 @@ const SettingsPage = () => {
 
   const profileSettings = useProfileSettings();
   const accountSettings = useAccountSettings();
+  const accountDeactivation = useAccountDeactivation();
 
   useEffect(() => {
     if (!loading && user) {
@@ -78,6 +82,25 @@ const SettingsPage = () => {
           handleSaveEmail={accountSettings.handleSaveEmail}
           handlePasswordNext={accountSettings.handlePasswordNext}
           handleSavePassword={accountSettings.handleSavePassword}
+        />
+
+        <AccountDeactivationSection onOpenModal={accountDeactivation.openModal} />
+
+        <AccountDeactivationModal
+          isOpen={accountDeactivation.isModalOpen}
+          currentStep={accountDeactivation.currentStep}
+          formData={accountDeactivation.formData}
+          handleChange={accountDeactivation.handleChange}
+          isLoading={accountDeactivation.isLoading}
+          errors={accountDeactivation.errors}
+          onRequestDeactivation={accountDeactivation.requestDeactivation}
+          onVerifyDeactivation={accountDeactivation.verifyDeactivation}
+          onResendCode={accountDeactivation.resendDeactivationCode}
+          onBackToStep1={accountDeactivation.backToStep1}
+          onClose={accountDeactivation.closeModal}
+          successMessage={accountDeactivation.successMessage}
+          resendTimer={accountDeactivation.resendTimer}
+          isResending={accountDeactivation.isResending}
         />
       </div>
     </div>

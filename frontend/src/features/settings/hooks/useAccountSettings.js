@@ -120,6 +120,8 @@ export const useAccountSettings = () => {
     }
 
     try {
+      console.log("currentPassword:", formData.currentPassword);
+      console.log("newPassword:", formData.newPassword);
       await updatePassword({
         currentPassword: formData.currentPassword,
         newPassword: formData.newPassword,

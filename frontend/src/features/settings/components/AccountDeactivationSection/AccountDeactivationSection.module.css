@@ -1,0 +1,195 @@
+/* ==================== */
+/* Danger Zone          */
+/* ==================== */
+.danger-zone {
+  margin-top: 4rem;
+  padding: 2rem;
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+/* Danger Zone Header */
+.danger-zone-header {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.warning-icon {
+  color: #ff1f1f;
+}
+
+.danger-zone-header h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+/* ==================== */
+/* Accordion            */
+/* ==================== */
+.accordion {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.accordion-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  width: 100%;
+  padding: 1.125rem 1.25rem;
+  background: white;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.accordion-header:hover {
+  background: #f9fafb;
+}
+
+.accordion-icon {
+  display: flex;
+  align-items: center;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  transition: transform 0.2s;
+}
+
+.accordion-title {
+  flex: 1;
+}
+
+.accordion-title h3 {
+  margin: 0 0 0.375rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.accordion-subtitle {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* Accordion Content */
+.accordion-content {
+  padding: 0 1.25rem 1.25rem 1.25rem;
+  border-top: 1px solid #f3f4f6;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================== */
+/* Warning Box          */
+/* ==================== */
+.warning-box {
+  margin-bottom: 1.25rem;
+  padding: 1.125rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+}
+
+.warning-box h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #991b1b;
+}
+
+.warning-box ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.warning-box li {
+  margin-bottom: 0.5rem;
+  font-size: 0.8125rem;
+  color: #7f1d1d;
+  line-height: 1.6;
+}
+
+.warning-box li:last-child {
+  margin-bottom: 0;
+}
+
+.warning-box li::marker {
+  color: #dc2626;
+}
+
+/* ==================== */
+/* Deactivation Button  */
+/* ==================== */
+.deactivation-button {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: block;
+  margin: 3rem auto 0;
+}
+
+.deactivation-button:hover {
+    background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
+@media (max-width: 640px) {
+  .danger-zone {
+    margin-top: 3rem;
+    padding: 1.5rem;
+  }
+
+  .danger-zone-header h2 {
+    font-size: 1.125rem;
+  }
+
+  .accordion-header {
+    padding: 1rem;
+  }
+
+  .accordion-content {
+    padding: 0 1rem 1rem 1rem;
+  }
+
+  .accordion-title h3 {
+    font-size: 1rem;
+  }
+
+  .warning-box {
+    padding: 1rem;
+  }
+}
