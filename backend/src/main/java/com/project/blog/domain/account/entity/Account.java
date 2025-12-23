@@ -1,5 +1,8 @@
 package com.project.blog.domain.account.entity;
 
+import java.time.LocalDateTime;
+
+import com.project.blog.domain.account.enums.AccountStatus;
 import com.project.blog.domain.account.enums.LoginType;
 import com.project.blog.domain.account.enums.RoleType;
 import com.project.blog.domain.profile.entity.Profile;
@@ -51,12 +54,34 @@ public class Account extends BaseTimeEntity {
     @JoinColumn(name = "profile_id", nullable = false, unique = true)
     private Profile profile;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private AccountStatus status = AccountStatus.ACTIVE;
+
+    @Column
+    private LocalDateTime deactivatedAt;
+
     public void updateEmail(String email) {
         this.email = email;
     }
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void deactivate() {
+        this.status = AccountStatus.DEACTIVATED;
+        this.deactivatedAt = LocalDateTime.now();
+    }
+
+    public void activate() {
+        this.status = AccountStatus.ACTIVE;
+        this.deactivatedAt = null;
+    }
+
+    public boolean isDeactivated() {
+        return this.status == AccountStatus.DEACTIVATED;
     }
 
 }

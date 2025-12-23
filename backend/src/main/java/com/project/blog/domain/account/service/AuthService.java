@@ -12,6 +12,7 @@ import com.project.blog.global.error.exception.BusinessException;
 import com.project.blog.global.security.jwt.JwtCookieUtil;
 import com.project.blog.global.security.jwt.JwtProvider;
 import com.project.blog.global.security.jwt.JwtService;
+import com.project.blog.global.security.service.AuthenticatedUser;
 import com.project.blog.global.security.service.AuthenticationService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +32,11 @@ public class AuthService {
 
     public void login(LoginReqDto reqDto, HttpServletResponse res) {
         Account account = accountRepository.findByUsername(reqDto.getUsername())
-            .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        if (account.isDeactivated()) {
+            throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_DEACTIVATED);
+        }
 
         authenticationService.authenticateWithPassword(reqDto);
 
@@ -42,13 +47,13 @@ public class AuthService {
 
     public void refresh(HttpServletRequest req, HttpServletResponse res) {
         String refreshToken = jwtCookieUtil.getRefreshToken(req)
-            .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_TOKEN));
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_TOKEN));
 
         jwtProvider.validateToken(refreshToken);
         String username = jwtProvider.extractClaims(refreshToken).getSubject();
 
         Account account = accountRepository.findByUsername(username)
-            .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         refreshTokenService.validateRefreshToken(account.getId(), refreshToken);
 
@@ -57,7 +62,7 @@ public class AuthService {
         jwtCookieUtil.addTokenToCookie(res, tokens);
     }
 
-    public void logout(com.project.blog.global.security.service.AuthenticatedUser authenticatedUser, HttpServletResponse res) {
+    public void logout(AuthenticatedUser authenticatedUser, HttpServletResponse res) {
         refreshTokenService.deleteRefreshToken(authenticatedUser.getAccount().getId());
 
         jwtCookieUtil.clearTokenFromCookie(res);
