@@ -14,3 +14,9 @@ export const verifyAccountDeactivation = (data) =>
 
 export const reactivateAccount = (data) =>
   client.post('/users/me/reactivate', data);
+
+export const unlinkOAuth2 = () =>
+  client.post('/users/me/oauth2/unlink');
+
+export const mergeAccounts = (data) =>
+  client.post('/users/me/merge', data);

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signup as apiSignup } from '../api/authApi';
+import { signup as apiSignup, sendSignupVerificationCode as apiSendVerificationCode, mergeLocalWithOAuth2 } from '../api/authApi';
 
 export const useSignup = () => {
   const navigate = useNavigate();
@@ -8,15 +8,43 @@ export const useSignup = () => {
     username: '',
     password: '',
     email: '',
-    nickname: ''
+    nickname: '',
+    verificationCode: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isVerificationSent, setIsVerificationSent] = useState(false);
+  const [isVerificationLoading, setIsVerificationLoading] = useState(false);
+  const [isSnsAccountDetected, setIsSnsAccountDetected] = useState(false);
+  const [showMergeModal, setShowMergeModal] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+  const timerRef = useRef(null);
   const [errors, setErrors] = useState({
     nickname: '',
     email: '',
     username: '',
-    password: ''
+    password: '',
+    verificationCode: ''
   });
+
+  useEffect(() => {
+    if (resendTimer > 0) {
+      timerRef.current = setInterval(() => {
+        setResendTimer(prev => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [resendTimer]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,8 +54,46 @@ export const useSignup = () => {
     }
   };
 
+  const sendVerificationCode = async () => {
+    if (isVerificationLoading || !formData.email || resendTimer > 0) return false;
+
+    setIsVerificationLoading(true);
+    setErrors(prev => ({ ...prev, email: '', verificationCode: '' }));
+
+    try {
+      await apiSendVerificationCode(formData.email);
+      setIsVerificationSent(true);
+      setIsSnsAccountDetected(false);
+      setResendTimer(30);
+      return true;
+    } catch (err) {
+      if (err.response?.data?.code === 'ACCOUNT014') {
+        setIsSnsAccountDetected(true);
+        setIsVerificationSent(true);
+        setResendTimer(30);
+        return true;
+      }
+
+      if (err.response?.data?.errors) {
+        setErrors(prev => ({ ...prev, ...err.response.data.errors }));
+      } else if (err.response?.data?.message) {
+        setErrors(prev => ({ ...prev, email: err.response.data.message }));
+      } else {
+        setErrors(prev => ({ ...prev, email: '인증코드 전송에 실패했습니다.' }));
+      }
+      return false;
+    } finally {
+      setIsVerificationLoading(false);
+    }
+  };
+
   const signup = async () => {
     if (isLoading) return false;
+
+    if (isSnsAccountDetected) {
+      setShowMergeModal(true);
+      return 'showModal';
+    }
 
     setIsLoading(true);
 
@@ -35,7 +101,8 @@ export const useSignup = () => {
       nickname: '',
       email: '',
       username: '',
-      password: ''
+      password: '',
+      verificationCode: ''
     });
 
     try {
@@ -55,14 +122,72 @@ export const useSignup = () => {
   };
 
   const reset = () => {
-    setFormData({ username: '', password: '', email: '', nickname: '' });
+    setFormData({ username: '', password: '', email: '', nickname: '', verificationCode: '' });
     setErrors({
       nickname: '',
       email: '',
       username: '',
-      password: ''
+      password: '',
+      verificationCode: ''
     });
+    setIsVerificationSent(false);
+    setResendTimer(0);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
   };
 
-  return { signup, isLoading, errors, formData, handleChange, reset };
+  const closeSnsAccountModal = () => {
+    setShowMergeModal(false);
+  };
+
+  const mergeAndSignup = async () => {
+    if (isLoading) return false;
+
+    setIsLoading(true);
+    setErrors({
+      nickname: '',
+      email: '',
+      username: '',
+      password: '',
+      verificationCode: ''
+    });
+
+    try {
+      await mergeLocalWithOAuth2({
+        email: formData.email,
+        username: formData.username,
+        password: formData.password,
+        nickname: formData.nickname,
+        verificationCode: formData.verificationCode
+      });
+      navigate('/');
+      return true;
+    } catch (err) {
+      if (err.response?.data?.errors) {
+        setErrors(err.response.data.errors);
+      } else {
+        console.error('Merge failed:', err.response?.data?.message || err.message || 'Unknown error');
+      }
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    signup,
+    sendVerificationCode,
+    mergeAndSignup,
+    isLoading,
+    isVerificationSent,
+    isVerificationLoading,
+    showMergeModal,
+    errors,
+    formData,
+    handleChange,
+    reset,
+    closeSnsAccountModal,
+    resendTimer
+  };
 };

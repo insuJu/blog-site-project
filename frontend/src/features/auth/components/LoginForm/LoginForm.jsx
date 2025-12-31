@@ -1,3 +1,5 @@
+import { FaGithub } from 'react-icons/fa';
+import { FcGoogle } from 'react-icons/fc';
 import { useLogin } from '../../hooks/useLogin';
 import styles from './LoginForm.module.css';
 
@@ -57,6 +59,30 @@ const LoginForm = ({ onSuccess }) => {
           '로그인'
         )}
       </button>
+
+      <div className={styles.divider}>
+        <span>또는</span>
+      </div>
+
+      <div className={styles['social-login']}>
+        <button
+          type="button"
+          onClick={() => window.location.href = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/github`}
+          className={`${styles['social-button']} ${styles.github}`}
+        >
+          <FaGithub size={20} />
+          GitHub로 로그인
+        </button>
+
+        <button
+          type="button"
+          onClick={() => window.location.href = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/google`}
+          className={`${styles['social-button']} ${styles.google}`}
+        >
+          <FcGoogle size={20} />
+          Google로 로그인
+        </button>
+      </div>
     </form>
   );
 };

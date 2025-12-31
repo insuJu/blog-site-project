@@ -1,19 +1,64 @@
 import { useSignup } from '../../hooks/useSignup';
+import LocalWithOAuth2MergeModal from '../LocalWithOAuth2MergeModal/LocalWithOAuth2MergeModal';
 import styles from './SignupForm.module.css';
 
 const SignupForm = ({ onSuccess }) => {
-  const { signup, isLoading, errors, formData, handleChange } = useSignup();
+  const {
+    signup,
+    sendVerificationCode,
+    mergeAndSignup,
+    isLoading,
+    isVerificationSent,
+    isVerificationLoading,
+    showMergeModal,
+    errors,
+    formData,
+    handleChange,
+    closeSnsAccountModal,
+    resendTimer
+  } = useSignup();
+
+  const handleSendVerificationCode = async (e) => {
+    e.preventDefault();
+    await sendVerificationCode();
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = await signup();
-    if (success && onSuccess) {
+    const result = await signup();
+
+    // 모달 표시 필요
+    if (result === 'showModal') {
+      return;
+    }
+
+    if (result && onSuccess) {
       onSuccess();
     }
   };
 
+  const handleMergeConfirm = async () => {
+    const success = await mergeAndSignup();
+    if (success) {
+      closeSnsAccountModal();
+      if (onSuccess) {
+        onSuccess();
+      }
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className={styles['signup-form']} noValidate>
+    <>
+      <LocalWithOAuth2MergeModal
+        isOpen={showMergeModal}
+        email={formData.email}
+        username={formData.username}
+        nickname={formData.nickname}
+        isLoading={isLoading}
+        onConfirm={handleMergeConfirm}
+        onCancel={closeSnsAccountModal}
+      />
+      <form onSubmit={handleSubmit} className={styles['signup-form']} noValidate>
       <div className={styles.header}>
         <h1>환영합니다</h1>
         <p className={styles.subtitle}>새로운 쭈로그 여정을 시작하세요</p>
@@ -35,17 +80,54 @@ const SignupForm = ({ onSuccess }) => {
 
       <div className={styles['form-group']}>
         <label htmlFor="email">이메일</label>
-        <input
-          type="text"
-          id="email"
-          name="email"
-          placeholder="example@email.com"
-          value={formData.email}
-          onChange={handleChange}
-          disabled={isLoading}
-        />
+        <div className={styles['input-with-button']}>
+          <input
+            type="text"
+            id="email"
+            name="email"
+            placeholder="example@email.com"
+            value={formData.email}
+            onChange={handleChange}
+            disabled={isLoading || isVerificationSent}
+          />
+          <button
+            type="button"
+            className={styles['verification-button']}
+            onClick={handleSendVerificationCode}
+            disabled={isLoading || isVerificationLoading || isVerificationSent || !formData.email}
+          >
+            {isVerificationLoading ? '전송 중...' : isVerificationSent ? '전송 완료' : '인증코드 전송'}
+          </button>
+        </div>
         {errors.email && <span className={styles.error}>{errors.email}</span>}
       </div>
+
+      {isVerificationSent && (
+        <div className={styles['form-group']}>
+          <label htmlFor="verificationCode">인증코드</label>
+          <div className={styles['input-with-button']}>
+            <input
+              type="text"
+              id="verificationCode"
+              name="verificationCode"
+              placeholder="이메일로 전송된 6자리 코드를 입력하세요"
+              value={formData.verificationCode}
+              onChange={handleChange}
+              disabled={isLoading}
+              maxLength="6"
+            />
+            <button
+              type="button"
+              className={styles['verification-button']}
+              onClick={handleSendVerificationCode}
+              disabled={isLoading || isVerificationLoading || resendTimer > 0}
+            >
+              {isVerificationLoading ? '전송 중...' : resendTimer > 0 ? `재전송 (${resendTimer}초)` : '재전송'}
+            </button>
+          </div>
+          {errors.verificationCode && <span className={styles.error}>{errors.verificationCode}</span>}
+        </div>
+      )}
 
       <div className={styles['form-group']}>
         <label htmlFor="username">아이디</label>
@@ -86,6 +168,7 @@ const SignupForm = ({ onSuccess }) => {
         )}
       </button>
     </form>
+    </>
   );
 };
 
