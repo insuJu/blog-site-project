@@ -91,7 +91,17 @@ export const useAccountDeactivation = () => {
     setSuccessMessage('');
 
     try {
-      await accountApi.requestAccountDeactivation(formData.password);
+      const response = await accountApi.requestAccountDeactivation(formData.password);
+
+      // OAuth2 계정: 바로 탈퇴 완료
+      if (!response.data?.data?.requiresVerification) {
+        await logout();
+        closeModal();
+        navigate('/');
+        return true;
+      }
+
+      // 일반 계정: 이메일 인증 필요
       setSuccessMessage('이메일로 인증코드가 전송되었습니다.');
       setCurrentStep(2);
       setResendTimer(30);

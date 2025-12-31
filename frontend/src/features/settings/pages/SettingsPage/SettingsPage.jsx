@@ -8,6 +8,8 @@ import ProfileSettingsForm from "../../components/ProfileSettingsForm/ProfileSet
 import AccountSettingsForm from "../../components/AccountSettingsForm/AccountSettingsForm";
 import AccountDeactivationSection from "../../components/AccountDeactivationSection/AccountDeactivationSection";
 import AccountDeactivationModal from "../../components/AccountDeactivationModal/AccountDeactivationModal";
+import OAuth2AccountDeactivationModal from "../../components/OAuth2AccountDeactivationModal/OAuth2AccountDeactivationModal";
+import AccountMergeModal from "../../components/AccountMergeModal/AccountMergeModal";
 import styles from "./SettingsPage.module.css";
 
 const SettingsPage = () => {
@@ -74,6 +76,8 @@ const SettingsPage = () => {
           editMode={accountSettings.editMode}
           errors={accountSettings.errors}
           passwordStep={accountSettings.passwordStep}
+          currentLoginMethod={user?.currentLoginMethod}
+          isLinkedAccount={user?.isLinkedAccount}
           handleChange={accountSettings.handleChange}
           handleEdit={accountSettings.handleEdit}
           handleCancel={(field) =>
@@ -82,25 +86,50 @@ const SettingsPage = () => {
           handleSaveEmail={accountSettings.handleSaveEmail}
           handlePasswordNext={accountSettings.handlePasswordNext}
           handleSavePassword={accountSettings.handleSavePassword}
+          handleUnlinkOAuth2={accountSettings.handleUnlinkOAuth2}
         />
 
-        <AccountDeactivationSection onOpenModal={accountDeactivation.openModal} />
+        <AccountDeactivationSection
+          onOpenModal={accountDeactivation.openModal}
+          currentLoginMethod={user?.currentLoginMethod}
+          isLinkedAccount={user?.isLinkedAccount}
+        />
 
-        <AccountDeactivationModal
-          isOpen={accountDeactivation.isModalOpen}
-          currentStep={accountDeactivation.currentStep}
-          formData={accountDeactivation.formData}
-          handleChange={accountDeactivation.handleChange}
-          isLoading={accountDeactivation.isLoading}
-          errors={accountDeactivation.errors}
-          onRequestDeactivation={accountDeactivation.requestDeactivation}
-          onVerifyDeactivation={accountDeactivation.verifyDeactivation}
-          onResendCode={accountDeactivation.resendDeactivationCode}
-          onBackToStep1={accountDeactivation.backToStep1}
-          onClose={accountDeactivation.closeModal}
-          successMessage={accountDeactivation.successMessage}
-          resendTimer={accountDeactivation.resendTimer}
-          isResending={accountDeactivation.isResending}
+        {user?.currentLoginMethod === 'OAUTH2' ? (
+          <OAuth2AccountDeactivationModal
+            isOpen={accountDeactivation.isModalOpen}
+            isLoading={accountDeactivation.isLoading}
+            onConfirm={accountDeactivation.requestDeactivation}
+            onClose={accountDeactivation.closeModal}
+          />
+        ) : (
+          <AccountDeactivationModal
+            isOpen={accountDeactivation.isModalOpen}
+            currentStep={accountDeactivation.currentStep}
+            formData={accountDeactivation.formData}
+            handleChange={accountDeactivation.handleChange}
+            isLoading={accountDeactivation.isLoading}
+            errors={accountDeactivation.errors}
+            onRequestDeactivation={accountDeactivation.requestDeactivation}
+            onVerifyDeactivation={accountDeactivation.verifyDeactivation}
+            onResendCode={accountDeactivation.resendDeactivationCode}
+            onBackToStep1={accountDeactivation.backToStep1}
+            onClose={accountDeactivation.closeModal}
+            successMessage={accountDeactivation.successMessage}
+            resendTimer={accountDeactivation.resendTimer}
+            isResending={accountDeactivation.isResending}
+          />
+        )}
+
+        <AccountMergeModal
+          isOpen={accountSettings.isMergeModalOpen}
+          targetEmail={accountSettings.targetEmail}
+          formData={accountSettings.formData}
+          errors={accountSettings.errors}
+          isLoading={accountSettings.isMerging}
+          onMerge={accountSettings.handleMerge}
+          onCancel={accountSettings.handleCancelMerge}
+          handleChange={accountSettings.handleChange}
         />
       </div>
     </div>

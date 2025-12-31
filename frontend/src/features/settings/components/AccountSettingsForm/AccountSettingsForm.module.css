@@ -176,6 +176,48 @@
   cursor: not-allowed;
 }
 
+/* Unlink Button */
+.unlink-button {
+  background: #fecaca;
+  color: #991b1b;
+  padding: 0.625rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.unlink-button:hover {
+  background: #fca5a5;
+  box-shadow: 0 2px 8px rgba(252, 165, 165, 0.3);
+  transform: translateY(-1px);
+}
+
+.unlink-button:active {
+  transform: translateY(0);
+}
+
+/* ==================== */
+/* Linked Account Info  */
+/* ==================== */
+.linked-account-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.linked-account-info p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
 /* ==================== */
 /* Media Queries        */
 /* ==================== */

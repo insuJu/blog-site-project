@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { updateEmail, updatePassword } from "../api/accountApi";
+import { useNavigate } from "react-router-dom";
+import { updateEmail, updatePassword, mergeAccounts, unlinkOAuth2 } from "../api/accountApi";
 import { useAuth } from "../../../contexts/AuthContext";
 
 export const useAccountSettings = () => {
-  const { user, updateUser } = useAuth();
+  const navigate = useNavigate();
+  const { user, updateUser, logout } = useAuth();
   const [editMode, setEditMode] = useState({
     email: false,
     password: false,
@@ -15,12 +17,17 @@ export const useAccountSettings = () => {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
+    password: "",
   });
 
   const [passwordStep, setPasswordStep] = useState(1);
 
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+
+  const [isMergeModalOpen, setIsMergeModalOpen] = useState(false);
+  const [targetEmail, setTargetEmail] = useState("");
+  const [isMerging, setIsMerging] = useState(false);
 
   const setUserEmail = (email) => {
     setFormData((prev) => ({ ...prev, email }));
@@ -77,7 +84,7 @@ export const useAccountSettings = () => {
     setErrors({});
     setSuccessMessage("");
 
-    if (!formData.emailCurrentPassword) {
+    if (!formData.emailCurrentPassword && user?.currentLoginMethod === 'LOCAL') {
       setErrors({ emailCurrentPassword: "비밀번호를 입력해주세요." });
       return;
     }
@@ -92,6 +99,12 @@ export const useAccountSettings = () => {
       setFormData((prev) => ({ ...prev, emailCurrentPassword: "" }));
       setSuccessMessage("이메일이 성공적으로 변경되었습니다.");
     } catch (error) {
+      if (error.response?.data?.code === 'ACCOUNT011') {
+        setTargetEmail(formData.email);
+        setIsMergeModalOpen(true);
+        return;
+      }
+
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else {
@@ -100,6 +113,43 @@ export const useAccountSettings = () => {
         });
       }
     }
+  };
+
+  const handleMerge = async () => {
+    setErrors({});
+    setIsMerging(true);
+
+    try {
+      await mergeAccounts({
+        email: targetEmail,
+        password: formData.password
+      });
+
+      await logout();
+      setIsMergeModalOpen(false);
+      navigate('/auth/login', {
+        state: {
+          message: '계정이 성공적으로 병합되었습니다. 다시 로그인해주세요.'
+        }
+      });
+    } catch (error) {
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else {
+        setErrors({
+          password: error.response?.data?.message || "계정 병합에 실패했습니다.",
+        });
+      }
+    } finally {
+      setIsMerging(false);
+    }
+  };
+
+  const handleCancelMerge = () => {
+    setIsMergeModalOpen(false);
+    setTargetEmail("");
+    setFormData((prev) => ({ ...prev, password: "" }));
+    setErrors({});
   };
 
   const handlePasswordNext = () => {
@@ -147,6 +197,27 @@ export const useAccountSettings = () => {
     }
   };
 
+  const handleUnlinkOAuth2 = async () => {
+    if (!window.confirm('소셜 로그인 연동을 해제하시겠습니까? 해제 후에는 일반 로그인만 사용할 수 있습니다.')) {
+      return;
+    }
+
+    try {
+      await unlinkOAuth2();
+      const updatedUser = {
+        ...user,
+        currentLoginMethod: 'LOCAL',
+        isLinkedAccount: false
+      };
+      updateUser(updatedUser);
+      setSuccessMessage('소셜 로그인 연동이 해제되었습니다.');
+    } catch (error) {
+      setErrors({
+        general: error.response?.data?.message || '연동 해제에 실패했습니다.',
+      });
+    }
+  };
+
   return {
     user,
     editMode,
@@ -154,6 +225,9 @@ export const useAccountSettings = () => {
     passwordStep,
     errors,
     successMessage,
+    isMergeModalOpen,
+    targetEmail,
+    isMerging,
     setUserEmail,
     handleEdit,
     handleCancel,
@@ -161,5 +235,8 @@ export const useAccountSettings = () => {
     handleSaveEmail,
     handlePasswordNext,
     handleSavePassword,
+    handleMerge,
+    handleCancelMerge,
+    handleUnlinkOAuth2,
   };
 };

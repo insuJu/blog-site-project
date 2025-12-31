@@ -85,7 +85,7 @@ const AccountDeactivationModal = ({
                         인증코드 전송 중...
                       </>
                     ) : (
-                      "인증코드 받기"
+                      '인증코드 받기'
                     )}
                   </button>
                 </div>

@@ -5,13 +5,18 @@ const AccountSettingsForm = ({
   editMode,
   errors,
   passwordStep,
+  currentLoginMethod,
+  isLinkedAccount,
   handleChange,
   handleEdit,
   handleCancel,
   handleSaveEmail,
   handlePasswordNext,
   handleSavePassword,
+  handleUnlinkOAuth2,
 }) => {
+  const isOAuth2 = currentLoginMethod === 'OAUTH2';
+
   return (
     <section className={styles["setting-section"]}>
 
@@ -24,13 +29,15 @@ const AccountSettingsForm = ({
               value={formData.email}
               disabled
             />
-            <button
-              onClick={() => handleEdit("email")}
-              className={styles["edit-button"]}
-              type="button"
-            >
-              수정
-            </button>
+            {!isOAuth2 && (
+              <button
+                onClick={() => handleEdit("email")}
+                className={styles["edit-button"]}
+                type="button"
+              >
+                수정
+              </button>
+            )}
           </div>
         ) : (
           <>
@@ -79,20 +86,37 @@ const AccountSettingsForm = ({
         )}
       </div>
 
-      <div className={styles["form-group"]}>
-        <label>비밀번호</label>
-        {!editMode.password ? (
-          <div className={styles["input-button-wrapper"]}>
-            <input type="password" value="••••••••" disabled />
+      {isLinkedAccount && (
+        <div className={styles["form-group"]}>
+          <label>소셜 로그인 연동</label>
+          <div className={styles["linked-account-info"]}>
+            <p>이 계정은 소셜 로그인과 연동되어 있습니다.</p>
             <button
-              onClick={() => handleEdit("password")}
-              className={styles["edit-button"]}
+              onClick={handleUnlinkOAuth2}
+              className={styles["unlink-button"]}
               type="button"
             >
-              수정
+              연동 해제
             </button>
           </div>
-        ) : (
+        </div>
+      )}
+
+      {!isOAuth2 && (
+        <div className={styles["form-group"]}>
+          <label>비밀번호</label>
+          {!editMode.password ? (
+            <div className={styles["input-button-wrapper"]}>
+              <input type="password" value="••••••••" disabled />
+              <button
+                onClick={() => handleEdit("password")}
+                className={styles["edit-button"]}
+                type="button"
+              >
+                수정
+              </button>
+            </div>
+          ) : (
           <div className={styles["password-change"]}>
             <div className={styles["input-button-wrapper"]}>
               <input
@@ -176,7 +200,8 @@ const AccountSettingsForm = ({
             )}
           </div>
         )}
-      </div>
+        </div>
+      )}
     </section>
   );
 };
