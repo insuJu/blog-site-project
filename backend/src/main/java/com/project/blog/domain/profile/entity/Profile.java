@@ -23,7 +23,7 @@ public class Profile extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 8)
+    @Column(nullable = false, unique = true, length = 30)
     private String nickname;
 
     @Column(nullable = false, unique = true, length = 30)

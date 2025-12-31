@@ -3,6 +3,9 @@ package com.project.blog.domain.post.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.project.blog.domain.account.entity.Account;
 import com.project.blog.domain.category.entity.Category;
 import com.project.blog.domain.comment.entity.Comment;
@@ -45,7 +48,8 @@ public class Post extends BaseTimeEntity {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "author_id", nullable = true)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Account author;
 
     @ManyToOne(fetch = FetchType.LAZY)

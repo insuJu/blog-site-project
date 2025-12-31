@@ -116,7 +116,7 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        if (!post.getAuthor().getId().equals(authenticatedUser.getAccount().getId())) {
+        if (post.getAuthor() == null || !post.getAuthor().getId().equals(authenticatedUser.getAccount().getId())) {
             throw new BusinessException(ErrorCode.POST_UPDATE_FORBIDDEN);
         }
 
@@ -139,7 +139,7 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        if (!post.getAuthor().getId().equals(authenticatedUser.getAccount().getId())) {
+        if (post.getAuthor() == null || !post.getAuthor().getId().equals(authenticatedUser.getAccount().getId())) {
             throw new BusinessException(ErrorCode.POST_DELETE_FORBIDDEN);
         }
 
@@ -160,7 +160,7 @@ public class PostService {
 
         Long authorId = authenticatedUser.getAccount().getId();
         for (Post post : posts) {
-            if (!post.getAuthor().getId().equals(authorId)) {
+            if (post.getAuthor() == null || !post.getAuthor().getId().equals(authorId)) {
                 throw new BusinessException(ErrorCode.POST_DELETE_FORBIDDEN);
             }
         }

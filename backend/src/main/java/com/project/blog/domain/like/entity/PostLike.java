@@ -1,5 +1,8 @@
 package com.project.blog.domain.like.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.project.blog.domain.account.entity.Account;
 import com.project.blog.domain.post.entity.Post;
 import com.project.blog.global.entity.BaseTimeEntity;
@@ -36,7 +39,8 @@ public class PostLike extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", nullable = false)
+    @JoinColumn(name = "account_id", nullable = true)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)

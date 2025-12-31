@@ -64,7 +64,7 @@ public class CommentService {
         List<Comment> rootComments = commentRepository.findByPostIdAndParentIsNull(postId);
 
         Long currentUserId = authenticatedUser != null ? authenticatedUser.getAccount().getId() : null;
-        Long postAuthorId = post.getAuthor().getId();
+        Long postAuthorId = post.getAuthor() != null ? post.getAuthor().getId() : null;
 
         return rootComments.stream()
                 .map(comment -> filterPrivateComments(comment, currentUserId, postAuthorId))
@@ -77,8 +77,9 @@ public class CommentService {
         if (!comment.isPublic()) {
             if (currentUserId == null)
                 return null;
-            if (!comment.getAuthor().getId().equals(currentUserId) &&
-                    !comment.getAuthor().getId().equals(postAuthorId)) {
+            Long commentAuthorId = comment.getAuthor() != null ? comment.getAuthor().getId() : null;
+            if (commentAuthorId == null ||
+                    (!commentAuthorId.equals(currentUserId) && !commentAuthorId.equals(postAuthorId))) {
                 return null;
             }
         }
@@ -100,11 +101,12 @@ public class CommentService {
 
         if (!comment.isPublic()) {
             Long currentUserId = authenticatedUser != null ? authenticatedUser.getAccount().getId() : null;
-            Long commentAuthorId = comment.getAuthor().getId();
-            Long postAuthorId = comment.getPost().getAuthor().getId();
+            Long commentAuthorId = comment.getAuthor() != null ? comment.getAuthor().getId() : null;
+            Long postAuthorId = comment.getPost().getAuthor() != null ? comment.getPost().getAuthor().getId() : null;
 
             if (currentUserId == null ||
-                    (!currentUserId.equals(commentAuthorId) && !currentUserId.equals(postAuthorId))) {
+                    (commentAuthorId != null && !currentUserId.equals(commentAuthorId) &&
+                     postAuthorId != null && !currentUserId.equals(postAuthorId))) {
                 throw new BusinessException(ErrorCode.COMMENT_ACCESS_FORBIDDEN);
             }
         }
@@ -117,7 +119,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
 
-        if (!comment.getAuthor().getId().equals(authenticatedUser.getAccount().getId())) {
+        if (comment.getAuthor() == null || !comment.getAuthor().getId().equals(authenticatedUser.getAccount().getId())) {
             throw new BusinessException(ErrorCode.COMMENT_UPDATE_FORBIDDEN);
         }
 
@@ -134,7 +136,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
 
-        if (!comment.getAuthor().getId().equals(authenticatedUser.getAccount().getId())) {
+        if (comment.getAuthor() == null || !comment.getAuthor().getId().equals(authenticatedUser.getAccount().getId())) {
             throw new BusinessException(ErrorCode.COMMENT_DELETE_FORBIDDEN);
         }
 
@@ -155,7 +157,7 @@ public class CommentService {
 
         Long authorId = authenticatedUser.getAccount().getId();
         for (Comment comment : comments) {
-            if (!comment.getAuthor().getId().equals(authorId)) {
+            if (comment.getAuthor() == null || !comment.getAuthor().getId().equals(authorId)) {
                 throw new BusinessException(ErrorCode.COMMENT_DELETE_FORBIDDEN);
             }
         }
