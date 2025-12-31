@@ -2,5 +2,6 @@ package com.project.blog.global.verification.enums;
 
 public enum VerificationType {
     PASSWORD_RESET,
-    ACCOUNT_DELETION
+    ACCOUNT_DELETION,
+    EMAIL_SIGNUP
 }

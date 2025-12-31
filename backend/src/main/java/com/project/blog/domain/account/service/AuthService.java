@@ -40,7 +40,7 @@ public class AuthService {
 
         authenticationService.authenticateWithPassword(reqDto);
 
-        Map<String, String> tokens = jwtService.generateTokens(reqDto.getUsername(), account.getId());
+        Map<String, String> tokens = jwtService.generateTokens(reqDto.getUsername(), account.getId(), "LOCAL");
 
         jwtCookieUtil.addTokenToCookie(res, tokens);
     }

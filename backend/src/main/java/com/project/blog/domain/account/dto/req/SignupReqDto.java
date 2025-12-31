@@ -34,4 +34,8 @@ public class SignupReqDto {
     @Pattern(regexp = NICKNAME_PATTERN, message = MSG_NICKNAME_FORMAT)
     @Pattern(regexp = NO_SPACE_PATTERN, message = MSG_NICKNAME_NO_SPACE)
     private String nickname;
+
+    @NotBlank(message = MSG_VERIFICATION_CODE_REQUIRED)
+    @Pattern(regexp = VERIFICATION_CODE_PATTERN, message = MSG_VERIFICATION_CODE_FORMAT)
+    private String verificationCode;
 }

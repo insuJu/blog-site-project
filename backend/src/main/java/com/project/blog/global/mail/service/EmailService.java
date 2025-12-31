@@ -64,6 +64,7 @@ public class EmailService {
         return switch (type) {
             case PASSWORD_RESET -> "비밀번호 재설정";
             case ACCOUNT_DELETION -> "회원탈퇴";
+            case EMAIL_SIGNUP -> "회원가입";
         };
     }
 }

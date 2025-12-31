@@ -159,6 +159,7 @@ public class EmailTemplate {
         return switch (type) {
             case PASSWORD_RESET -> "비밀번호 재설정";
             case ACCOUNT_DELETION -> "회원탈퇴";
+            case EMAIL_SIGNUP -> "회원가입";
         };
     }
 
@@ -166,6 +167,7 @@ public class EmailTemplate {
         return switch (type) {
             case PASSWORD_RESET -> "비밀번호 재설정을 위한 인증코드를 보내드립니다.";
             case ACCOUNT_DELETION -> "회원탈퇴를 위한 인증코드를 보내드립니다.";
+            case EMAIL_SIGNUP -> "회원가입을 위한 인증코드를 보내드립니다.";
         };
     }
 }
