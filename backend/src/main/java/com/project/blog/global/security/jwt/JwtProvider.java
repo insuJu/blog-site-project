@@ -45,20 +45,21 @@ public class JwtProvider {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createAccessToken(String username) {
-        return createToken(username, accessTokenExpirationSeconds);
+    public String createAccessToken(String username, String loginMethod) {
+        return createToken(username, loginMethod, accessTokenExpirationSeconds);
     }
 
-    public String createRefreshToken(String username) {
-        return createToken(username, refreshTokenExpirationSeconds);
+    public String createRefreshToken(String username, String loginMethod) {
+        return createToken(username, loginMethod, refreshTokenExpirationSeconds);
     }
 
-    private String createToken(String username, long expirationSeconds) {
+    private String createToken(String username, String loginMethod, long expirationSeconds) {
         Date now = new Date();
         Date expirationTime = new Date(now.getTime() + expirationSeconds * 1000);
 
         return Jwts.builder()
                 .setSubject(username)
+                .claim("loginMethod", loginMethod)
                 .setIssuedAt(now)
                 .setExpiration(expirationTime)
                 .signWith(key, SignatureAlgorithm.HS256)

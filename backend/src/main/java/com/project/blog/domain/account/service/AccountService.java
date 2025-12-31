@@ -5,20 +5,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.project.blog.domain.account.dto.req.AccountDeactivationReqDto;
 import com.project.blog.domain.account.dto.req.AccountDeactivationVerifyReqDto;
+import com.project.blog.domain.account.dto.req.EmailSignupVerificationReqDto;
 import com.project.blog.domain.account.dto.req.EmailUpdateReqDto;
 import com.project.blog.domain.account.dto.req.FindUsernameReqDto;
+import com.project.blog.domain.account.dto.req.LocalWithOAuth2MergeReqDto;
+import com.project.blog.domain.account.dto.req.OAuth2WithLocalMergeReqDto;
 import com.project.blog.domain.account.dto.req.PasswordResetRequestReqDto;
 import com.project.blog.domain.account.dto.req.PasswordResetVerifyReqDto;
 import com.project.blog.domain.account.dto.req.PasswordUpdateReqDto;
 import com.project.blog.domain.account.dto.req.SignupReqDto;
+import com.project.blog.domain.account.dto.res.AccountDeactivationResDto;
 import com.project.blog.domain.account.dto.res.UserInfoResDto;
 import com.project.blog.domain.account.entity.Account;
-import com.project.blog.domain.account.enums.LoginType;
 import com.project.blog.domain.account.enums.RoleType;
 import com.project.blog.domain.account.repository.AccountRepository;
 import com.project.blog.domain.profile.entity.Profile;
@@ -28,6 +33,7 @@ import com.project.blog.global.error.exception.BusinessException;
 import com.project.blog.global.error.util.ErrorUtil;
 import com.project.blog.global.mail.enums.EmailType;
 import com.project.blog.global.mail.service.EmailService;
+import com.project.blog.global.security.oauth2.service.CustomOAuth2User;
 import com.project.blog.global.security.service.AuthenticatedUser;
 import com.project.blog.global.verification.enums.VerificationType;
 import com.project.blog.global.verification.service.VerificationCodeService;
@@ -45,6 +51,21 @@ public class AccountService {
         private final RefreshTokenService refreshTokenService;
         private final SecureRandom random = new SecureRandom();
 
+        public UserInfoResDto getUserInfo() {
+                Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                boolean isOAuth2Login = principal instanceof CustomOAuth2User;
+
+                if (isOAuth2Login) {
+                        CustomOAuth2User oauth2User = (CustomOAuth2User) principal;
+                        Account account = accountRepository.findById(oauth2User.getId())
+                                        .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+                        return UserInfoResDto.fromOAuth2(account);
+                } else {
+                        AuthenticatedUser authenticatedUser = (AuthenticatedUser) principal;
+                        return UserInfoResDto.from(authenticatedUser);
+                }
+        }
+
         public UserInfoResDto getUserInfo(AuthenticatedUser authenticatedUser) {
                 return UserInfoResDto.from(authenticatedUser);
         }
@@ -55,12 +76,37 @@ public class AccountService {
                 return UserInfoResDto.from(account);
         }
 
+        public void sendSignupVerificationCode(EmailSignupVerificationReqDto reqDto) {
+                String email = reqDto.getEmail();
+                boolean isSnsAccount = false;
+
+                if (accountRepository.existsByEmail(email)) {
+                        Account existingAccount = accountRepository.findByEmail(email)
+                                        .orElseThrow(() -> new BusinessException(ErrorCode.DUPLICATE_EMAIL));
+
+                        if (existingAccount.isOAuth2Account()) {
+                                isSnsAccount = true;
+                        } else {
+                                throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
+                        }
+                }
+
+                String code = verificationCodeService.generateCode();
+                verificationCodeService.saveCode(email, VerificationType.EMAIL_SIGNUP, code);
+                emailService.sendVerificationCode(email, code, EmailType.EMAIL_SIGNUP);
+
+                if (isSnsAccount) {
+                        throw new BusinessException(ErrorCode.EMAIL_REGISTERED_WITH_SNS);
+                }
+        }
+
         @Transactional
         public void signup(SignupReqDto reqDto) {
                 String username = reqDto.getUsername();
                 String email = reqDto.getEmail();
                 String password = reqDto.getPassword();
                 String nickname = reqDto.getNickname();
+                String verificationCode = reqDto.getVerificationCode();
 
                 Map<String, String> errors = new HashMap<>();
 
@@ -71,6 +117,8 @@ public class AccountService {
 
                 ErrorUtil.throwIfNotEmpty(errors);
 
+                verificationCodeService.validateCode(email, VerificationType.EMAIL_SIGNUP, verificationCode);
+
                 Profile profile = profileService.createProfile(nickname);
 
                 Account account = Account.builder()
@@ -78,7 +126,6 @@ public class AccountService {
                                 .password(passwordEncoder.encode(password))
                                 .email(email)
                                 .roleType(RoleType.USER)
-                                .loginType(LoginType.LOCAL)
                                 .profile(profile)
                                 .build();
 
@@ -94,15 +141,26 @@ public class AccountService {
 
                 Map<String, String> errors = new HashMap<>();
 
-                ErrorUtil.addErrorIf(errors, !passwordEncoder.matches(currentPassword, currentAccount.getPassword()),
-                                "currentPassword",
-                                () -> ErrorCode.INCORRECT_PASSWORD.getMessage());
+                if (!currentAccount.isOAuth2Account()) {
+                        ErrorUtil.addErrorIf(errors,
+                                        !passwordEncoder.matches(currentPassword, currentAccount.getPassword()),
+                                        "currentPassword",
+                                        () -> ErrorCode.INCORRECT_PASSWORD.getMessage());
+                }
+
                 ErrorUtil.addErrorIf(errors, currentAccount.getEmail().equals(newEmail), "newEmail",
                                 () -> ErrorCode.SAME_EMAIL.getMessage());
-                ErrorUtil.addErrorIf(errors, accountRepository.existsByEmail(newEmail), "newEmail",
-                                () -> ErrorCode.DUPLICATE_EMAIL.getMessage());
 
                 ErrorUtil.throwIfNotEmpty(errors);
+
+                if (accountRepository.existsByEmail(newEmail)) {
+                        if (currentAccount.isOAuth2Account()) {
+                                throw new BusinessException(ErrorCode.EMAIL_REQUIRES_ACCOUNT_MERGE);
+                        }
+                        Map<String, String> duplicateError = new HashMap<>();
+                        duplicateError.put("newEmail", ErrorCode.DUPLICATE_EMAIL.getMessage());
+                        ErrorUtil.throwIfNotEmpty(duplicateError);
+                }
 
                 currentAccount.updateEmail(newEmail);
         }
@@ -126,6 +184,62 @@ public class AccountService {
                 ErrorUtil.throwIfNotEmpty(errors);
 
                 currentAccount.updatePassword(passwordEncoder.encode(newPassword));
+        }
+
+        @Transactional
+        public void mergeOAuth2WithLocal(OAuth2WithLocalMergeReqDto reqDto, AuthenticatedUser authenticatedUser) {
+                Account oauth2Account = accountRepository.findById(authenticatedUser.getAccount().getId())
+                                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+                if (!oauth2Account.isOAuth2Account()) {
+                        throw new BusinessException(ErrorCode.MERGE_TARGET_NOT_OAUTH2);
+                }
+
+                Account targetAccount = accountRepository.findByEmail(reqDto.getEmail())
+                                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+                if (oauth2Account.getId().equals(targetAccount.getId())) {
+                        throw new BusinessException(ErrorCode.CANNOT_MERGE_SAME_ACCOUNT);
+                }
+
+                if (!passwordEncoder.matches(reqDto.getPassword(), targetAccount.getPassword())) {
+                        Map<String, String> errors = new HashMap<>();
+                        errors.put("password", ErrorCode.INCORRECT_PASSWORD.getMessage());
+                        ErrorUtil.throwIfNotEmpty(errors);
+                }
+
+                targetAccount.updateOAuth2Info(oauth2Account.getOauth2Provider(), oauth2Account.getProviderId());
+
+                accountRepository.delete(oauth2Account);
+        }
+
+        @Transactional
+        public void mergeLocalWithOAuth2(LocalWithOAuth2MergeReqDto reqDto) {
+                String email = reqDto.getEmail();
+                String username = reqDto.getUsername();
+                String password = reqDto.getPassword();
+                String nickname = reqDto.getNickname();
+                String verificationCode = reqDto.getVerificationCode();
+
+                Account oauth2Account = accountRepository.findByEmail(email)
+                                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+                if (!oauth2Account.isOAuth2Account()) {
+                        throw new BusinessException(ErrorCode.MERGE_SOURCE_NOT_OAUTH2);
+                }
+
+                Map<String, String> errors = new HashMap<>();
+
+                ErrorUtil.addErrorIf(errors, accountRepository.existsByUsername(username), "username",
+                                () -> ErrorCode.DUPLICATE_USERNAME.getMessage());
+
+                ErrorUtil.throwIfNotEmpty(errors);
+
+                verificationCodeService.validateCode(email, VerificationType.EMAIL_SIGNUP, verificationCode);
+
+                oauth2Account.updateUsername(username);
+                oauth2Account.updatePassword(passwordEncoder.encode(password));
+                oauth2Account.getProfile().updateNickname(nickname);
         }
 
         @Transactional(readOnly = true)
@@ -176,18 +290,55 @@ public class AccountService {
                                 .toString();
         }
 
-        @Transactional(readOnly = true)
-        public void requestAccountDeactivation(AuthenticatedUser authenticatedUser) {
+        @Transactional
+        public void unlinkOAuth2(AuthenticatedUser authenticatedUser) {
                 Account account = accountRepository.findById(authenticatedUser.getAccount().getId())
                                 .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+                if (!account.isLinkedAccount()) {
+                        throw new BusinessException(ErrorCode.OAUTH2_NOT_LINKED);
+                }
+
+                account.unlinkOAuth2();
+        }
+
+        @Transactional
+        public AccountDeactivationResDto requestAccountDeactivation(AccountDeactivationReqDto reqDto,
+                        AuthenticatedUser authenticatedUser) {
+                Account account = accountRepository.findById(authenticatedUser.getAccount().getId())
+                                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+                boolean isCurrentlyOAuth2Login = "OAUTH2".equals(authenticatedUser.getLoginMethod());
+
+                if (isCurrentlyOAuth2Login) {
+                        if (account.isLinkedAccount()) {
+                                account.unlinkOAuth2();
+                        } else {
+                                refreshTokenService.deleteRefreshToken(account.getId());
+                                accountRepository.delete(account);
+                        }
+                        return AccountDeactivationResDto.builder()
+                                        .requiresVerification(false)
+                                        .build();
+                }
 
                 if (account.isDeactivated()) {
                         throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_DEACTIVATED);
                 }
 
+                if (!passwordEncoder.matches(reqDto.getPassword(), account.getPassword())) {
+                        Map<String, String> errors = new HashMap<>();
+                        errors.put("password", "비밀번호가 일치하지 않습니다.");
+                        ErrorUtil.throwIfNotEmpty(errors);
+                }
+
                 String code = verificationCodeService.generateCode();
                 verificationCodeService.saveCode(account.getEmail(), VerificationType.ACCOUNT_DELETION, code);
                 emailService.sendVerificationCode(account.getEmail(), code, EmailType.ACCOUNT_DELETION);
+
+                return AccountDeactivationResDto.builder()
+                                .requiresVerification(true)
+                                .build();
         }
 
         @Transactional

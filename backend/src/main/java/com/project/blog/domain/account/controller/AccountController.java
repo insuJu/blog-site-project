@@ -10,18 +10,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.blog.domain.account.dto.req.AccountDeactivationReqDto;
 import com.project.blog.domain.account.dto.req.AccountDeactivationVerifyReqDto;
+import com.project.blog.domain.account.dto.req.EmailSignupVerificationReqDto;
 import com.project.blog.domain.account.dto.req.EmailUpdateReqDto;
 import com.project.blog.domain.account.dto.req.FindUsernameReqDto;
+import com.project.blog.domain.account.dto.req.LocalWithOAuth2MergeReqDto;
+import com.project.blog.domain.account.dto.req.OAuth2WithLocalMergeReqDto;
 import com.project.blog.domain.account.dto.req.PasswordResetRequestReqDto;
 import com.project.blog.domain.account.dto.req.PasswordResetVerifyReqDto;
 import com.project.blog.domain.account.dto.req.PasswordUpdateReqDto;
 import com.project.blog.domain.account.dto.req.SignupReqDto;
+import com.project.blog.domain.account.dto.res.AccountDeactivationResDto;
 import com.project.blog.domain.account.dto.res.UserInfoResDto;
 import com.project.blog.domain.account.service.AccountService;
 import com.project.blog.global.dto.ApiResDto;
+import com.project.blog.global.security.jwt.JwtCookieUtil;
 import com.project.blog.global.security.service.AuthenticatedUser;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +37,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
+    private final JwtCookieUtil jwtCookieUtil;
+
+    @PostMapping("/signup/verification")
+    public ResponseEntity<ApiResDto<Void>> sendSignupVerificationCode(
+            @Valid @RequestBody EmailSignupVerificationReqDto reqDto) {
+        accountService.sendSignupVerificationCode(reqDto);
+        return ResponseEntity.ok(ApiResDto.<Void>builder().build());
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResDto<Void>> signup(
@@ -38,10 +53,24 @@ public class AccountController {
         return ResponseEntity.ok(ApiResDto.<Void>builder().build());
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<ApiResDto<UserInfoResDto>> getUserInfo(
+        @PostMapping("/me/merge")
+    public ResponseEntity<ApiResDto<Void>> mergeOAuth2WithLocal(
+            @Valid @RequestBody OAuth2WithLocalMergeReqDto reqDto,
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
-        UserInfoResDto userInfo = accountService.getUserInfo(authenticatedUser);
+        accountService.mergeOAuth2WithLocal(reqDto, authenticatedUser);
+        return ResponseEntity.ok(ApiResDto.<Void>builder().build());
+    }
+
+    @PostMapping("/signup/merge-oauth2")
+    public ResponseEntity<ApiResDto<Void>> mergeLocalWithOAuth2(
+            @Valid @RequestBody LocalWithOAuth2MergeReqDto reqDto) {
+        accountService.mergeLocalWithOAuth2(reqDto);
+        return ResponseEntity.ok(ApiResDto.<Void>builder().build());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResDto<UserInfoResDto>> getUserInfo() {
+        UserInfoResDto userInfo = accountService.getUserInfo();
         return ResponseEntity.ok(ApiResDto.<UserInfoResDto>builder()
                 .data(userInfo)
                 .build());
@@ -73,10 +102,19 @@ public class AccountController {
     }
 
     @PostMapping("/me/deactivation/request")
-    public ResponseEntity<ApiResDto<Void>> requestAccountDeactivation(
-            @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
-        accountService.requestAccountDeactivation(authenticatedUser);
-        return ResponseEntity.ok(ApiResDto.<Void>builder().build());
+    public ResponseEntity<ApiResDto<AccountDeactivationResDto>> requestAccountDeactivation(
+            @Valid @RequestBody AccountDeactivationReqDto reqDto,
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+            HttpServletResponse response) {
+        AccountDeactivationResDto resDto = accountService.requestAccountDeactivation(reqDto, authenticatedUser);
+
+        if (!resDto.isRequiresVerification()) {
+            jwtCookieUtil.clearTokenFromCookie(response);
+        }
+
+        return ResponseEntity.ok(ApiResDto.<AccountDeactivationResDto>builder()
+                .data(resDto)
+                .build());
     }
 
     @PostMapping("/me/deactivation/verify")
@@ -91,6 +129,13 @@ public class AccountController {
     public ResponseEntity<ApiResDto<Void>> reactivateAccount(
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
         accountService.reactivateAccount(authenticatedUser);
+        return ResponseEntity.ok(ApiResDto.<Void>builder().build());
+    }
+
+    @PostMapping("/me/oauth2/unlink")
+    public ResponseEntity<ApiResDto<Void>> unlinkOAuth2(
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+        accountService.unlinkOAuth2(authenticatedUser);
         return ResponseEntity.ok(ApiResDto.<Void>builder().build());
     }
 

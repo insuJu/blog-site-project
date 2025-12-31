@@ -12,6 +12,7 @@ import com.project.blog.global.error.code.ErrorCode;
 import com.project.blog.global.error.exception.AuthenticationException;
 import com.project.blog.global.security.jwt.JwtProvider;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -33,12 +34,18 @@ public class AuthenticationService {
     }
 
     public void authenticateWithJwt(String token) {
-        String username = jwtProvider.extractClaims(token).getSubject();
+        Claims claims = jwtProvider.extractClaims(token);
+        String username = claims.getSubject();
         if (StringUtils.isBlank(username)) {
             throw new AuthenticationException(ErrorCode.INVALID_TOKEN);
         }
 
-        AuthenticatedUser authenticatedUser = authenticatedUserService.loadUserByUsername(username);
+        String loginMethod = claims.get("loginMethod", String.class);
+        if (loginMethod == null) {
+            loginMethod = "LOCAL";
+        }
+
+        AuthenticatedUser authenticatedUser = authenticatedUserService.loadUserByUsername(username, loginMethod);
         registerAuthentication(authenticatedUser);
     }
 

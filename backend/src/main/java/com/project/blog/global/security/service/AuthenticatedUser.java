@@ -20,10 +20,18 @@ public class AuthenticatedUser implements UserDetails {
 
     private Account account;
     private Map<String, Object> attributes;
+    private String loginMethod;
 
     public AuthenticatedUser(Account account) {
         this.account = account;
         this.attributes = Map.of();
+        this.loginMethod = "LOCAL";
+    }
+
+    public AuthenticatedUser(Account account, Map<String, Object> attributes) {
+        this.account = account;
+        this.attributes = attributes;
+        this.loginMethod = "LOCAL";
     }
 
     @Override

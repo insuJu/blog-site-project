@@ -28,6 +28,16 @@ public enum ErrorCode {
     ACCOUNT_ALREADY_DEACTIVATED(HttpStatus.BAD_REQUEST, "ACCOUNT008", "이미 비활성화된 계정입니다."),
     ACCOUNT_NOT_DEACTIVATED(HttpStatus.BAD_REQUEST, "ACCOUNT009", "비활성화되지 않은 계정입니다."),
     EMAIL_MISMATCH(HttpStatus.BAD_REQUEST, "ACCOUNT010", "이메일이 일치하지 않습니다."),
+    EMAIL_REQUIRES_ACCOUNT_MERGE(HttpStatus.CONFLICT, "ACCOUNT011", "이 이메일은 이미 가입된 계정이 있습니다. 계정 병합이 필요합니다."),
+    CANNOT_MERGE_SAME_ACCOUNT(HttpStatus.BAD_REQUEST, "ACCOUNT012", "같은 계정끼리는 병합할 수 없습니다."),
+    MERGE_TARGET_NOT_OAUTH2(HttpStatus.BAD_REQUEST, "ACCOUNT013", "OAuth2 계정만 병합할 수 있습니다."),
+    EMAIL_REGISTERED_WITH_SNS(HttpStatus.CONFLICT, "ACCOUNT014", "이미 SNS로 가입된 이메일입니다."),
+    MERGE_SOURCE_NOT_OAUTH2(HttpStatus.BAD_REQUEST, "ACCOUNT015", "일반 계정에 SNS 정보를 추가할 수 없습니다."),
+
+    // OAuth2
+    OAUTH2_EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "OAUTH2001", "OAuth2 제공자로부터 이메일을 받을 수 없습니다."),
+    OAUTH2_PROVIDER_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "OAUTH2002", "지원하지 않는 OAuth2 제공자입니다."),
+    OAUTH2_NOT_LINKED(HttpStatus.BAD_REQUEST, "OAUTH2003", "연동된 소셜 로그인이 없습니다."),
 
     // Verification
     VERIFICATION_CODE_EXPIRED(HttpStatus.BAD_REQUEST, "VERIFICATION001", "인증코드가 만료되었습니다."),

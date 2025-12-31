@@ -3,7 +3,7 @@ package com.project.blog.domain.account.entity;
 import java.time.LocalDateTime;
 
 import com.project.blog.domain.account.enums.AccountStatus;
-import com.project.blog.domain.account.enums.LoginType;
+import com.project.blog.domain.account.enums.OAuth2Provider;
 import com.project.blog.domain.account.enums.RoleType;
 import com.project.blog.domain.profile.entity.Profile;
 import com.project.blog.global.entity.BaseTimeEntity;
@@ -35,20 +35,24 @@ public class Account extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 20)
+    @Column(unique = true, length = 20)
     private String username;
 
-    @Column(nullable = false, length = 60)
+    @Column(length = 60)
     private String password;
+
+    @Column(length = 100)
+    private String providerId;
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    private OAuth2Provider oauth2Provider;
 
     @Column(nullable = false, unique = true, length = 50)
     private String email;
 
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
-
-    @Enumerated(EnumType.STRING)
-    private LoginType loginType;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profile_id", nullable = false, unique = true)
@@ -64,6 +68,10 @@ public class Account extends BaseTimeEntity {
 
     public void updateEmail(String email) {
         this.email = email;
+    }
+
+    public void updateUsername(String username) {
+        this.username = username;
     }
 
     public void updatePassword(String password) {
@@ -82,6 +90,24 @@ public class Account extends BaseTimeEntity {
 
     public boolean isDeactivated() {
         return this.status == AccountStatus.DEACTIVATED;
+    }
+
+    public void updateOAuth2Info(OAuth2Provider oauth2Provider, String providerId) {
+        this.oauth2Provider = oauth2Provider;
+        this.providerId = providerId;
+    }
+
+    public void unlinkOAuth2() {
+        this.oauth2Provider = null;
+        this.providerId = null;
+    }
+
+    public boolean isOAuth2Account() {
+        return oauth2Provider != null;
+    }
+
+    public boolean isLinkedAccount() {
+        return this.password != null && this.oauth2Provider != null;
     }
 
 }

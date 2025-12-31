@@ -21,4 +21,10 @@ public class AuthenticatedUserService implements UserDetailsService {
                 .map(AuthenticatedUser::new)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
+
+    public AuthenticatedUser loadUserByUsername(String username, String loginMethod) {
+        return accountRepository.findByUsername(username)
+                .map(account -> new AuthenticatedUser(account, null, loginMethod))
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+    }
 }
