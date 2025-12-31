@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { FiUser } from 'react-icons/fi';
 import { IoIosHeart } from 'react-icons/io';
 import { formatRelativeDate } from '../../../../utils/dateFormat';
 import CommentForm from '../CommentForm/CommentForm';
@@ -20,32 +21,40 @@ const CommentItem = ({
   },
   replyActions: { onDeleteReply, onLikeReply }
 }) => {
-  const isAuthor = currentUser && currentUser.id === comment.author.id;
+  const isAuthor = currentUser && comment.author.id && currentUser.id === comment.author.id;
   const isPostAuthor = currentUser && currentUser.id === postAuthorId;
   const canSeePrivate = isAuthor || isPostAuthor;
-  const authorBlogUrl = isAuthor ? '/my-blog' : `/users/${comment.author.id}/blog`;
+  const authorBlogUrl = isAuthor ? '/my-blog' : (comment.author.id ? `/users/${comment.author.id}/blog` : null);
 
   return (
     <div className={styles.commentItem}>
       <div className={styles.comment}>
         <Link
-          to={authorBlogUrl}
+          to={authorBlogUrl || '#'}
           className={styles.avatar}
+          onClick={(e) => { if (!authorBlogUrl) e.preventDefault(); }}
+          style={{ cursor: authorBlogUrl ? 'pointer' : 'default' }}
         >
           {comment.author.avatar ? (
             <img src={comment.author.avatar} alt={comment.author.nickname} className={styles.avatarImage} />
           ) : (
-            comment.author.nickname.charAt(0)
+            <FiUser size={20} />
           )}
         </Link>
         <div className={styles.commentContent}>
           <div className={styles.commentHeader}>
-            <Link
-              to={authorBlogUrl}
-              className={styles.author}
-            >
-              {comment.author.nickname}
-            </Link>
+            {authorBlogUrl ? (
+              <Link
+                to={authorBlogUrl}
+                className={styles.author}
+              >
+                {comment.author.nickname}
+              </Link>
+            ) : (
+              <span className={styles.author}>
+                {comment.author.nickname}
+              </span>
+            )}
             <span className={styles.date}>{formatRelativeDate(comment.createdAt)}</span>
             {!comment.isPublic && canSeePrivate && (
               <span className={styles.privateBadge}>비공개</span>

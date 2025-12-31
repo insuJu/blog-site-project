@@ -1,4 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { FiUser } from "react-icons/fi";
 import { useAuth } from "../../../../contexts/AuthContext";
 import CommentSection from "../../../comment/components/CommentSection/CommentSection";
 import { useComments } from "../../../comment/hooks/useComments";
@@ -185,8 +186,8 @@ const PostDetailPage = () => {
     );
   }
 
-  const isAuthor = user && user.id === post.author.id;
-  const authorBlogUrl = isAuthor ? '/my-blog' : `/users/${post.author.id}/blog`;
+  const isAuthor = user && post.author.id && user.id === post.author.id;
+  const authorBlogUrl = isAuthor ? '/my-blog' : (post.author.id ? `/users/${post.author.id}/blog` : null);
 
   return (
     <div className={styles.postDetailPage}>
@@ -205,22 +206,30 @@ const PostDetailPage = () => {
             <div className={styles.meta}>
               <div className={styles.authorInfo}>
                 <Link
-                  to={authorBlogUrl}
+                  to={authorBlogUrl || '#'}
                   className={styles.avatar}
+                  onClick={(e) => { if (!authorBlogUrl) e.preventDefault(); }}
+                  style={{ cursor: authorBlogUrl ? 'pointer' : 'default' }}
                 >
                   {post.author.avatar ? (
                     <img src={post.author.avatar} alt={post.author.nickname} className={styles.avatarImage} />
                   ) : (
-                    post.author.nickname.charAt(0)
+                    <FiUser size={24} />
                   )}
                 </Link>
                 <div className={styles.authorDetails}>
-                  <Link
-                    to={authorBlogUrl}
-                    className={styles.authorName}
-                  >
-                    {post.author.nickname}
-                  </Link>
+                  {authorBlogUrl ? (
+                    <Link
+                      to={authorBlogUrl}
+                      className={styles.authorName}
+                    >
+                      {post.author.nickname}
+                    </Link>
+                  ) : (
+                    <span className={styles.authorName}>
+                      {post.author.nickname}
+                    </span>
+                  )}
                   <span className={styles.date}>
                     {formatDate(post.createdAt)}
                   </span>

@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { FiUser } from 'react-icons/fi';
 import { formatDate } from '../../../../utils/dateFormat';
 import { getPreview } from '../../../../utils/textUtils';
 import styles from './PostCard.module.css';
@@ -39,9 +40,13 @@ const PostCard = ({ post }) => {
 
       <div className={styles.meta}>
         <Link
-          to={`/users/${post.author.id}/blog`}
+          to={post.author.id ? `/users/${post.author.id}/blog` : '#'}
           className={styles.avatarLink}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!post.author.id) e.preventDefault();
+          }}
+          style={{ cursor: post.author.id ? 'pointer' : 'default' }}
         >
           <div className={styles.avatar}>
             {post.author.avatar ? (
@@ -51,18 +56,24 @@ const PostCard = ({ post }) => {
                 className={styles.avatarImage}
               />
             ) : (
-              post.author.nickname.charAt(0)
+              <FiUser size={20} />
             )}
           </div>
         </Link>
 
-        <Link
-          to={`/users/${post.author.id}/blog`}
-          className={styles.author}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {post.author.nickname}
-        </Link>
+        {post.author.id ? (
+          <Link
+            to={`/users/${post.author.id}/blog`}
+            className={styles.author}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {post.author.nickname}
+          </Link>
+        ) : (
+          <span className={styles.author}>
+            {post.author.nickname}
+          </span>
+        )}
 
         <span className={styles.separator}>·</span>
         <span className={styles.date}>{formatDate(post.createdAt)}</span>

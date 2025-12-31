@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { FiUser } from 'react-icons/fi';
 import { IoIosHeart } from 'react-icons/io';
 import { formatRelativeDate } from '../../../../utils/dateFormat';
 import styles from './ReplyItem.module.css';
@@ -10,31 +11,39 @@ const ReplyItem = ({
   onDelete,
   onLike
 }) => {
-  const isReplyAuthor = currentUser && currentUser.id === reply.author.id;
+  const isReplyAuthor = currentUser && reply.author.id && currentUser.id === reply.author.id;
   const isPostAuthor = currentUser && currentUser.id === postAuthorId;
   const canSeePrivate = isReplyAuthor || isPostAuthor;
-  const authorBlogUrl = isReplyAuthor ? '/my-blog' : `/users/${reply.author.id}/blog`;
+  const authorBlogUrl = isReplyAuthor ? '/my-blog' : (reply.author.id ? `/users/${reply.author.id}/blog` : null);
 
   return (
     <div className={styles.reply}>
       <Link
-        to={authorBlogUrl}
+        to={authorBlogUrl || '#'}
         className={styles.avatar}
+        onClick={(e) => { if (!authorBlogUrl) e.preventDefault(); }}
+        style={{ cursor: authorBlogUrl ? 'pointer' : 'default' }}
       >
         {reply.author.avatar ? (
           <img src={reply.author.avatar} alt={reply.author.nickname} className={styles.avatarImage} />
         ) : (
-          reply.author.nickname.charAt(0)
+          <FiUser size={20} />
         )}
       </Link>
       <div className={styles.replyContent}>
         <div className={styles.replyHeader}>
-          <Link
-            to={authorBlogUrl}
-            className={styles.author}
-          >
-            {reply.author.nickname}
-          </Link>
+          {authorBlogUrl ? (
+            <Link
+              to={authorBlogUrl}
+              className={styles.author}
+            >
+              {reply.author.nickname}
+            </Link>
+          ) : (
+            <span className={styles.author}>
+              {reply.author.nickname}
+            </span>
+          )}
           <span className={styles.date}>
             {formatRelativeDate(reply.createdAt)}
           </span>
