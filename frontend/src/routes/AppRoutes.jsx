@@ -3,6 +3,7 @@ import Footer from "../components/layout/Footer/Footer";
 import Header from "../components/layout/Header/Header";
 import Layout from "../components/layout/Layout";
 import ProtectedRoute from "../components/routes/ProtectedRoute";
+import OAuth2RedirectPage from "../features/auth/pages/OAuth2RedirectPage/OAuth2RedirectPage";
 import CategoryListPage from "../features/category/pages/CategoryListPage/CategoryListPage";
 import EditPage from "../features/post/pages/EditPage/EditPage";
 import IndexPage from "../features/post/pages/IndexPage/IndexPage";
@@ -27,6 +28,11 @@ const AppRoutes = () => {
             <Footer />
           </>
         }
+      />
+
+      <Route
+        path="/oauth2/redirect"
+        element={<OAuth2RedirectPage />}
       />
 
       <Route
