@@ -33,7 +33,7 @@ public class EmailTemplate {
                 <body>
                     <div class="container">
                         <div class="header">
-                            <h1>쭈로그</h1>
+                            <h1>Writon</h1>
                             <p>%s</p>
                         </div>
                         <div class="content">
@@ -48,7 +48,7 @@ public class EmailTemplate {
                             </div>
                         </div>
                         <div class="footer">
-                            <p>© 2025 쭈로그. All rights reserved.</p>
+                            <p>© 2025 Writon. All rights reserved.</p>
                         </div>
                     </div>
                 </body>
@@ -80,7 +80,7 @@ public class EmailTemplate {
                 <body>
                     <div class="container">
                         <div class="header">
-                            <h1>쭈로그</h1>
+                            <h1>Writon</h1>
                             <p>아이디 찾기 결과</p>
                         </div>
                         <div class="content">
@@ -92,7 +92,7 @@ public class EmailTemplate {
                             <p>로그인 페이지에서 해당 아이디로 로그인하실 수 있습니다.</p>
                         </div>
                         <div class="footer">
-                            <p>© 2025 쭈로그. All rights reserved.</p>
+                            <p>© 2025 Writon. All rights reserved.</p>
                         </div>
                     </div>
                 </body>
@@ -128,7 +128,7 @@ public class EmailTemplate {
                 <body>
                     <div class="container">
                         <div class="header">
-                            <h1>쭈로그</h1>
+                            <h1>Writon</h1>
                             <p>임시 비밀번호 발급</p>
                         </div>
                         <div class="content">
@@ -147,7 +147,7 @@ public class EmailTemplate {
                             </div>
                         </div>
                         <div class="footer">
-                            <p>© 2025 쭈로그. All rights reserved.</p>
+                            <p>© 2025 Writon. All rights reserved.</p>
                         </div>
                     </div>
                 </body>
