@@ -17,8 +17,8 @@ const LoginForm = ({ onSuccess }) => {
   return (
     <form onSubmit={handleSubmit} className={styles['login-form']} noValidate>
       <div className={styles.header}>
-        <h1>쭈로그에 오신 것을 환영합니다</h1>
-        <p className={styles.subtitle}>로그인을 하여 쭈로그를 이용하세요!</p>
+        <h1>Writon에 오신 것을 환영합니다</h1>
+        <p className={styles.subtitle}>로그인을 하여 Writon를 이용하세요!</p>
       </div>
 
       <div className={styles['form-group']}>

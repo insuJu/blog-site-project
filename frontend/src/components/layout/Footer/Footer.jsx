@@ -8,7 +8,7 @@ const Footer = () => {
       <div className={styles.container}>
         <div className={styles.content}>
           <p className={styles.copyright}>
-            © {currentYear} 쭈로그. All rights reserved.
+            © {currentYear} Writon. All rights reserved.
           </p>
         </div>
       </div>

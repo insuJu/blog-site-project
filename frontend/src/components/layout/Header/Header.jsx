@@ -47,11 +47,11 @@ const Header = () => {
           <div className={styles.leftSection}>
             {isAuthenticated && location.pathname !== "/" ? (
               <span className={styles.logo}>
-                {user?.profile?.blogName || "쭈로그"}
+                {user?.profile?.blogName || "Writon"}
               </span>
             ) : (
               <Link to="/" className={styles.logo}>
-                쭈로그
+                Writon
               </Link>
             )}
           </div>
