@@ -326,7 +326,14 @@ public class AccountService {
                         throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_DEACTIVATED);
                 }
 
-                if (!passwordEncoder.matches(reqDto.getPassword(), account.getPassword())) {
+                String password = reqDto.getPassword();
+                if (password == null || password.isBlank()) {
+                        Map<String, String> errors = new HashMap<>();
+                        errors.put("password", "비밀번호는 필수 입력값입니다.");
+                        ErrorUtil.throwIfNotEmpty(errors);
+                }
+
+                if (!passwordEncoder.matches(password, account.getPassword())) {
                         Map<String, String> errors = new HashMap<>();
                         errors.put("password", "비밀번호가 일치하지 않습니다.");
                         ErrorUtil.throwIfNotEmpty(errors);
