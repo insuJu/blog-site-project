@@ -1,17 +1,11 @@
 package com.project.blog.global.mail.service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import com.project.blog.global.error.code.ErrorCode;
-import com.project.blog.global.error.exception.BusinessException;
 import com.project.blog.global.mail.enums.EmailType;
+import com.project.blog.global.mail.sender.EmailSender;
 import com.project.blog.global.mail.template.EmailTemplate;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,10 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender mailSender;
-
-    @Value("${app.mail.from}")
-    private String fromEmail;
+    private final EmailSender emailSender;
 
     public void sendVerificationCode(String to, String code, EmailType type) {
         String subject = String.format("[쭈로그] %s 인증코드", getSubjectSuffix(type));
@@ -44,20 +35,7 @@ public class EmailService {
     }
 
     private void sendEmail(String to, String subject, String content) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom(fromEmail);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(content, true);
-
-            mailSender.send(message);
-        } catch (MessagingException e) {
-            log.error("Failed to send email to: {}", to, e);
-            throw new BusinessException(ErrorCode.VERIFICATION_CODE_SEND_FAILED);
-        }
+        emailSender.sendEmail(to, subject, content);
     }
 
     private String getSubjectSuffix(EmailType type) {
