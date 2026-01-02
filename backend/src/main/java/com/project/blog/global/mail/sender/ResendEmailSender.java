@@ -39,6 +39,9 @@ public class ResendEmailSender implements EmailSender {
     @Override
     public void sendEmail(String to, String subject, String htmlContent) {
         try {
+            log.info("Attempting to send email via Resend API to: {}", to);
+            log.debug("API Key present: {}, From email: {}", apiKey != null && !apiKey.isEmpty(), fromEmail);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(apiKey);
@@ -58,10 +61,15 @@ public class ResendEmailSender implements EmailSender {
                     String.class);
 
             if (!response.getStatusCode().is2xxSuccessful()) {
-                log.error("Failed to send email to: {}. Status: {}", to, response.getStatusCode());
+                log.error("Failed to send email to: {}. Status: {}, Response: {}", to, response.getStatusCode(), response.getBody());
                 throw new BusinessException(ErrorCode.VERIFICATION_CODE_SEND_FAILED);
             }
+
+            log.info("Email sent successfully to: {} via Resend", to);
+        } catch (BusinessException e) {
+            throw e;
         } catch (Exception e) {
+            log.error("Failed to send email to: {} via Resend. Error: {}", to, e.getMessage(), e);
             throw new BusinessException(ErrorCode.VERIFICATION_CODE_SEND_FAILED);
         }
     }
