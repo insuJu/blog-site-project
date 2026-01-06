@@ -46,7 +46,7 @@ public class TagController {
 
     @GetMapping("/search")
     public ResponseEntity<ApiResDto<List<TagResDto>>> searchTags(
-            @RequestParam String keyword) {
+            @RequestParam("keyword") String keyword) {
         List<TagResDto> tags = tagService.searchTags(keyword);
         return ResponseEntity.ok(ApiResDto.<List<TagResDto>>builder()
                 .data(tags)

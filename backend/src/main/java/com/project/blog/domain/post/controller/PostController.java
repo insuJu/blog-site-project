@@ -97,7 +97,7 @@ public class PostController {
 
         @GetMapping("/search")
         public ResponseEntity<ApiResDto<Page<PostResDto>>> searchPosts(
-                        @RequestParam String keyword,
+                        @RequestParam("keyword") String keyword,
                         @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
                 Page<PostResDto> posts = postService.searchPosts(keyword, pageable);
                 return ResponseEntity.ok(ApiResDto.<Page<PostResDto>>builder()
@@ -108,7 +108,7 @@ public class PostController {
         @GetMapping("/author/{authorId}/search")
         public ResponseEntity<ApiResDto<Page<PostResDto>>> searchPostsByAuthor(
                         @PathVariable("authorId") Long authorId,
-                        @RequestParam String keyword,
+                        @RequestParam("keyword") String keyword,
                         @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
                         @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
                 Long requesterId = (authenticatedUser != null) ? authenticatedUser.getAccount().getId() : null;
