@@ -61,7 +61,6 @@ const SignupForm = ({ onSuccess }) => {
       />
       <form onSubmit={handleSubmit} className={styles['signup-form']} noValidate>
       <div className={styles.header}>
-        <h1>환영합니다</h1>
         <p className={styles.subtitle}>새로운 Writon 여정을 시작하세요</p>
       </div>
 

@@ -167,7 +167,7 @@
 /* ==================== */
 /* Media Queries        */
 /* ==================== */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .danger-zone {
     margin-top: 3rem;
     padding: 1.5rem;

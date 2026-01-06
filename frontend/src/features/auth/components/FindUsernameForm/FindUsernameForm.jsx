@@ -26,7 +26,6 @@ const FindUsernameForm = () => {
       noValidate
     >
       <div className={styles.header}>
-        <h1>아이디 찾기</h1>
         <p className={styles.subtitle}>가입하신 이메일 주소를 입력해주세요</p>
       </div>
 

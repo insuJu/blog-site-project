@@ -103,14 +103,6 @@
 }
 
 @media (max-width: 768px) {
-  .searchResultPage {
-    padding: 2rem 0;
-  }
-
-  .container {
-    padding: 0 1rem;
-  }
-
   .title {
     font-size: 1.5rem;
   }

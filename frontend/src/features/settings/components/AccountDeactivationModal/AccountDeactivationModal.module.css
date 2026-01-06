@@ -387,11 +387,7 @@
 /* ==================== */
 /* Media Queries        */
 /* ==================== */
-@media (max-width: 640px) {
-  .modal {
-    padding: 2rem 1.5rem;
-  }
-
+@media (max-width: 768px) {
   .header h2 {
     font-size: 1.25rem;
   }

@@ -13,13 +13,6 @@
   text-align: center;
 }
 
-.header h1 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #212529;
-}
-
 /* Subtitle */
 .subtitle {
   margin: 0;
@@ -250,11 +243,7 @@
 /* ==================== */
 /* Media Queries        */
 /* ==================== */
-@media (max-width: 640px) {
-  .signup-form {
-    padding: 2rem 1.5rem;
-  }
-
+@media (max-width: 768px) {
   .header h1 {
     font-size: 1.5rem;
   }
