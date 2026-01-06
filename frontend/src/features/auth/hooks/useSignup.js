@@ -17,6 +17,7 @@ export const useSignup = () => {
   const [isSnsAccountDetected, setIsSnsAccountDetected] = useState(false);
   const [showMergeModal, setShowMergeModal] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
+  const [successMessage, setSuccessMessage] = useState('');
   const timerRef = useRef(null);
   const [errors, setErrors] = useState({
     nickname: '',
@@ -59,18 +60,21 @@ export const useSignup = () => {
 
     setIsVerificationLoading(true);
     setErrors(prev => ({ ...prev, email: '', verificationCode: '' }));
+    setSuccessMessage('');
 
     try {
       await apiSendVerificationCode(formData.email);
       setIsVerificationSent(true);
       setIsSnsAccountDetected(false);
-      setResendTimer(30);
+      setSuccessMessage('이메일로 인증코드가 전송되었습니다.');
+      setResendTimer(60);
       return true;
     } catch (err) {
       if (err.response?.data?.code === 'ACCOUNT014') {
         setIsSnsAccountDetected(true);
         setIsVerificationSent(true);
-        setResendTimer(30);
+        setSuccessMessage('이메일로 인증코드가 전송되었습니다.');
+        setResendTimer(60);
         return true;
       }
 
@@ -131,6 +135,7 @@ export const useSignup = () => {
       verificationCode: ''
     });
     setIsVerificationSent(false);
+    setSuccessMessage('');
     setResendTimer(0);
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -188,6 +193,7 @@ export const useSignup = () => {
     handleChange,
     reset,
     closeSnsAccountModal,
+    successMessage,
     resendTimer
   };
 };

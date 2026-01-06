@@ -104,7 +104,7 @@ export const useAccountDeactivation = () => {
       // 일반 계정: 이메일 인증 필요
       setSuccessMessage('이메일로 인증코드가 전송되었습니다.');
       setCurrentStep(2);
-      setResendTimer(30);
+      setResendTimer(60);
       return true;
     } catch (err) {
       if (err.response?.data?.errors) {
@@ -128,7 +128,7 @@ export const useAccountDeactivation = () => {
     try {
       await accountApi.requestAccountDeactivation(formData.password);
       setSuccessMessage('인증코드가 재전송되었습니다.');
-      setResendTimer(30);
+      setResendTimer(60);
       return true;
     } catch (err) {
       if (err.response?.data?.errors) {

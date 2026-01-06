@@ -11,8 +11,11 @@ const ResetPasswordForm = () => {
     errors,
     requestReset,
     verifyReset,
+    resendPasswordResetCode,
     isComplete,
     successMessage,
+    resendTimer,
+    isResending,
   } = usePasswordReset();
 
   const handleStep1Submit = async (e) => {
@@ -131,16 +134,35 @@ const ResetPasswordForm = () => {
 
       <div className={styles["form-group"]}>
         <label htmlFor="verificationCode">인증코드</label>
-        <input
-          type="text"
-          id="verificationCode"
-          name="verificationCode"
-          placeholder="인증코드 6자리를 입력하세요"
-          value={formData.verificationCode}
-          onChange={handleChange}
-          disabled={isLoading}
-          maxLength={6}
-        />
+        <div className={styles["input-with-button"]}>
+          <input
+            type="text"
+            id="verificationCode"
+            name="verificationCode"
+            placeholder="인증코드 6자리를 입력하세요"
+            value={formData.verificationCode}
+            onChange={handleChange}
+            disabled={isLoading}
+            maxLength={6}
+          />
+          <button
+            type="button"
+            onClick={resendPasswordResetCode}
+            className={styles["resend-button"]}
+            disabled={resendTimer > 0 || isResending || isLoading}
+          >
+            {isResending ? (
+              <>
+                <span className={styles["small-spinner"]}></span>
+                전송 중
+              </>
+            ) : resendTimer > 0 ? (
+              `재전송 (${resendTimer}초)`
+            ) : (
+              "재전송"
+            )}
+          </button>
+        </div>
         {errors.verificationCode && (
           <span className={styles.error}>{errors.verificationCode}</span>
         )}

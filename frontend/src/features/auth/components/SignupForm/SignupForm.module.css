@@ -76,6 +76,34 @@
   cursor: not-allowed;
 }
 
+/* Resend Button */
+.resend-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.875rem 1.125rem;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #495057;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.resend-button:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.resend-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Input */
 .form-group input {
   width: 100%;
@@ -130,6 +158,33 @@
 }
 
 /* ==================== */
+/* Success Message      */
+/* ==================== */
+.success-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.875rem 1.125rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+}
+
+.success-message svg {
+  flex-shrink: 0;
+  color: #16a34a;
+}
+
+.success-message p {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #15803d;
+}
+
+/* ==================== */
 /* Submit Button        */
 /* ==================== */
 .submit-button {
@@ -171,6 +226,16 @@
   height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Small Spinner */
+.small-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(73, 80, 87, 0.2);
+  border-top-color: #495057;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }

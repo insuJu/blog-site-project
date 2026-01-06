@@ -10,6 +10,8 @@ const FindUsernameForm = () => {
     formData,
     handleChange,
     successMessage,
+    resendTimer,
+    isResending,
   } = useFindUsername();
 
   const handleSubmit = async (e) => {
@@ -52,13 +54,17 @@ const FindUsernameForm = () => {
       <button
         type="submit"
         className={styles["submit-button"]}
-        disabled={isLoading}
+        disabled={isLoading || resendTimer > 0}
       >
         {isLoading ? (
           <>
             <span className={styles.spinner}></span>
-            아이디 찾는 중...
+            {successMessage ? '재전송 중...' : '아이디 찾는 중...'}
           </>
+        ) : resendTimer > 0 ? (
+          `재전송 (${resendTimer}초)`
+        ) : successMessage ? (
+          "재전송"
         ) : (
           "아이디 찾기"
         )}

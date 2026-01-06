@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as authApi from '../api/authApi';
 
 export const usePasswordReset = () => {
@@ -16,6 +16,29 @@ export const usePasswordReset = () => {
   });
   const [isComplete, setIsComplete] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [resendTimer, setResendTimer] = useState(0);
+  const [isResending, setIsResending] = useState(false);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    if (resendTimer > 0) {
+      timerRef.current = setInterval(() => {
+        setResendTimer(prev => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [resendTimer]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,6 +64,7 @@ export const usePasswordReset = () => {
       });
       setSuccessMessage('이메일로 인증코드가 전송되었습니다.');
       setCurrentStep(2);
+      setResendTimer(60);
       return true;
     } catch (err) {
       if (err.response?.data?.errors) {
@@ -51,6 +75,38 @@ export const usePasswordReset = () => {
       return false;
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const resendPasswordResetCode = async () => {
+    if (resendTimer > 0 || isResending) return;
+
+    setIsResending(true);
+    setErrors({
+      username: '',
+      email: '',
+      verificationCode: ''
+    });
+    setSuccessMessage('');
+
+    try {
+      await authApi.requestPasswordReset({
+        username: formData.username,
+        email: formData.email
+      });
+      setSuccessMessage('인증코드가 재전송되었습니다.');
+      setResendTimer(60);
+      return true;
+    } catch (err) {
+      if (err.response?.data?.errors) {
+        setErrors(err.response.data.errors);
+      } else {
+        console.error('Resend password reset code failed:', err.response?.data?.message || err.message || 'Unknown error');
+        setErrors({ verificationCode: '인증코드 재전송에 실패했습니다. 다시 시도해주세요.' });
+      }
+      return false;
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -95,6 +151,11 @@ export const usePasswordReset = () => {
     });
     setIsComplete(false);
     setSuccessMessage('');
+    setResendTimer(0);
+    setIsResending(false);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
   };
 
   return {
@@ -106,8 +167,11 @@ export const usePasswordReset = () => {
     errors,
     requestReset,
     verifyReset,
+    resendPasswordResetCode,
     reset,
     isComplete,
-    successMessage
+    successMessage,
+    resendTimer,
+    isResending
   };
 };
