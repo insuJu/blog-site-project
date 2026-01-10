@@ -5,6 +5,7 @@ import { uploadPostImage } from "../../api/postApi";
 import EditorModeSelector from "./components/EditorModeSelector";
 import EditorToolbar from "./components/EditorToolbar";
 import { useEditorFormat } from "./hooks/useEditorFormat";
+import { htmlToMarkdown, markdownToHtml } from "./utils/contentConverter";
 import styles from "./PostEditor.module.css";
 
 const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
@@ -23,12 +24,10 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
   const [showPreview, setShowPreview] = useState(false);
   const [fontSize, setFontSize] = useState("medium");
   const [pendingImages, setPendingImages] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null);
   const textareaRef = useRef(null);
   const wysiwygRef = useRef(null);
   const latestContentRef = useRef(formData.content);
   const imageInputRef = useRef(null);
-  const resizeHandleRef = useRef(null);
 
   const { htmlFormats, markdownFormats } = useEditorFormat(
     textareaRef,
@@ -187,6 +186,7 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
           pre.style.lineHeight = "1.6";
           pre.style.whiteSpace = "pre-wrap";
           pre.contentEditable = "true";
+          pre.spellcheck = false;
 
           const code = document.createElement("code");
           code.textContent = selectedText || "";
@@ -381,18 +381,50 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
   };
 
   const handleModeChange = (newMode) => {
-    if (editorMode === "wysiwyg" && wysiwygRef.current) {
+    const currentMode = editorMode;
+
+    if (currentMode === "wysiwyg" && wysiwygRef.current) {
       const htmlContent = wysiwygRef.current.innerHTML;
+      let convertedContent = htmlContent;
+
+      if (newMode === "markdown") {
+        convertedContent = htmlToMarkdown(htmlContent);
+      }
+
+      latestContentRef.current = convertedContent;
+
+      flushSync(() => {
+        setFormData((prev) => ({ ...prev, content: convertedContent }));
+      });
+    } else if (currentMode === "markdown" && newMode === "wysiwyg") {
+      const markdownContent = formData.content;
+      const htmlContent = markdownToHtml(markdownContent);
 
       latestContentRef.current = htmlContent;
 
       flushSync(() => {
-        setFormData((prev) => {
-          return { ...prev, content: htmlContent };
-        });
+        setFormData((prev) => ({ ...prev, content: htmlContent }));
       });
-    } else if (newMode === "wysiwyg") {
+
+      if (wysiwygRef.current) {
+        wysiwygRef.current.innerHTML = htmlContent;
+      }
+    } else if (currentMode === "html" && newMode === "wysiwyg") {
       if (wysiwygRef.current && formData.content) {
+        wysiwygRef.current.innerHTML = formData.content;
+      }
+    } else if (currentMode === "markdown" && newMode === "html") {
+      const htmlContent = markdownToHtml(formData.content);
+      flushSync(() => {
+        setFormData((prev) => ({ ...prev, content: htmlContent }));
+      });
+    } else if (currentMode === "html" && newMode === "markdown") {
+      const markdownContent = htmlToMarkdown(formData.content);
+      flushSync(() => {
+        setFormData((prev) => ({ ...prev, content: markdownContent }));
+      });
+    } else {
+      if (newMode === "wysiwyg" && wysiwygRef.current && formData.content) {
         wysiwygRef.current.innerHTML = formData.content;
       }
     }
@@ -436,8 +468,6 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
     if (img.parentNode.classList?.contains('image-resize-wrapper')) {
       return;
     }
-
-    setSelectedImage(img);
 
     const existingWrapper = document.querySelector(".image-resize-wrapper");
     if (existingWrapper) {
@@ -537,7 +567,6 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
     const handleClickOutside = (e) => {
       if (!wrapper.contains(e.target)) {
         wrapper.replaceWith(img);
-        setSelectedImage(null);
         document.removeEventListener("click", handleClickOutside);
       }
     };
@@ -698,7 +727,19 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
         let pre = element.closest("pre");
         if (pre) {
           e.preventDefault();
-          document.execCommand("insertLineBreak");
+
+          const newline = document.createTextNode('\n');
+
+          range.deleteContents();
+          range.insertNode(newline);
+
+          range.setStartAfter(newline);
+          range.collapse(true);
+
+          selection.removeAllRanges();
+          selection.addRange(range);
+
+          return;
         }
       }
     }

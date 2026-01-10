@@ -1,25 +1,54 @@
 import { useState, useCallback, useEffect } from 'react';
 import { getAllCategories, createCategory } from '../../category/api/categoryApi';
 import { deleteCategories } from '../api/manageApi';
+import { usePosts } from '../../post/hooks/usePosts';
 
 export const useCategoryManage = () => {
   const [categories, setCategories] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ name: '', parentId: null });
+  const { posts: postsData } = usePosts({ type: 'all' });
+
+  const allPosts = postsData?.content || postsData || [];
+
+  const addPostCountToCategories = useCallback((cats, postsByCategoryId) => {
+    return cats.map(cat => {
+      const categoryWithCount = {
+        ...cat,
+        postCount: postsByCategoryId[cat.id] || 0
+      };
+
+      if (cat.children && cat.children.length > 0) {
+        categoryWithCount.children = addPostCountToCategories(cat.children, postsByCategoryId);
+      }
+
+      return categoryWithCount;
+    });
+  }, []);
 
   const loadCategories = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getAllCategories();
-      setCategories(data);
+
+      const postsByCategoryId = {};
+      allPosts.forEach((post) => {
+        const categoryId = post.category?.id;
+        if (categoryId) {
+          postsByCategoryId[categoryId] = (postsByCategoryId[categoryId] || 0) + 1;
+        }
+      });
+
+      const categoriesWithCount = addPostCountToCategories(data, postsByCategoryId);
+      setCategories(categoriesWithCount);
     } catch (error) {
       console.error('Failed to load categories:', error);
       throw error;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [allPosts, addPostCountToCategories]);
 
   useEffect(() => {
     loadCategories();

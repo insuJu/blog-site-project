@@ -24,19 +24,33 @@ const MyBlogPage = () => {
     viewCount: 0,
   });
 
-  useEffect(() => {
-    const postsByCategory = {};
-    allPosts.forEach((post) => {
-      const categoryName = post.category?.name || "기타";
-      postsByCategory[categoryName] = (postsByCategory[categoryName] || 0) + 1;
+  const flattenCategories = (cats, depth = 0, out = []) => {
+    (cats || []).forEach((c) => {
+      out.push({ ...c, depth });
+      if (c.children && c.children.length > 0) {
+        flattenCategories(c.children, depth + 1, out);
+      }
     });
+    return out;
+  };
+
+  useEffect(() => {
+    const postsByCategoryId = {};
+    allPosts.forEach((post) => {
+      const categoryId = post.category?.id;
+      if (categoryId) {
+        postsByCategoryId[categoryId] = (postsByCategoryId[categoryId] || 0) + 1;
+      }
+    });
+
+    const flatCategories = flattenCategories(categoriesData);
 
     const categoryList = [
       { id: "all", name: "전체", count: allPosts.length },
-      ...(categoriesData || []).map((cat) => ({
+      ...flatCategories.map((cat) => ({
         id: cat.id,
-        name: cat.name,
-        count: postsByCategory[cat.name] || 0,
+        name: cat.depth > 0 ? `${'  '.repeat(cat.depth)}${cat.name}` : cat.name,
+        count: postsByCategoryId[cat.id] || 0,
       })),
     ];
 

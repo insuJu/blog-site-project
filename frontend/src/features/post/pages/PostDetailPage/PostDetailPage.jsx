@@ -8,6 +8,7 @@ import styles from "./PostDetailPage.module.css";
 import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
 import { useLike } from "../../../like/hooks/useLike";
 import { useEffect } from "react";
+import { markdownToHtml } from "../../components/PostEditor/utils/contentConverter";
 
 const PostDetailPage = () => {
   const { id } = useParams();
@@ -84,88 +85,14 @@ const PostDetailPage = () => {
   const renderContent = (content) => {
     if (!content) return "";
 
-    const hasHtmlHeadings =
-      content.includes("<h1>") ||
-      content.includes("<h2>") ||
-      content.includes("<h3>");
-    const hasConvertedCodeBlocks = content.includes("<pre><code");
-    const hasRawCodeBlocks = content.includes("```");
-    const hasHtmlImages = content.includes("<img");
+    const hasHtmlTags = content.includes("<h") || content.includes("<pre") || content.includes("<img");
+    const hasMarkdownSyntax = content.includes("```") || content.includes("# ");
 
-    if ((hasHtmlHeadings && hasConvertedCodeBlocks && !hasRawCodeBlocks) || hasHtmlImages) {
+    if (hasHtmlTags && !hasMarkdownSyntax) {
       return content;
     }
 
-    let html = content;
-    
-    html = html.replace(/<br\s*\/?>/gi, "\n");
-
-    html = html
-      .split("\n")
-      .map((line) => line.trim())
-      .join("\n");
-
-    const codeBlocks = [];
-    html = html.replace(/```(\w+)?\s*\n([\s\S]*?)```/g, (match, lang, code) => {
-      const placeholder = `___CODE_BLOCK_${codeBlocks.length}___`;
-      codeBlocks.push(
-        `<pre><code class="language-${
-          lang || "plaintext"
-        }">${code.trim()}</code></pre>`
-      );
-      return placeholder;
-    });
-
-    const inlineCodes = [];
-    html = html.replace(/`([^`]+)`/g, (match, code) => {
-      const placeholder = `___INLINE_CODE_${inlineCodes.length}___`;
-      inlineCodes.push(`<code>${code}</code>`);
-      return placeholder;
-    });
-
-    html = html.replace(/^###\s+(.+)$/gm, "<h3>$1</h3>");
-    html = html.replace(/^##\s+(.+)$/gm, "<h2>$1</h2>");
-    html = html.replace(/^#\s+(.+)$/gm, "<h1>$1</h1>");
-
-    html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-    html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
-    html = html.replace(/~~(.+?)~~/g, "<del>$1</del>");
-
-    html = html.replace(
-      /!\[([^\]]*)\]\(([^)]+)\)/g,
-      '<img src="$2" alt="$1" />'
-    );
-    html = html.replace(
-      /\[([^\]]+)\]\(([^)]+)\)/g,
-      '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
-    );
-
-    html = html.replace(/^- (.+)$/gm, "<li>$1</li>");
-    html = html.replace(/(<li>[\s\S]*?<\/li>)/g, "<ul>$1</ul>");
-
-    html = html.replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>");
-
-    html = html
-      .split("\n\n")
-      .map((para) => {
-        if (para.trim().startsWith("<")) {
-          return para;
-        }
-        if (!para.trim()) {
-          return "";
-        }
-        return `<p>${para.replace(/\n/g, "<br>")}</p>`;
-      })
-      .join("\n");
-
-    inlineCodes.forEach((code, index) => {
-      html = html.replace(`___INLINE_CODE_${index}___`, code);
-    });
-    codeBlocks.forEach((code, index) => {
-      html = html.replace(`___CODE_BLOCK_${index}___`, code);
-    });
-
-    return html;
+    return markdownToHtml(content);
   };
 
   if (loading) {

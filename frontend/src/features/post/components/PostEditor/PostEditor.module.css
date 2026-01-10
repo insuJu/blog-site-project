@@ -372,6 +372,8 @@
   border: 1px solid #333;
   border-radius: 8px;
   overflow-x: auto;
+  white-space: pre-wrap;
+  line-height: 1.2;
 }
 
 .preview pre code {
@@ -380,6 +382,14 @@
   border: none;
   font-size: 0.95rem;
   color: #d4d4d4;
+  white-space: pre-wrap;
+  line-height: 1.2;
+}
+
+.preview pre p {
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
 }
 
 .preview ul,
