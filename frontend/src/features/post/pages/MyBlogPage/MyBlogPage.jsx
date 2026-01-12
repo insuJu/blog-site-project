@@ -34,25 +34,61 @@ const MyBlogPage = () => {
     return out;
   };
 
-  useEffect(() => {
-    const postsByCategoryId = {};
-    allPosts.forEach((post) => {
-      const categoryId = post.category?.id;
-      if (categoryId) {
-        postsByCategoryId[categoryId] = (postsByCategoryId[categoryId] || 0) + 1;
-      }
-    });
+  const getAllDescendantIds = (categoryId, categoriesData) => {
+    const ids = [categoryId];
 
+    const findCategory = (cats, id) => {
+      for (const cat of cats) {
+        if (cat.id === id) return cat;
+        if (cat.children) {
+          const found = findCategory(cat.children, id);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    const category = findCategory(categoriesData, categoryId);
+    if (category && category.children) {
+      category.children.forEach((child) => {
+        ids.push(...getAllDescendantIds(child.id, categoriesData));
+      });
+    }
+
+    return ids;
+  };
+
+  useEffect(() => {
     const flatCategories = flattenCategories(categoriesData);
+
+    const uncategorizedCount = allPosts.filter(post => !post.category?.id).length;
 
     const categoryList = [
       { id: "all", name: "전체", count: allPosts.length },
-      ...flatCategories.map((cat) => ({
-        id: cat.id,
-        name: cat.depth > 0 ? `${'  '.repeat(cat.depth)}${cat.name}` : cat.name,
-        count: postsByCategoryId[cat.id] || 0,
-      })),
+      ...flatCategories.map((cat) => {
+        const descendantIds = getAllDescendantIds(cat.id, categoriesData);
+        const count = allPosts.filter((post) =>
+          post.category?.id && descendantIds.includes(post.category.id)
+        ).length;
+
+        return {
+          id: cat.id,
+          name: cat.name,
+          depth: cat.depth,
+          count: count,
+          children: cat.children,
+        };
+      }),
     ];
+
+    if (uncategorizedCount > 0) {
+      categoryList.push({
+        id: "uncategorized",
+        name: "미분류",
+        depth: 0,
+        count: uncategorizedCount,
+      });
+    }
 
     setCategories(categoryList);
   }, [allPosts, categoriesData]);
@@ -78,12 +114,15 @@ const MyBlogPage = () => {
   useEffect(() => {
     if (selectedCategory === "all") {
       setPosts(allPosts);
+    } else if (selectedCategory === "uncategorized") {
+      setPosts(allPosts.filter((post) => !post.category?.id));
     } else {
+      const descendantIds = getAllDescendantIds(selectedCategory, categoriesData);
       setPosts(
-        allPosts.filter((post) => post.category?.id === selectedCategory)
+        allPosts.filter((post) => post.category?.id && descendantIds.includes(post.category.id))
       );
     }
-  }, [selectedCategory, allPosts]);
+  }, [selectedCategory, allPosts, categoriesData]);
 
   return (
     <div className={styles.myBlogPage}>

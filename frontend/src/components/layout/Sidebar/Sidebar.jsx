@@ -38,9 +38,13 @@ const Sidebar = ({
                 <button
                   className={`${styles.categoryButton} ${
                     selectedCategory === category.id ? styles.active : ""
-                  }`}
+                  } ${category.depth > 0 ? styles.childCategory : ""}`}
                   onClick={() => handleCategoryClick(category.id)}
+                  style={{ paddingLeft: `${1 + (category.depth || 0) * 1.5}rem` }}
                 >
+                  {category.depth > 0 && (
+                    <span className={styles.categoryIndicator}>└</span>
+                  )}
                   <span className={styles.categoryName}>{category.name}</span>
                   {category.count !== undefined && (
                     <span className={styles.categoryCount}>

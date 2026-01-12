@@ -44,9 +44,32 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
     return out;
   };
 
+  const ensurePreEscapeParagraphs = (html) => {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+
+    const preElements = tempDiv.querySelectorAll('pre');
+    preElements.forEach(pre => {
+      pre.removeAttribute('contenteditable');
+
+      const prevP = pre.previousElementSibling;
+      if (prevP && prevP.tagName === 'P' && prevP.innerHTML.trim() === '') {
+        prevP.innerHTML = '<br>';
+      }
+
+      const nextP = pre.nextElementSibling;
+      if (nextP && nextP.tagName === 'P' && nextP.innerHTML.trim() === '') {
+        nextP.innerHTML = '<br>';
+      }
+    });
+
+    return tempDiv.innerHTML;
+  };
+
   useEffect(() => {
     if (wysiwygRef.current && initialData?.content) {
-      wysiwygRef.current.innerHTML = initialData.content;
+      const processedContent = ensurePreEscapeParagraphs(initialData.content);
+      wysiwygRef.current.innerHTML = processedContent;
     }
 
     try {
@@ -185,7 +208,6 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
           pre.style.fontSize = "0.9em";
           pre.style.lineHeight = "1.6";
           pre.style.whiteSpace = "pre-wrap";
-          pre.contentEditable = "true";
           pre.spellcheck = false;
 
           const code = document.createElement("code");
@@ -195,9 +217,13 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
           range.deleteContents();
           range.insertNode(pre);
 
-          const exitParagraph = document.createElement("p");
-          exitParagraph.innerHTML = "<br>";
-          pre.parentNode.insertBefore(exitParagraph, pre.nextSibling);
+          const beforeParagraph = document.createElement("p");
+          beforeParagraph.innerHTML = "<br>";
+          pre.parentNode.insertBefore(beforeParagraph, pre);
+
+          const afterParagraph = document.createElement("p");
+          afterParagraph.innerHTML = "<br>";
+          pre.parentNode.insertBefore(afterParagraph, pre.nextSibling);
 
           const newRange = document.createRange();
           newRange.selectNodeContents(code);
@@ -398,7 +424,8 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
       });
     } else if (currentMode === "markdown" && newMode === "wysiwyg") {
       const markdownContent = formData.content;
-      const htmlContent = markdownToHtml(markdownContent);
+      let htmlContent = markdownToHtml(markdownContent);
+      htmlContent = ensurePreEscapeParagraphs(htmlContent);
 
       latestContentRef.current = htmlContent;
 
@@ -411,7 +438,8 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
       }
     } else if (currentMode === "html" && newMode === "wysiwyg") {
       if (wysiwygRef.current && formData.content) {
-        wysiwygRef.current.innerHTML = formData.content;
+        let htmlContent = ensurePreEscapeParagraphs(formData.content);
+        wysiwygRef.current.innerHTML = htmlContent;
       }
     } else if (currentMode === "markdown" && newMode === "html") {
       const htmlContent = markdownToHtml(formData.content);
@@ -425,7 +453,8 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
       });
     } else {
       if (newMode === "wysiwyg" && wysiwygRef.current && formData.content) {
-        wysiwygRef.current.innerHTML = formData.content;
+        let htmlContent = ensurePreEscapeParagraphs(formData.content);
+        wysiwygRef.current.innerHTML = htmlContent;
       }
     }
 
@@ -652,6 +681,53 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
   };
 
   const handleWysiwygKeyDown = (e) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+
+        if (range.collapsed) {
+          document.execCommand('insertText', false, '    ');
+        } else {
+          const selectedText = range.toString();
+          const lines = selectedText.split('\n');
+          const indentedText = lines.map(line => '    ' + line).join('\n');
+          document.execCommand('insertText', false, indentedText);
+        }
+      }
+      return;
+    }
+
+    if (e.key === "Escape") {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const container = range.startContainer;
+        let element = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+
+        let pre = element.closest("pre");
+        if (pre) {
+          e.preventDefault();
+
+          let targetP = pre.nextElementSibling;
+          if (!targetP || targetP.tagName !== 'P') {
+            targetP = document.createElement('p');
+            targetP.innerHTML = '<br>';
+            pre.parentNode.insertBefore(targetP, pre.nextSibling);
+          }
+
+          const newRange = document.createRange();
+          newRange.setStart(targetP, 0);
+          newRange.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(newRange);
+          return;
+        }
+      }
+    }
+
     if (e.key === "Backspace" || e.key === "Delete") {
       const selection = window.getSelection();
       if (selection && selection.rangeCount > 0) {
@@ -932,6 +1008,39 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
               name="content"
               value={formData.content}
               onChange={handleChange}
+              onKeyDown={(e) => {
+                if (e.key === "Tab") {
+                  e.preventDefault();
+                  const textarea = e.target;
+                  const start = textarea.selectionStart;
+                  const end = textarea.selectionEnd;
+                  const tabChar = "    ";
+
+                  if (start === end) {
+                    document.execCommand('insertText', false, tabChar);
+                    const newValue = textarea.value;
+                    setFormData((prev) => ({ ...prev, content: newValue }));
+                  } else {
+                    const value = textarea.value;
+                    const beforeSelection = value.substring(0, start);
+                    const afterSelection = value.substring(end);
+                    const lineStart = beforeSelection.lastIndexOf('\n') + 1;
+                    const fullSelectedText = value.substring(lineStart, end);
+
+                    const lines = fullSelectedText.split('\n');
+                    const indentedLines = lines.map(line => tabChar + line);
+                    const indentedText = indentedLines.join('\n');
+
+                    textarea.selectionStart = lineStart;
+                    textarea.selectionEnd = end;
+
+                    document.execCommand('insertText', false, indentedText);
+
+                    const newValue = textarea.value;
+                    setFormData((prev) => ({ ...prev, content: newValue }));
+                  }
+                }
+              }}
               placeholder={getPlaceholder()}
               className={`${styles.contentTextarea} ${styles.codeMode} ${
                 styles[`fontSize-${fontSize}`]

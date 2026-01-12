@@ -201,6 +201,13 @@
   color: #333;
   white-space: pre-wrap;
   word-break: break-word;
+  user-select: text;
+}
+
+.contentText * {
+  user-select: text;
+  -webkit-user-modify: read-only;
+  -moz-user-modify: read-only;
 }
 
 .contentText pre {
@@ -214,6 +221,13 @@
   line-height: 1.2;
   white-space: pre-wrap;
   margin: 1rem 0;
+  pointer-events: none;
+  user-select: text;
+}
+
+.contentText pre * {
+  pointer-events: none;
+  user-select: text;
 }
 
 .contentText pre code {

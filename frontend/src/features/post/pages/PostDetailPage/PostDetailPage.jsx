@@ -24,6 +24,13 @@ const PostDetailPage = () => {
     }
   }, [id, user, checkLiked]);
 
+  useEffect(() => {
+    const contentElements = document.querySelectorAll('.contentText [contenteditable]');
+    contentElements.forEach((element) => {
+      element.removeAttribute('contenteditable');
+    });
+  }, [post]);
+
   const handleLike = async () => {
     if (!user) {
       alert("로그인이 필요합니다.");
@@ -75,10 +82,10 @@ const PostDetailPage = () => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${year}.${month}.${day} ${hours}:${minutes}`;
   };
 

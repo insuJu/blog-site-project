@@ -12,35 +12,54 @@ export const useCategoryManage = () => {
 
   const allPosts = postsData?.content || postsData || [];
 
-  const addPostCountToCategories = useCallback((cats, postsByCategoryId) => {
+  const getAllDescendantIds = useCallback((category) => {
+    const ids = [category.id];
+    if (category.children && category.children.length > 0) {
+      category.children.forEach((child) => {
+        ids.push(...getAllDescendantIds(child));
+      });
+    }
+    return ids;
+  }, []);
+
+  const addPostCountToCategories = useCallback((cats, allPostsArray) => {
     return cats.map(cat => {
+      const descendantIds = getAllDescendantIds(cat);
+      const count = allPostsArray.filter(post =>
+        post.category?.id && descendantIds.includes(post.category.id)
+      ).length;
+
       const categoryWithCount = {
         ...cat,
-        postCount: postsByCategoryId[cat.id] || 0
+        postCount: count
       };
 
       if (cat.children && cat.children.length > 0) {
-        categoryWithCount.children = addPostCountToCategories(cat.children, postsByCategoryId);
+        categoryWithCount.children = addPostCountToCategories(cat.children, allPostsArray);
       }
 
       return categoryWithCount;
     });
-  }, []);
+  }, [getAllDescendantIds]);
 
   const loadCategories = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getAllCategories();
 
-      const postsByCategoryId = {};
-      allPosts.forEach((post) => {
-        const categoryId = post.category?.id;
-        if (categoryId) {
-          postsByCategoryId[categoryId] = (postsByCategoryId[categoryId] || 0) + 1;
-        }
-      });
+      const categoriesWithCount = addPostCountToCategories(data, allPosts);
 
-      const categoriesWithCount = addPostCountToCategories(data, postsByCategoryId);
+      const uncategorizedCount = allPosts.filter(post => !post.category?.id).length;
+
+      if (uncategorizedCount > 0) {
+        categoriesWithCount.push({
+          id: 'uncategorized',
+          name: '미분류',
+          postCount: uncategorizedCount,
+          children: []
+        });
+      }
+
       setCategories(categoriesWithCount);
     } catch (error) {
       console.error('Failed to load categories:', error);

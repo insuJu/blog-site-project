@@ -92,6 +92,26 @@
   font-weight: 600;
 }
 
+.categoryButton.childCategory {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.categoryButton.childCategory:hover {
+  background: #f1f3f5;
+}
+
+.categoryButton.childCategory.active {
+  background: #d0ebff;
+  color: #1971c2;
+}
+
+.categoryIndicator {
+  margin-right: 0.5rem;
+  color: #adb5bd;
+  font-size: 0.9rem;
+}
+
 .categoryName {
   flex: 1;
 }
