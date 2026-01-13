@@ -146,14 +146,15 @@ export const markdownToHtml = (markdown) => {
   inlineCodes.forEach((code, index) => {
     html = html.replace(
       `___INLINE_CODE_${index}___`,
-      `<code style="background-color: #f8f9fa; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; color: #e83e8c;">${code}</code>`
+      `<code class="inline-code">${code}</code>`
     );
   });
 
   codeBlocks.forEach((block, index) => {
+    const langClass = block.lang ? `language-${block.lang}` : '';
     html = html.replace(
       `___CODE_BLOCK_${index}___`,
-      `<pre style="background-color: #282c34; color: #abb2bf; padding: 16px; border-radius: 8px; overflow: auto; font-family: monospace; font-size: 0.9em; line-height: 1.6; white-space: pre-wrap;" contenteditable="true" spellcheck="false"><code>${block.code}</code></pre>`
+      `<pre class="${langClass}"><code class="${langClass}">${block.code}</code></pre>`
     );
   });
 

@@ -4,9 +4,11 @@ import { useCategories } from "../../../category/hooks/useCategories";
 import { uploadPostImage } from "../../api/postApi";
 import EditorModeSelector from "./components/EditorModeSelector";
 import EditorToolbar from "./components/EditorToolbar";
+import CodeBlockModal from "./components/CodeBlockModal";
 import { useEditorFormat } from "./hooks/useEditorFormat";
 import { htmlToMarkdown, markdownToHtml } from "./utils/contentConverter";
 import styles from "./PostEditor.module.css";
+import Prism from "../../../../utils/prismConfig";
 
 const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
   const [formData, setFormData] = useState({
@@ -28,6 +30,13 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
   const wysiwygRef = useRef(null);
   const latestContentRef = useRef(formData.content);
   const imageInputRef = useRef(null);
+  const previewRef = useRef(null);
+
+  const [codeModalOpen, setCodeModalOpen] = useState(false);
+  const [editingCodeBlock, setEditingCodeBlock] = useState(null);
+  const [codeModalInitialCode, setCodeModalInitialCode] = useState("");
+  const [codeModalInitialLang, setCodeModalInitialLang] = useState("plaintext");
+  const savedSelectionRef = useRef(null);
 
   const { htmlFormats, markdownFormats } = useEditorFormat(
     textareaRef,
@@ -79,6 +88,12 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
       console.log("Object resizing not supported");
     }
   }, []);
+
+  useEffect(() => {
+    if (showPreview && previewRef.current) {
+      Prism.highlightAllUnder(previewRef.current);
+    }
+  }, [showPreview, formData.content]);
 
   const wysiwygFormats = {
     bold: () => {
@@ -153,12 +168,7 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
           const selectedText = range.toString();
           if (selectedText) {
             const code = document.createElement("code");
-            code.style.backgroundColor = "#f8f9fa";
-            code.style.padding = "2px 6px";
-            code.style.borderRadius = "4px";
-            code.style.fontFamily = "monospace";
-            code.style.fontSize = "0.9em";
-            code.style.color = "#e83e8c";
+            code.className = "inline-code";
             code.textContent = selectedText;
 
             range.deleteContents();
@@ -175,64 +185,18 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
     },
     codeBlock: () => {
       const selection = window.getSelection();
+      let selectedText = "";
       if (selection && selection.rangeCount > 0) {
+        selectedText = selection.toString();
         const range = selection.getRangeAt(0);
-        const container = range.startContainer;
-        let element =
-          container.nodeType === Node.TEXT_NODE
-            ? container.parentElement
-            : container;
-        let existingPre = element.closest("pre");
-
-        if (existingPre) {
-          const textContent = existingPre.textContent;
-          const p = document.createElement("p");
-          p.textContent = textContent;
-          existingPre.parentNode.replaceChild(p, existingPre);
-
-          const newRange = document.createRange();
-          newRange.selectNodeContents(p);
-          newRange.collapse(false);
-          selection.removeAllRanges();
-          selection.addRange(newRange);
-        } else {
-          const selectedText = range.toString() || "";
-
-          const pre = document.createElement("pre");
-          pre.style.backgroundColor = "#282c34";
-          pre.style.color = "#abb2bf";
-          pre.style.padding = "16px";
-          pre.style.borderRadius = "8px";
-          pre.style.overflow = "auto";
-          pre.style.fontFamily = "monospace";
-          pre.style.fontSize = "0.9em";
-          pre.style.lineHeight = "1.6";
-          pre.style.whiteSpace = "pre-wrap";
-          pre.spellcheck = false;
-
-          const code = document.createElement("code");
-          code.textContent = selectedText || "";
-          pre.appendChild(code);
-
-          range.deleteContents();
-          range.insertNode(pre);
-
-          const beforeParagraph = document.createElement("p");
-          beforeParagraph.innerHTML = "<br>";
-          pre.parentNode.insertBefore(beforeParagraph, pre);
-
-          const afterParagraph = document.createElement("p");
-          afterParagraph.innerHTML = "<br>";
-          pre.parentNode.insertBefore(afterParagraph, pre.nextSibling);
-
-          const newRange = document.createRange();
-          newRange.selectNodeContents(code);
-          newRange.collapse(false);
-          selection.removeAllRanges();
-          selection.addRange(newRange);
-        }
+        savedSelectionRef.current = range.cloneRange();
+      } else {
+        savedSelectionRef.current = null;
       }
-      wysiwygRef.current?.focus();
+      setCodeModalInitialCode(selectedText);
+      setCodeModalInitialLang("plaintext");
+      setEditingCodeBlock(null);
+      setCodeModalOpen(true);
     },
     link: () => {
       const url = prompt("링크 URL을 입력하세요:", "https://");
@@ -463,34 +427,71 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
   };
 
   const renderPreview = () => {
-    let html = formData.content;
-
     if (editorMode === "markdown") {
-      html = html.replace(/```([\s\S]*?)```/g, "<pre><code>$1</code></pre>");
-      html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+      return markdownToHtml(formData.content);
+    }
+    return formData.content;
+  };
 
-      html = html.replace(/^### (.*$)/gim, "<h3>$1</h3>");
-      html = html.replace(/^## (.*$)/gim, "<h2>$1</h2>");
-      html = html.replace(/^# (.*$)/gim, "<h1>$1</h1>");
+  const handleCodeBlockClick = (pre) => {
+    const code = pre.querySelector("code");
+    const rawCode = code?.textContent || pre.textContent || "";
+    const langMatch = pre.className.match(/language-(\w+)/);
+    const lang = langMatch ? langMatch[1] : "plaintext";
 
-      html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-      html = html.replace(/\*(.*?)\*/g, "<em>$1</em>");
-      html = html.replace(/~~(.*?)~~/g, "<del>$1</del>");
+    setCodeModalInitialCode(rawCode);
+    setCodeModalInitialLang(lang);
+    setEditingCodeBlock(pre);
+    setCodeModalOpen(true);
+  };
 
-      html = html.replace(
-        /!\[([^\]]*)\]\(([^)]+)\)/g,
-        '<img src="$2" alt="$1" />'
-      );
-      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+  const handleCodeModalSave = (code, language, highlightedHtml) => {
+    if (editingCodeBlock) {
+      const pre = editingCodeBlock;
+      pre.className = `language-${language}`;
+      const codeEl = pre.querySelector("code") || document.createElement("code");
+      codeEl.className = `language-${language}`;
+      codeEl.innerHTML = highlightedHtml;
+      if (!pre.contains(codeEl)) {
+        pre.innerHTML = "";
+        pre.appendChild(codeEl);
+      }
+      pre.setAttribute("data-raw-code", code);
+    } else {
+      const pre = document.createElement("pre");
+      pre.className = `language-${language}`;
+      pre.spellcheck = false;
+      pre.setAttribute("data-raw-code", code);
 
-      html = html.replace(/^- (.*$)/gim, "<li>$1</li>");
-      html = html.replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>");
-      html = html.replace(/^> (.*$)/gim, "<blockquote>$1</blockquote>");
+      const codeEl = document.createElement("code");
+      codeEl.className = `language-${language}`;
+      codeEl.innerHTML = highlightedHtml;
+      pre.appendChild(codeEl);
 
-      html = html.replace(/\n/g, "<br>");
+      if (savedSelectionRef.current && wysiwygRef.current) {
+        const range = savedSelectionRef.current;
+        range.deleteContents();
+        range.insertNode(pre);
+
+        const beforeParagraph = document.createElement("p");
+        beforeParagraph.innerHTML = "<br>";
+        pre.parentNode.insertBefore(beforeParagraph, pre);
+
+        const afterParagraph = document.createElement("p");
+        afterParagraph.innerHTML = "<br>";
+        pre.parentNode.insertBefore(afterParagraph, pre.nextSibling);
+
+        savedSelectionRef.current = null;
+      } else if (wysiwygRef.current) {
+        const afterParagraph = document.createElement("p");
+        afterParagraph.innerHTML = "<br>";
+        wysiwygRef.current.appendChild(pre);
+        wysiwygRef.current.appendChild(afterParagraph);
+      }
     }
 
-    return html;
+    setEditingCodeBlock(null);
+    wysiwygRef.current?.focus();
   };
 
   const handleImageSelect = (img) => {
@@ -955,6 +956,14 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
             }
           }}
           onKeyDown={handleWysiwygKeyDown}
+          onClick={(e) => {
+            const pre = e.target.closest("pre");
+            if (pre) {
+              e.preventDefault();
+              e.stopPropagation();
+              handleCodeBlockClick(pre);
+            }
+          }}
           onPaste={(e) => {
             e.preventDefault();
             const text = e.clipboardData.getData("text/plain");
@@ -1055,6 +1064,7 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
 
         {editorMode !== "wysiwyg" && showPreview && (
           <div
+            ref={previewRef}
             className={`${styles.preview} ${styles[`fontSize-${fontSize}`]}`}
             dangerouslySetInnerHTML={{ __html: renderPreview() }}
           />
@@ -1108,6 +1118,17 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
           {isSubmitting ? "저장 중..." : isEditing ? "수정" : "발행"}
         </button>
       </div>
+
+      <CodeBlockModal
+        isOpen={codeModalOpen}
+        onClose={() => {
+          setCodeModalOpen(false);
+          setEditingCodeBlock(null);
+        }}
+        onSave={handleCodeModalSave}
+        initialCode={codeModalInitialCode}
+        initialLanguage={codeModalInitialLang}
+      />
     </form>
   );
 };

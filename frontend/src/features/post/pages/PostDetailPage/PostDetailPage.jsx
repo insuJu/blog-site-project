@@ -7,8 +7,9 @@ import { usePost } from "../../hooks/usePost";
 import styles from "./PostDetailPage.module.css";
 import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
 import { useLike } from "../../../like/hooks/useLike";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { markdownToHtml } from "../../components/PostEditor/utils/contentConverter";
+import Prism from "../../../../utils/prismConfig";
 
 const PostDetailPage = () => {
   const { id } = useParams();
@@ -17,6 +18,7 @@ const PostDetailPage = () => {
   const { post, loading, error, update, remove, reload } = usePost(id);
   const { liked, toggle: toggleLike, checkLiked } = useLike('post', id);
   const comments = useComments(id);
+  const contentRef = useRef(null);
 
   useEffect(() => {
     if (id && user) {
@@ -29,6 +31,10 @@ const PostDetailPage = () => {
     contentElements.forEach((element) => {
       element.removeAttribute('contenteditable');
     });
+
+    if (contentRef.current) {
+      Prism.highlightAllUnder(contentRef.current);
+    }
   }, [post]);
 
   const handleLike = async () => {
@@ -194,6 +200,7 @@ const PostDetailPage = () => {
 
           <div className={styles.content}>
             <div
+              ref={contentRef}
               className={styles.contentText}
               dangerouslySetInnerHTML={{ __html: renderContent(post.content) }}
             />
