@@ -1,0 +1,160 @@
+/* ==================== */
+/* Page Container       */
+/* ==================== */
+.admin-page {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  background: #F8F9FA;
+}
+
+/* ==================== */
+/* Main Container       */
+/* ==================== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  background: white;
+  border: 1px solid #E9ECEF;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* ==================== */
+/* Title                */
+/* ==================== */
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 2rem;
+}
+
+/* ==================== */
+/* Success Message      */
+/* ==================== */
+.success-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.success-message svg {
+  flex-shrink: 0;
+  color: #10b981;
+}
+
+/* ==================== */
+/* Error Message        */
+/* ==================== */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.error-message svg {
+  flex-shrink: 0;
+  color: #ef4444;
+}
+
+/* ==================== */
+/* Tab Container        */
+/* ==================== */
+.tab-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ==================== */
+/* Tab List             */
+/* ==================== */
+.tab-list {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid #E9ECEF;
+  overflow-x: auto;
+}
+
+/* ==================== */
+/* Tab Button           */
+/* ==================== */
+.tab-button {
+  padding: 0.875rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #6C757D;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.tab-button:hover {
+  color: #212529;
+  background-color: #F8F9FA;
+}
+
+.tab-button.active {
+  color: #0D6EFD;
+  border-bottom-color: #0D6EFD;
+  font-weight: 600;
+}
+
+/* ==================== */
+/* Tab Content          */
+/* ==================== */
+.tab-content {
+  padding: 1rem 0;
+}
+
+/* ==================== */
+/* Loading & Error      */
+/* ==================== */
+.loading,
+.error {
+  padding: 3rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #6C757D;
+}
+
+.error {
+  color: #dc2626;
+}
+
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .tab-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+}

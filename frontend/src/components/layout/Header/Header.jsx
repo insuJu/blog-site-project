@@ -119,6 +119,15 @@ const Header = () => {
                       >
                         관리
                       </Link>
+                      {user?.roleType === 'ADMIN' && (
+                        <Link
+                          to="/admin"
+                          className={styles.dropdownItem}
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          관리자
+                        </Link>
+                      )}
                       <button
                         onClick={handleLogout}
                         className={styles.dropdownItem}

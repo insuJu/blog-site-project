@@ -3,6 +3,7 @@ import Footer from "../components/layout/Footer/Footer";
 import Header from "../components/layout/Header/Header";
 import Layout from "../components/layout/Layout";
 import ProtectedRoute from "../components/routes/ProtectedRoute";
+import AdminRoute from "../components/routes/AdminRoute";
 import OAuth2RedirectPage from "../features/auth/pages/OAuth2RedirectPage/OAuth2RedirectPage";
 import CategoryListPage from "../features/category/pages/CategoryListPage/CategoryListPage";
 import EditPage from "../features/post/pages/EditPage/EditPage";
@@ -15,6 +16,7 @@ import UserBlogPage from "../features/post/pages/UserBlogPage/UserBlogPage";
 import WritePage from "../features/post/pages/WritePage/WritePage";
 import SettingsPage from "../features/settings/pages/SettingsPage/SettingsPage";
 import ManagePage from "../features/manage/pages/ManagePage/ManagePage";
+import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage/AdminDashboardPage";
 
 const AppRoutes = () => {
   return (
@@ -131,6 +133,17 @@ const AppRoutes = () => {
             <SearchResultPage />
             <Footer />
           </>
+        }
+      />
+
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <Header />
+            <AdminDashboardPage />
+            <Footer />
+          </AdminRoute>
         }
       />
     </Routes>
