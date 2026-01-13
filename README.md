@@ -35,6 +35,8 @@
 |------|------|
 | React | 19.1.0 |
 | Vite | 7.2.4 |
+| React Router | 6.23.0 |
+| Axios | 1.6.8 |
 
 ### Infra
 | 기술 | 용도 |
@@ -55,6 +57,7 @@
 backend/src/main/java/com/project/blog/
 ├── domain/
 │   ├── account/        # 계정
+│   ├── admin/          # 관리자
 │   ├── profile/        # 프로필
 │   ├── post/           # 게시글
 │   ├── comment/        # 댓글
@@ -76,6 +79,7 @@ backend/src/main/java/com/project/blog/
 frontend/src/
 ├── features/
 │   ├── auth/           # 인증 (로그인, 회원가입, OAuth2)
+│   ├── admin/          # 관리자
 │   ├── post/           # 게시글
 │   ├── comment/        # 댓글
 │   ├── category/       # 카테고리
@@ -120,9 +124,16 @@ frontend/src/
 - 이메일 변경 (비밀번호 검증)
 - 비밀번호 변경
 
+### 관리자
+- 대시보드 통계
+- 회원 관리 (권한 변경, 삭제)
+- 게시글/댓글/카테고리/태그 관리
+- ADMIN 권한 기반 접근 제어
+
 ### 게시글
 - 게시글 CRUD
 - HTML / Markdown 에디터 지원
+- Prism.js 코드 하이라이팅 (20+ 언어)
 - 카테고리 & 태그 분류
 - 조회수, 좋아요
 - 공개/비공개 설정
