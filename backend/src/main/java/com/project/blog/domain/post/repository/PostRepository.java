@@ -53,4 +53,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
         @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Post p JOIN p.tags t WHERE t.id = :tagId")
         boolean existsByTagsId(@Param("tagId") Long tagId);
+
+        Long countByAuthorId(Long authorId);
 }
