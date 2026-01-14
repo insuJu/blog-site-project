@@ -13,7 +13,7 @@ const UserBlogPage = () => {
     type: "author",
     authorId: userId,
   });
-  const { categories: categoriesData } = useCategories();
+  const { categories: categoriesData } = useCategories(userId);
 
   const allPosts = postsData?.content || postsData || [];
   const [posts, setPosts] = useState([]);
@@ -154,6 +154,7 @@ const UserBlogPage = () => {
         categories={categories}
         onCategorySelect={setSelectedCategory}
         selectedCategory={selectedCategory}
+        accountId={userId}
       />
 
       <div className={styles.mainContent}>

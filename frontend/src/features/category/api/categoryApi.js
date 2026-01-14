@@ -5,8 +5,9 @@ export const createCategory = async (categoryData) => {
   return response.data.data;
 };
 
-export const getAllCategories = async () => {
-  const response = await client.get("/categories");
+export const getAllCategories = async (accountId = null) => {
+  const params = accountId ? { accountId } : {};
+  const response = await client.get("/categories", { params });
   return response.data.data;
 };
 
@@ -15,8 +16,9 @@ export const getCategoryById = async (id) => {
   return response.data.data;
 };
 
-export const getCategoriesByParentId = async (parentId) => {
-  const response = await client.get(`/categories/${parentId}/children`);
+export const getCategoriesByParentId = async (parentId, accountId = null) => {
+  const params = accountId ? { accountId } : {};
+  const response = await client.get(`/categories/${parentId}/children`, { params });
   return response.data.data;
 };
 

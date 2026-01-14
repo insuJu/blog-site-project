@@ -8,12 +8,13 @@ const Sidebar = ({
   categories = [],
   onCategorySelect,
   selectedCategory = "all",
+  accountId = null,
 }) => {
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [popularTags, setPopularTags] = useState([]);
   const { stats } = useStats();
-  const { tags } = useTags(8);
+  const { tags } = useTags(accountId, 8);
 
   useEffect(() => {
     setPopularTags(tags || []);

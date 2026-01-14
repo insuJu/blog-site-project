@@ -5,15 +5,18 @@ export const createTag = async (tagData) => {
   return response.data.data;
 };
 
-export const getAllTags = async () => {
-  const response = await client.get('/tags');
+export const getAllTags = async (accountId = null) => {
+  const params = accountId ? { accountId } : {};
+  const response = await client.get('/tags', { params });
   return response.data.data;
 };
 
-export const searchTags = async (keyword) => {
-  const response = await client.get('/tags/search', {
-    params: { keyword }
-  });
+export const searchTags = async (keyword, accountId = null) => {
+  const params = { keyword };
+  if (accountId) {
+    params.accountId = accountId;
+  }
+  const response = await client.get('/tags/search', { params });
   return response.data.data;
 };
 
