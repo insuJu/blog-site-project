@@ -11,7 +11,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     List<Category> findByParentIsNull();
 
+    List<Category> findByParentIsNullAndAccountId(Long accountId);
+
     List<Category> findByParentId(Long parentId);
+
+    List<Category> findByParentIdAndAccountId(Long parentId, Long accountId);
 
     boolean existsByName(String name);
 
@@ -20,6 +24,10 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     boolean existsByNameAndParentId(String name, Long parentId);
 
     boolean existsByNameAndParentIdAndIdNot(String name, Long parentId, Long id);
+
+    boolean existsByNameAndParentIdAndAccountId(String name, Long parentId, Long accountId);
+
+    boolean existsByNameAndParentIdAndIdNotAndAccountId(String name, Long parentId, Long id, Long accountId);
 
     @Query("SELECT DISTINCT c FROM Category c LEFT JOIN FETCH c.children WHERE c.id = :id")
     Category findByIdWithChildren(Long id);

@@ -26,14 +26,14 @@ public class CategoryService {
     private final PostRepository postRepository;
 
     @Transactional
-    public CategoryResDto createCategory(CategoryReqDto reqDto) {
+    public CategoryResDto createCategory(CategoryReqDto reqDto, Long accountId) {
         String name = reqDto.getName();
         Long parentId = reqDto.getParentId();
 
         Map<String, String> errors = new HashMap<>();
 
         ErrorUtil.addErrorIf(errors,
-                categoryRepository.existsByNameAndParentId(name, parentId),
+                categoryRepository.existsByNameAndParentIdAndAccountId(name, parentId, accountId),
                 "name",
                 () -> ErrorCode.DUPLICATE_CATEGORY_NAME.getMessage());
 
@@ -53,6 +53,7 @@ public class CategoryService {
         Category category = Category.builder()
                 .name(name)
                 .parent(parent)
+                .account(com.project.blog.domain.account.entity.Account.builder().id(accountId).build())
                 .build();
 
         Category savedCategory = categoryRepository.save(category);
@@ -60,8 +61,8 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryResDto> getAllCategories() {
-        List<Category> topLevelCategories = categoryRepository.findByParentIsNull();
+    public List<CategoryResDto> getAllCategories(Long accountId) {
+        List<Category> topLevelCategories = categoryRepository.findByParentIsNullAndAccountId(accountId);
         return topLevelCategories.stream()
                 .map(CategoryResDto::from)
                 .collect(Collectors.toList());
@@ -75,18 +76,18 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryResDto> getCategoriesByParentId(Long parentId) {
+    public List<CategoryResDto> getCategoriesByParentId(Long parentId, Long accountId) {
         categoryRepository.findById(parentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PARENT_CATEGORY_NOT_FOUND));
 
-        List<Category> children = categoryRepository.findByParentId(parentId);
+        List<Category> children = categoryRepository.findByParentIdAndAccountId(parentId, accountId);
         return children.stream()
                 .map(CategoryResDto::fromWithoutChildren)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public CategoryResDto updateCategory(Long id, CategoryReqDto reqDto) {
+    public CategoryResDto updateCategory(Long id, CategoryReqDto reqDto, Long accountId) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
@@ -97,7 +98,7 @@ public class CategoryService {
 
         if (!category.getName().equals(name)) {
             ErrorUtil.addErrorIf(errors,
-                    categoryRepository.existsByNameAndParentIdAndIdNot(name, parentId, id),
+                    categoryRepository.existsByNameAndParentIdAndIdNotAndAccountId(name, parentId, id, accountId),
                     "name",
                     () -> ErrorCode.DUPLICATE_CATEGORY_NAME.getMessage());
         }

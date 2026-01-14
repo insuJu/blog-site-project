@@ -34,7 +34,7 @@ public class PostService {
     public PostResDto createPost(PostReqDto reqDto, AuthenticatedUser authenticatedUser) {
         Account author = authenticatedUser.getAccount();
         Category category = findCategoryById(reqDto.getCategoryId());
-        List<Tag> tags = findOrCreateTags(reqDto.getTagNames());
+        List<Tag> tags = findOrCreateTags(reqDto.getTagNames(), author.getId());
 
         Post post = Post.builder()
             .title(reqDto.getTitle())
@@ -121,7 +121,7 @@ public class PostService {
         }
 
         Category category = findCategoryById(reqDto.getCategoryId());
-        List<Tag> tags = findOrCreateTags(reqDto.getTagNames());
+        List<Tag> tags = findOrCreateTags(reqDto.getTagNames(), authenticatedUser.getAccount().getId());
 
         post.updateTitle(reqDto.getTitle());
         post.updateContent(reqDto.getContent());
@@ -176,12 +176,12 @@ public class PostService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 
-    private List<Tag> findOrCreateTags(List<String> tagNames) {
+    private List<Tag> findOrCreateTags(List<String> tagNames, Long accountId) {
         if (tagNames == null || tagNames.isEmpty()) {
             return List.of();
         }
         return tagNames.stream()
-                .map(tagService::findOrCreateTag)
+                .map(name -> tagService.findOrCreateTag(name, accountId))
                 .collect(Collectors.toList());
     }
 }

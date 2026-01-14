@@ -26,13 +26,13 @@ public class TagService {
     private final PostRepository postRepository;
 
     @Transactional
-    public TagResDto createTag(TagReqDto reqDto) {
+    public TagResDto createTag(TagReqDto reqDto, Long accountId) {
         String name = reqDto.getName();
 
         Map<String, String> errors = new HashMap<>();
 
         ErrorUtil.addErrorIf(errors,
-                tagRepository.existsByName(name),
+                tagRepository.existsByNameAndAccountId(name, accountId),
                 "name",
                 () -> ErrorCode.DUPLICATE_TAG_NAME.getMessage());
 
@@ -40,6 +40,7 @@ public class TagService {
 
         Tag tag = Tag.builder()
                 .name(name)
+                .account(com.project.blog.domain.account.entity.Account.builder().id(accountId).build())
                 .build();
 
         Tag savedTag = tagRepository.save(tag);
@@ -47,8 +48,8 @@ public class TagService {
     }
 
     @Transactional(readOnly = true)
-    public List<TagResDto> getAllTags() {
-        List<Tag> tags = tagRepository.findAll();
+    public List<TagResDto> getAllTags(Long accountId) {
+        List<Tag> tags = tagRepository.findByAccountId(accountId);
         return tags.stream()
                 .map(TagResDto::from)
                 .collect(Collectors.toList());
@@ -62,15 +63,15 @@ public class TagService {
     }
 
     @Transactional(readOnly = true)
-    public List<TagResDto> searchTags(String keyword) {
-        List<Tag> tags = tagRepository.findByNameContaining(keyword);
+    public List<TagResDto> searchTags(String keyword, Long accountId) {
+        List<Tag> tags = tagRepository.findByNameContainingAndAccountId(keyword, accountId);
         return tags.stream()
                 .map(TagResDto::from)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public TagResDto updateTag(Long id, TagReqDto reqDto) {
+    public TagResDto updateTag(Long id, TagReqDto reqDto, Long accountId) {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TAG_NOT_FOUND));
 
@@ -80,7 +81,7 @@ public class TagService {
 
         if (!tag.getName().equals(name)) {
             ErrorUtil.addErrorIf(errors,
-                    tagRepository.existsByNameAndIdNot(name, id),
+                    tagRepository.existsByNameAndIdNotAndAccountId(name, id, accountId),
                     "name",
                     () -> ErrorCode.DUPLICATE_TAG_NAME.getMessage());
         }
@@ -122,8 +123,11 @@ public class TagService {
     }
 
     @Transactional
-    public Tag findOrCreateTag(String name) {
-        return tagRepository.findByName(name)
-                .orElseGet(() -> tagRepository.save(Tag.builder().name(name).build()));
+    public Tag findOrCreateTag(String name, Long accountId) {
+        return tagRepository.findByNameAndAccountId(name, accountId)
+                .orElseGet(() -> tagRepository.save(Tag.builder()
+                        .name(name)
+                        .account(com.project.blog.domain.account.entity.Account.builder().id(accountId).build())
+                        .build()));
     }
 }
