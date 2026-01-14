@@ -17,6 +17,8 @@ import WritePage from "../features/post/pages/WritePage/WritePage";
 import SettingsPage from "../features/settings/pages/SettingsPage/SettingsPage";
 import ManagePage from "../features/manage/pages/ManagePage/ManagePage";
 import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage/AdminDashboardPage";
+import TermsPage from "../pages/TermsPage/TermsPage";
+import PrivacyPage from "../pages/PrivacyPage/PrivacyPage";
 
 const AppRoutes = () => {
   return (
@@ -144,6 +146,28 @@ const AppRoutes = () => {
             <AdminDashboardPage />
             <Footer />
           </AdminRoute>
+        }
+      />
+
+      <Route
+        path="/terms"
+        element={
+          <>
+            <Header />
+            <TermsPage />
+            <Footer />
+          </>
+        }
+      />
+
+      <Route
+        path="/privacy"
+        element={
+          <>
+            <Header />
+            <PrivacyPage />
+            <Footer />
+          </>
         }
       />
     </Routes>

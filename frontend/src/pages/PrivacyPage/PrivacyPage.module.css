@@ -1,0 +1,122 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  min-height: calc(100vh - 200px);
+}
+
+.content {
+  background-color: var(--bg-secondary);
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.content h1 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: var(--text-primary);
+  text-align: center;
+  font-weight: 700;
+}
+
+.intro {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  padding: 16px;
+  background-color: var(--bg-tertiary, #f8f9fa);
+  border-left: 3px solid var(--primary-color);
+  border-radius: 4px;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.section h3 {
+  font-size: 1.1rem;
+  margin-top: 16px;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.section p,
+.section li {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.section ul {
+  margin-left: 20px;
+  margin-top: 8px;
+  list-style-type: disc;
+}
+
+.subsection {
+  margin-top: 16px;
+  padding-left: 16px;
+  border-left: 2px solid var(--border-color);
+}
+
+.subsection p strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.contact {
+  padding: 16px;
+  background-color: var(--bg-tertiary, #f8f9fa);
+  border-radius: 4px;
+  margin: 12px 0;
+}
+
+.contact p strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.note {
+  font-size: 0.9rem;
+  color: var(--text-tertiary, #666);
+  font-style: italic;
+  margin-top: 8px;
+}
+
+.effective {
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 24px;
+  }
+
+  .content h1 {
+    font-size: 1.5rem;
+  }
+
+  .section h2 {
+    font-size: 1.1rem;
+  }
+
+  .section h3 {
+    font-size: 1rem;
+  }
+}

@@ -175,6 +175,38 @@ const SignupForm = ({ onSuccess }) => {
         {errors.password && <span className={styles.error}>{errors.password}</span>}
       </div>
 
+      <div className={styles['terms-group']}>
+        <div className={styles['checkbox-item']}>
+          <input
+            type="checkbox"
+            id="agreeToTerms"
+            name="agreeToTerms"
+            checked={formData.agreeToTerms}
+            onChange={handleChange}
+            disabled={isLoading}
+          />
+          <label htmlFor="agreeToTerms">
+            <a href="/terms" target="_blank" rel="noopener noreferrer">이용약관</a>에 동의합니다 (필수)
+          </label>
+        </div>
+        {errors.agreeToTerms && <span className={styles.error}>{errors.agreeToTerms}</span>}
+
+        <div className={styles['checkbox-item']}>
+          <input
+            type="checkbox"
+            id="agreeToPrivacy"
+            name="agreeToPrivacy"
+            checked={formData.agreeToPrivacy}
+            onChange={handleChange}
+            disabled={isLoading}
+          />
+          <label htmlFor="agreeToPrivacy">
+            <a href="/privacy" target="_blank" rel="noopener noreferrer">개인정보처리방침</a>에 동의합니다 (필수)
+          </label>
+        </div>
+        {errors.agreeToPrivacy && <span className={styles.error}>{errors.agreeToPrivacy}</span>}
+      </div>
+
       <button type="submit" className={styles['submit-button']} disabled={isLoading}>
         {isLoading ? (
           <>

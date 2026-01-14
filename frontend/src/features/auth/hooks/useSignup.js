@@ -9,7 +9,9 @@ export const useSignup = () => {
     password: '',
     email: '',
     nickname: '',
-    verificationCode: ''
+    verificationCode: '',
+    agreeToTerms: false,
+    agreeToPrivacy: false
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isVerificationSent, setIsVerificationSent] = useState(false);
@@ -24,7 +26,9 @@ export const useSignup = () => {
     email: '',
     username: '',
     password: '',
-    verificationCode: ''
+    verificationCode: '',
+    agreeToTerms: '',
+    agreeToPrivacy: ''
   });
 
   useEffect(() => {
@@ -48,8 +52,8 @@ export const useSignup = () => {
   }, [resendTimer]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -106,11 +110,26 @@ export const useSignup = () => {
       email: '',
       username: '',
       password: '',
-      verificationCode: ''
+      verificationCode: '',
+      agreeToTerms: '',
+      agreeToPrivacy: ''
     });
 
+    if (!formData.agreeToTerms) {
+      setErrors(prev => ({ ...prev, agreeToTerms: '이용약관에 동의해주세요.' }));
+      setIsLoading(false);
+      return false;
+    }
+
+    if (!formData.agreeToPrivacy) {
+      setErrors(prev => ({ ...prev, agreeToPrivacy: '개인정보처리방침에 동의해주세요.' }));
+      setIsLoading(false);
+      return false;
+    }
+
     try {
-      await apiSignup(formData);
+      const { agreeToTerms, agreeToPrivacy, ...signupData } = formData;
+      await apiSignup(signupData);
       navigate('/');
       return true;
     } catch (err) {
@@ -126,13 +145,15 @@ export const useSignup = () => {
   };
 
   const reset = () => {
-    setFormData({ username: '', password: '', email: '', nickname: '', verificationCode: '' });
+    setFormData({ username: '', password: '', email: '', nickname: '', verificationCode: '', agreeToTerms: false, agreeToPrivacy: false });
     setErrors({
       nickname: '',
       email: '',
       username: '',
       password: '',
-      verificationCode: ''
+      verificationCode: '',
+      agreeToTerms: '',
+      agreeToPrivacy: ''
     });
     setIsVerificationSent(false);
     setSuccessMessage('');
@@ -155,8 +176,22 @@ export const useSignup = () => {
       email: '',
       username: '',
       password: '',
-      verificationCode: ''
+      verificationCode: '',
+      agreeToTerms: '',
+      agreeToPrivacy: ''
     });
+
+    if (!formData.agreeToTerms) {
+      setErrors(prev => ({ ...prev, agreeToTerms: '이용약관에 동의해주세요.' }));
+      setIsLoading(false);
+      return false;
+    }
+
+    if (!formData.agreeToPrivacy) {
+      setErrors(prev => ({ ...prev, agreeToPrivacy: '개인정보처리방침에 동의해주세요.' }));
+      setIsLoading(false);
+      return false;
+    }
 
     try {
       await mergeLocalWithOAuth2({
