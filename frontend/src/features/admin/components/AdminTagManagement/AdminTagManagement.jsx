@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import * as adminApi from '../../api/adminApi';
-import styles from './AdminTagManagement.module.css';
+import { useState, useEffect } from "react";
+import * as adminApi from "../../api/adminApi";
+import styles from "./AdminTagManagement.module.css";
 
 const AdminTagManagement = ({ setSuccessMessage, setErrorMessage }) => {
   const [tags, setTags] = useState([]);
@@ -17,8 +17,8 @@ const AdminTagManagement = ({ setSuccessMessage, setErrorMessage }) => {
       const data = await adminApi.getAllTags();
       setTags(data.content || []);
     } catch (error) {
-      setErrorMessage(error.message || 'Failed to load tags');
-      setTimeout(() => setErrorMessage(''), 3000);
+      setErrorMessage(error.message || "Failed to load tags");
+      setTimeout(() => setErrorMessage(""), 3000);
     } finally {
       setLoading(false);
     }
@@ -42,12 +42,16 @@ const AdminTagManagement = ({ setSuccessMessage, setErrorMessage }) => {
 
   const handleDelete = async () => {
     if (selectedIds.length === 0) {
-      setErrorMessage('Delete target not selected');
-      setTimeout(() => setErrorMessage(''), 3000);
+      setErrorMessage("Delete target not selected");
+      setTimeout(() => setErrorMessage(""), 3000);
       return;
     }
 
-    if (!window.confirm(`선택한 ${selectedIds.length}개의 태그를 삭제하시겠습니까?`)) {
+    if (
+      !window.confirm(
+        `선택한 ${selectedIds.length}개의 태그를 삭제하시겠습니까?`
+      )
+    ) {
       return;
     }
 
@@ -57,23 +61,23 @@ const AdminTagManagement = ({ setSuccessMessage, setErrorMessage }) => {
       }
       setSuccessMessage(`${selectedIds.length}개의 태그가 삭제되었습니다.`);
       setSelectedIds([]);
-      setTimeout(() => setSuccessMessage(''), 3000);
+      setTimeout(() => setSuccessMessage(""), 3000);
       fetchTags();
     } catch (error) {
-      setErrorMessage(error.message || 'Failed to delete tag');
-      setTimeout(() => setErrorMessage(''), 3000);
+      setErrorMessage(error.message || "Failed to delete tag");
+      setTimeout(() => setErrorMessage(""), 3000);
     }
   };
 
   const allSelected = tags.length > 0 && selectedIds.length === tags.length;
 
   const formatDate = (dateString) => {
-    if (!dateString) return '-';
+    if (!dateString) return "-";
     const date = new Date(dateString);
-    return date.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
+    return date.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     });
   };
 
@@ -82,7 +86,8 @@ const AdminTagManagement = ({ setSuccessMessage, setErrorMessage }) => {
       <div className={styles.section}>
         <div className={styles["section-header"]}>
           <h2 className={styles["section-title"]}>
-            전체 태그 목록 <span className={styles["count-badge"]}>{tags.length}</span>
+            전체 태그 목록{" "}
+            <span className={styles["count-badge"]}>{tags.length}</span>
           </h2>
           <div className={styles.actions}>
             <label className={styles["select-all"]}>
@@ -121,6 +126,7 @@ const AdminTagManagement = ({ setSuccessMessage, setErrorMessage }) => {
                 <div className={styles["tag-info"]}>
                   <span className={styles["tag-name"]}>{tag.name}</span>
                   <div className={styles["tag-meta"]}>
+                    <span>Owner: {tag.ownerUsername}</span>
                     <span>Created: {formatDate(tag.createdAt)}</span>
                   </div>
                 </div>

@@ -113,12 +113,13 @@ public class AdminService {
         commentRepository.delete(comment);
     }
 
+    @Transactional(readOnly = true)
     public List<AdminCategoryResDto> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
         return categories.stream()
             .map(category -> {
                 Long postCount = (long) postRepository.findByCategoryId(category.getId(), Pageable.unpaged()).getContent().size();
-                return AdminCategoryResDto.from(category, postCount);
+                return AdminCategoryResDto.from(category, postCount, category.getAccount().getUsername());
             })
             .collect(Collectors.toList());
     }
@@ -140,7 +141,7 @@ public class AdminService {
             Long postCount = (long) postRepository.findAll().stream()
                 .filter(post -> post.getTags().stream().anyMatch(t -> t.getId().equals(tag.getId())))
                 .count();
-            return AdminTagResDto.from(tag, postCount);
+            return AdminTagResDto.from(tag, postCount, tag.getAccount().getUsername());
         });
     }
 

@@ -14,13 +14,15 @@ public class AdminTagResDto {
     private String name;
     private Long postCount;
     private LocalDateTime createdAt;
+    private String ownerUsername;
 
-    public static AdminTagResDto from(Tag tag, Long postCount) {
+    public static AdminTagResDto from(Tag tag, Long postCount, String ownerUsername) {
         return AdminTagResDto.builder()
-            .id(tag.getId())
-            .name(tag.getName())
-            .postCount(postCount)
-            .createdAt(tag.getCreatedAt())
-            .build();
+                .id(tag.getId())
+                .name(tag.getName())
+                .postCount(postCount)
+                .createdAt(tag.getCreatedAt())
+                .ownerUsername(ownerUsername)
+                .build();
     }
 }

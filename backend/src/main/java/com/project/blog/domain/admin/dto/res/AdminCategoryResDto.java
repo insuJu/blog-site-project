@@ -17,8 +17,9 @@ public class AdminCategoryResDto {
     private int childrenCount;
     private Long postCount;
     private LocalDateTime createdAt;
+    private String ownerUsername;
 
-    public static AdminCategoryResDto from(Category category, Long postCount) {
+    public static AdminCategoryResDto from(Category category, Long postCount, String ownerUsername) {
         return AdminCategoryResDto.builder()
             .id(category.getId())
             .name(category.getName())
@@ -27,6 +28,7 @@ public class AdminCategoryResDto {
             .childrenCount(category.getChildren() != null ? category.getChildren().size() : 0)
             .postCount(postCount)
             .createdAt(category.getCreatedAt())
+            .ownerUsername(ownerUsername)
             .build();
     }
 }
