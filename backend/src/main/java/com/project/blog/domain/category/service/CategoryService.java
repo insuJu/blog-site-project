@@ -16,6 +16,7 @@ import com.project.blog.domain.post.repository.PostRepository;
 import com.project.blog.global.error.code.ErrorCode;
 import com.project.blog.global.error.exception.BusinessException;
 import com.project.blog.global.error.util.ErrorUtil;
+import com.project.blog.global.security.service.AuthenticatedUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -87,9 +88,14 @@ public class CategoryService {
     }
 
     @Transactional
-    public CategoryResDto updateCategory(Long id, CategoryReqDto reqDto, Long accountId) {
+    public CategoryResDto updateCategory(Long id, CategoryReqDto reqDto, AuthenticatedUser authenticatedUser) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        Long accountId = authenticatedUser.getAccount().getId();
+        if (category.getAccount() == null || !category.getAccount().getId().equals(accountId)) {
+            throw new BusinessException(ErrorCode.CATEGORY_UPDATE_FORBIDDEN);
+        }
 
         String name = reqDto.getName();
         Long parentId = reqDto.getParentId();
@@ -131,7 +137,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategories(List<Long> ids) {
+    public void deleteCategories(List<Long> ids, AuthenticatedUser authenticatedUser) {
         if (ids == null || ids.isEmpty()) {
             return;
         }
@@ -142,7 +148,11 @@ public class CategoryService {
             throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND);
         }
 
+        Long accountId = authenticatedUser.getAccount().getId();
         for (Category category : categories) {
+            if (category.getAccount() == null || !category.getAccount().getId().equals(accountId)) {
+                throw new BusinessException(ErrorCode.CATEGORY_DELETE_FORBIDDEN);
+            }
             if (!category.getChildren().isEmpty()) {
                 throw new BusinessException(ErrorCode.CANNOT_DELETE_CATEGORY_WITH_CHILDREN);
             }

@@ -75,21 +75,17 @@ public class TagController {
             @PathVariable("id") Long id,
             @Valid @RequestBody TagReqDto reqDto,
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
-        TagResDto tag = tagService.updateTag(id, reqDto, authenticatedUser.getAccount().getId());
+        TagResDto tag = tagService.updateTag(id, reqDto, authenticatedUser);
         return ResponseEntity.ok(ApiResDto.<TagResDto>builder()
                 .data(tag)
                 .build());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResDto<Void>> deleteTag(@PathVariable("id") Long id) {
-        tagService.deleteTag(id);
-        return ResponseEntity.ok(ApiResDto.<Void>builder().build());
-    }
-
     @DeleteMapping
-    public ResponseEntity<ApiResDto<Void>> deleteTags(@RequestBody List<Long> ids) {
-        tagService.deleteTags(ids);
+    public ResponseEntity<ApiResDto<Void>> deleteTags(
+            @RequestBody List<Long> ids,
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+        tagService.deleteTags(ids, authenticatedUser);
         return ResponseEntity.ok(ApiResDto.<Void>builder().build());
     }
 }

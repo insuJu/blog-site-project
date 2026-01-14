@@ -16,6 +16,7 @@ import com.project.blog.domain.tag.repository.TagRepository;
 import com.project.blog.global.error.code.ErrorCode;
 import com.project.blog.global.error.exception.BusinessException;
 import com.project.blog.global.error.util.ErrorUtil;
+import com.project.blog.global.security.service.AuthenticatedUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -71,9 +72,14 @@ public class TagService {
     }
 
     @Transactional
-    public TagResDto updateTag(Long id, TagReqDto reqDto, Long accountId) {
+    public TagResDto updateTag(Long id, TagReqDto reqDto, AuthenticatedUser authenticatedUser) {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TAG_NOT_FOUND));
+
+        Long accountId = authenticatedUser.getAccount().getId();
+        if (tag.getAccount() == null || !tag.getAccount().getId().equals(accountId)) {
+            throw new BusinessException(ErrorCode.TAG_UPDATE_FORBIDDEN);
+        }
 
         String name = reqDto.getName();
 
@@ -94,15 +100,7 @@ public class TagService {
     }
 
     @Transactional
-    public void deleteTag(Long id) {
-        Tag tag = tagRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.TAG_NOT_FOUND));
-
-        tagRepository.delete(tag);
-    }
-
-    @Transactional
-    public void deleteTags(List<Long> ids) {
+    public void deleteTags(List<Long> ids, AuthenticatedUser authenticatedUser) {
         if (ids == null || ids.isEmpty()) {
             return;
         }
@@ -113,7 +111,11 @@ public class TagService {
             throw new BusinessException(ErrorCode.TAG_NOT_FOUND);
         }
 
+        Long accountId = authenticatedUser.getAccount().getId();
         for (Tag tag : tags) {
+            if (tag.getAccount() == null || !tag.getAccount().getId().equals(accountId)) {
+                throw new BusinessException(ErrorCode.TAG_DELETE_FORBIDDEN);
+            }
             if (postRepository.existsByTagsId(tag.getId())) {
                 throw new BusinessException(ErrorCode.CANNOT_DELETE_TAG_WITH_POSTS);
             }

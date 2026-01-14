@@ -59,11 +59,15 @@ public enum ErrorCode {
     CIRCULAR_CATEGORY_REFERENCE(HttpStatus.BAD_REQUEST, "CATEGORY005", "순환 참조가 발생할 수 있는 부모 카테고리입니다."),
     MAX_CATEGORY_DEPTH_EXCEEDED(HttpStatus.BAD_REQUEST, "CATEGORY006", "카테고리는 2단계까지만 생성할 수 있습니다."),
     CANNOT_DELETE_CATEGORY_WITH_POSTS(HttpStatus.BAD_REQUEST, "CATEGORY007", "게시글이 있는 카테고리는 삭제할 수 없습니다."),
+    CATEGORY_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, "CATEGORY008", "카테고리 수정 권한이 없습니다."),
+    CATEGORY_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "CATEGORY009", "카테고리 삭제 권한이 없습니다."),
 
     // Tag
     TAG_NOT_FOUND(HttpStatus.NOT_FOUND, "TAG001", "태그를 찾을 수 없습니다."),
     DUPLICATE_TAG_NAME(HttpStatus.CONFLICT, "TAG002", "이미 사용 중인 태그 이름입니다."),
     CANNOT_DELETE_TAG_WITH_POSTS(HttpStatus.BAD_REQUEST, "TAG003", "게시글이 있는 태그는 삭제할 수 없습니다."),
+    TAG_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, "TAG004", "태그 수정 권한이 없습니다."),
+    TAG_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "TAG005", "태그 삭제 권한이 없습니다."),
 
     // Post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST001", "게시글을 찾을 수 없습니다."),

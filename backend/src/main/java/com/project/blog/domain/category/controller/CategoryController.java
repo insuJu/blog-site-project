@@ -75,15 +75,17 @@ public class CategoryController {
             @PathVariable Long id,
             @Valid @RequestBody CategoryReqDto reqDto,
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
-        CategoryResDto category = categoryService.updateCategory(id, reqDto, authenticatedUser.getAccount().getId());
+        CategoryResDto category = categoryService.updateCategory(id, reqDto, authenticatedUser);
         return ResponseEntity.ok(ApiResDto.<CategoryResDto>builder()
                 .data(category)
                 .build());
     }
 
     @DeleteMapping
-    public ResponseEntity<ApiResDto<Void>> deleteCategories(@RequestBody List<Long> ids) {
-        categoryService.deleteCategories(ids);
+    public ResponseEntity<ApiResDto<Void>> deleteCategories(
+            @RequestBody List<Long> ids,
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+        categoryService.deleteCategories(ids, authenticatedUser);
         return ResponseEntity.ok(ApiResDto.<Void>builder().build());
     }
 }
