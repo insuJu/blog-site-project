@@ -55,12 +55,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             log.info("OAuth2 email not provided, generated email: {}", email);
         }
 
-        Account account = getOrCreateAccount(provider, providerId, email);
+        AccountResult accountResult = getOrCreateAccount(provider, providerId, email);
 
-        return new CustomOAuth2User(account, attributes);
+        return new CustomOAuth2User(accountResult.account(), attributes, accountResult.isNewUser());
     }
 
-    private Account getOrCreateAccount(OAuth2Provider provider, String providerId, String email) {
+    private AccountResult getOrCreateAccount(OAuth2Provider provider, String providerId, String email) {
         Optional<Account> existingOAuth2Account = accountRepository.findByOauth2ProviderAndProviderId(provider,
                 providerId);
         if (existingOAuth2Account.isPresent()) {
@@ -68,7 +68,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             if (account.isDeactivated()) {
                 throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_DEACTIVATED);
             }
-            return account;
+            return new AccountResult(account, false);
         }
 
         Optional<Account> existingLocalAccount = accountRepository.findByEmail(email);
@@ -78,10 +78,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 throw new BusinessException(ErrorCode.ACCOUNT_ALREADY_DEACTIVATED);
             }
             account.updateOAuth2Info(provider, providerId);
-            return accountRepository.save(account);
+            return new AccountResult(accountRepository.save(account), true);
         }
 
-        return createNewOAuth2Account(provider, providerId, email);
+        return new AccountResult(createNewOAuth2Account(provider, providerId, email), true);
+    }
+
+    private record AccountResult(Account account, boolean isNewUser) {
     }
 
     private Account createNewOAuth2Account(OAuth2Provider provider, String providerId, String email) {

@@ -37,11 +37,16 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         String username = oAuth2User.getUsername();
         Long accountId = oAuth2User.getId();
+        boolean isNewUser = oAuth2User.isNewUser();
 
         Map<String, String> tokens = jwtService.generateTokens(username, accountId, "OAUTH2");
 
         jwtCookieUtil.addTokenToCookie(response, tokens);
 
-        getRedirectStrategy().sendRedirect(request, response, frontendRedirectUri);
+        String redirectUrl = isNewUser
+            ? frontendRedirectUri + "?newUser=true"
+            : frontendRedirectUri;
+
+        getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 }

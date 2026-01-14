@@ -19,6 +19,7 @@ public class CustomOAuth2User implements OAuth2User {
 
     private final Account account;
     private final Map<String, Object> attributes;
+    private final boolean isNewUser;
 
     @Override
     public Map<String, Object> getAttributes() {
