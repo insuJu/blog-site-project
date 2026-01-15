@@ -38,7 +38,7 @@ const PostGridCard = ({ post }) => {
             <span className={styles.date}>{formatDate(post.createdAt)}</span>
             <span className={styles.stats}>
               <span>👁 {post.viewCount}</span>
-              <span>💬 {post.commentCount || 0}</span>
+              <span>💬 {post.comment.count || 0}</span>
             </span>
           </div>
         </div>
