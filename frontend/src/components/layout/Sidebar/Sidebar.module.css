@@ -185,7 +185,8 @@
 
 /* Activity Icon & Text */
 .activityIcon {
-  font-size: 1.25rem;
+  font-size: 1rem;
+  color: #adb5bd;
 }
 
 .activityText {

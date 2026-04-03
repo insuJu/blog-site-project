@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { FaFileAlt, FaComment, FaEye } from "react-icons/fa";
 import { useAuth } from "../../../contexts/AuthContext";
 import { getAuthorStats } from "../../../features/stat/api/statsApi";
 import { useTags } from "../../../features/tag/hooks/useTags";
@@ -102,19 +103,19 @@ const Sidebar = ({
             <h3 className={styles.sectionTitle}>블로그 정보</h3>
             <ul className={styles.activityList}>
               <li className={styles.activityItem}>
-                <span className={styles.activityIcon}>📝</span>
+                <FaFileAlt className={styles.activityIcon} />
                 <span className={styles.activityText}>
                   전체 글 {authorStats.postCount}개
                 </span>
               </li>
               <li className={styles.activityItem}>
-                <span className={styles.activityIcon}>💬</span>
+                <FaComment className={styles.activityIcon} />
                 <span className={styles.activityText}>
                   댓글 {authorStats.commentCount}개
                 </span>
               </li>
               <li className={styles.activityItem}>
-                <span className={styles.activityIcon}>👁</span>
+                <FaEye className={styles.activityIcon} />
                 <span className={styles.activityText}>
                   조회수 {authorStats.viewCount}회
                 </span>

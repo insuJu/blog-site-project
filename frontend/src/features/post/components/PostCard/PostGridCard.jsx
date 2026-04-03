@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { FaEye, FaComment } from 'react-icons/fa';
 import { formatDate } from '../../../../utils/dateFormat';
 import { getPreview } from '../../../../utils/textUtils';
 import styles from './PostGridCard.module.css';
@@ -36,10 +37,14 @@ const PostGridCard = ({ post }) => {
           <div className={styles.author}>{post.author.nickname}</div>
           <div className={styles.meta}>
             <span className={styles.date}>{formatDate(post.createdAt)}</span>
-            <span className={styles.stats}>
-              <span>👁 {post.viewCount}</span>
-              <span>💬 {post.comment.count || 0}</span>
-            </span>
+            <div className={styles.stats}>
+              <span className={styles.statItem}>
+                <FaEye className={styles.statIcon} /> {post.viewCount}
+              </span>
+              <span className={styles.statItem}>
+                <FaComment className={styles.statIcon} /> {post.comment.count || 0}
+              </span>
+            </div>
           </div>
         </div>
       </Link>
