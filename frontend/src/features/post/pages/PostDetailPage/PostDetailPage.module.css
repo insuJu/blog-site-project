@@ -204,10 +204,39 @@
   user-select: text;
 }
 
-.contentText * {
-  user-select: text;
-  -webkit-user-modify: read-only;
-  -moz-user-modify: read-only;
+/* ==================== */
+/* List Styles          */
+/* ==================== */
+.contentText ul,
+.contentText ol {
+  margin: 1.5rem 0;
+  padding-left: 2rem;
+}
+
+.contentText ul {
+  list-style-type: disc;
+}
+
+.contentText ol {
+  list-style-type: decimal;
+}
+
+.contentText li {
+  margin-bottom: 0.5rem;
+}
+
+.contentText li:last-child {
+  margin-bottom: 0;
+}
+
+/* ==================== */
+/* Strikethrough Styles */
+/* ==================== */
+.contentText del,
+.contentText s,
+.contentText strike {
+  text-decoration: line-through;
+  color: #868e96;
 }
 
 .contentText pre {
