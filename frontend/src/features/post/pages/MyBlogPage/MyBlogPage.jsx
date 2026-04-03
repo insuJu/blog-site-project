@@ -141,6 +141,7 @@ const MyBlogPage = () => {
         onCategorySelect={handleCategorySelect}
         selectedCategory={selectedCategory}
         accountId={user?.id}
+        isMyBlogPage={true}
       />
 
       <div className={styles.mainContent}>
