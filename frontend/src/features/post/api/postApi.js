@@ -20,6 +20,11 @@ export const getPostsByAuthor = async (authorId, params = {}) => {
   return response.data.data;
 };
 
+export const getUnpagedPostsByAuthor = async (authorId) => {
+  const response = await client.get(`/posts/author/${authorId}/unpaged`);
+  return response.data.data;
+};
+
 export const getPostsByCategory = async (categoryId, params = {}) => {
   const response = await client.get(`/posts/category/${categoryId}`, { params });
   return response.data.data;

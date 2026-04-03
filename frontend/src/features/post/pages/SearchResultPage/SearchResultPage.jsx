@@ -12,15 +12,18 @@ const SearchResultPage = () => {
   const authorId = searchParams.get("authorId");
 
   const [keyword, setKeyword] = useState(initialKeyword);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState({});
   const [loading, setLoading] = useState(false);
-  const [totalElements, setTotalElements] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [initialKeyword, authorId]);
 
   useEffect(() => {
     const fetchSearchResults = async () => {
       if (!initialKeyword.trim()) {
-        setPosts([]);
-        setTotalElements(0);
+        setPosts({});
         return;
       }
 
@@ -28,23 +31,25 @@ const SearchResultPage = () => {
       try {
         let data;
         if (authorId) {
-          data = await searchPostsByAuthor(authorId, initialKeyword, { size: 20 });
+          data = await searchPostsByAuthor(authorId, initialKeyword, { 
+            page: currentPage - 1 
+          });
         } else {
-          data = await searchPosts(initialKeyword, { size: 20 });
+          data = await searchPosts(initialKeyword, { 
+            page: currentPage - 1 
+          });
         }
-        setPosts(data.content || []);
-        setTotalElements(data.totalElements || 0);
+        setPosts(data || {});
       } catch (error) {
         console.error('Failed to search posts:', error);
-        setPosts([]);
-        setTotalElements(0);
+        setPosts({});
       } finally {
         setLoading(false);
       }
     };
 
     fetchSearchResults();
-  }, [initialKeyword, authorId]);
+  }, [initialKeyword, authorId, currentPage]);
 
   const handleSearch = () => {
     if (!keyword.trim()) return;
@@ -98,19 +103,24 @@ const SearchResultPage = () => {
 
           {initialKeyword && !loading && (
             <p className={styles.resultCount}>
-              "{initialKeyword}" 검색 결과: 총 {totalElements}개의 게시글
+              "{initialKeyword}" 검색 결과: 총 {posts.totalElements || 0}개의 게시글
             </p>
           )}
         </div>
 
-        {!loading && posts.length === 0 && initialKeyword && (
+        {!loading && (!posts.content || posts.content.length === 0) && initialKeyword && (
           <div className={styles.emptyState}>
             <p className={styles.emptyMessage}>검색 결과가 없습니다.</p>
             <p className={styles.emptyHint}>다른 키워드로 검색해보세요.</p>
           </div>
         )}
 
-        <PostGridList posts={posts} loading={loading} />
+        <PostGridList 
+          posts={posts} 
+          loading={loading} 
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

@@ -24,4 +24,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "LEFT JOIN FETCH c.parent " +
             "WHERE c.id = :id")
     Comment findByIdWithDetails(@Param("id") Long id);
+    
+    @Query("SELECT COUNT(c) FROM Comment c WHERE c.post.author.id = :authorId")
+            Long countByPostAuthorId(@Param("authorId") Long authorId);
 }
+

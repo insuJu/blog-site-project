@@ -1,5 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getAllPosts, getPostsByAuthor, getPostsByCategory, getPostsByTag, searchPosts } from '../api/postApi';
+import { 
+  getAllPosts, 
+  getPostsByAuthor, 
+  getUnpagedPostsByAuthor, 
+  getPostsByCategory, 
+  getPostsByTag, 
+  searchPosts
+} from '../api/postApi';
 
 export const usePosts = ({ type = 'all', authorId, categoryId, tagName, keyword, params = {} } = {}) => {
   const [posts, setPosts] = useState([]);
@@ -17,6 +24,10 @@ export const usePosts = ({ type = 'all', authorId, categoryId, tagName, keyword,
         case 'author':
           if (!authorId) throw new Error('authorId is required for type="author"');
           data = await getPostsByAuthor(authorId, params);
+          break;
+        case 'author-unpaged':
+          if (!authorId) throw new Error('authorId is required for type="author-unpaged"');
+          data = await getUnpagedPostsByAuthor(authorId);
           break;
         case 'category':
           if (!categoryId) throw new Error('categoryId is required for type="category"');

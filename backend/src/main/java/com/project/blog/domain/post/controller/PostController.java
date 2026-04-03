@@ -65,14 +65,26 @@ public class PostController {
 
         @GetMapping("/author/{authorId}")
         public ResponseEntity<ApiResDto<Page<PostResDto>>> getPostsByAuthor(
-                        @PathVariable("authorId") Long authorId,
-                        @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-                        @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
-                Long requesterId = (authenticatedUser != null) ? authenticatedUser.getAccount().getId() : null;
-                Page<PostResDto> posts = postService.getPostsByAuthor(authorId, pageable, requesterId);
-                return ResponseEntity.ok(ApiResDto.<Page<PostResDto>>builder()
-                                .data(posts)
-                                .build());
+                @PathVariable("authorId") Long authorId,
+                @RequestParam(value = "category", required = false) String category,
+                @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+            Long requesterId = (authenticatedUser != null) ? authenticatedUser.getAccount().getId() : null;
+            Page<PostResDto> posts = postService.getPostsByAuthor(authorId, category, pageable, requesterId);
+            return ResponseEntity.ok(ApiResDto.<Page<PostResDto>>builder()
+                    .data(posts)
+                    .build());
+        }
+
+        @GetMapping("/author/{authorId}/unpaged")
+        public ResponseEntity<ApiResDto<List<PostResDto>>> getUnpagedPostsByAuthor(
+                @PathVariable("authorId") Long authorId,
+                @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+        Long requesterId = (authenticatedUser != null) ? authenticatedUser.getAccount().getId() : null;
+        List<PostResDto> posts = postService.getUnpagedPostsByAuthor(authorId, requesterId); 
+        return ResponseEntity.ok(ApiResDto.<List<PostResDto>>builder()
+                .data(posts)
+                .build());
         }
 
         @GetMapping("/category/{categoryId}")

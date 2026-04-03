@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import Sidebar from "../../../../components/layout/Sidebar/Sidebar";
 import { useCategories } from "../../../category/hooks/useCategories";
@@ -9,15 +9,62 @@ import styles from "./UserBlogPage.module.css";
 
 const UserBlogPage = () => {
   const { userId } = useParams();
-  const { posts: postsData, loading } = usePosts({
-    type: "author",
-    authorId: userId,
-  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
   const { categories: categoriesData } = useCategories(userId);
 
-  const allPosts = postsData?.content || postsData || [];
-  const [posts, setPosts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const handleCategorySelect = (categoryId) => {
+    setSelectedCategory(categoryId);
+    setCurrentPage(1);
+  };
+
+  const getAllDescendantIds = useCallback((categoryId, catsData) => {
+    const ids = [categoryId];
+
+    const findCategory = (cats, id) => {
+      for (const cat of cats) {
+        if (cat.id === id) return cat;
+        if (cat.children) {
+          const found = findCategory(cat.children, id);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    const category = findCategory(catsData, categoryId);
+    if (category && category.children) {
+      category.children.forEach((child) => {
+        ids.push(...getAllDescendantIds(child.id, catsData));
+      });
+    }
+
+    return ids;
+  }, []);
+
+  const categoryParam = useMemo(() => {
+    if (selectedCategory === "all") return "all";
+    if (selectedCategory === "uncategorized") return "uncategorized";
+    return getAllDescendantIds(selectedCategory, categoriesData).join(",");
+  }, [selectedCategory, categoriesData, getAllDescendantIds]);
+
+  const { posts: pagedPostsData, loading } = usePosts({
+    type: "author",
+    authorId: userId,
+    params: {
+      page: currentPage - 1,
+      category: categoryParam,
+    },
+  });
+
+  const { posts: unpagedPostsData } = usePosts({
+    type: "author-unpaged",
+    authorId: userId,
+  });
+
+  const allPosts = unpagedPostsData || [];
+
   const [categories, setCategories] = useState([]);
   const [stats, setStats] = useState({
     postCount: 0,
@@ -58,30 +105,6 @@ const UserBlogPage = () => {
     return out;
   };
 
-  const getAllDescendantIds = (categoryId, categoriesData) => {
-    const ids = [categoryId];
-
-    const findCategory = (cats, id) => {
-      for (const cat of cats) {
-        if (cat.id === id) return cat;
-        if (cat.children) {
-          const found = findCategory(cat.children, id);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
-
-    const category = findCategory(categoriesData, categoryId);
-    if (category && category.children) {
-      category.children.forEach((child) => {
-        ids.push(...getAllDescendantIds(child.id, categoriesData));
-      });
-    }
-
-    return ids;
-  };
-
   useEffect(() => {
     const flatCategories = flattenCategories(categoriesData);
 
@@ -90,9 +113,9 @@ const UserBlogPage = () => {
     const categoryList = [
       { id: "all", name: "전체", count: allPosts.length },
       ...flatCategories.map((cat) => {
-        const descendantIds = getAllDescendantIds(cat.id, categoriesData);
+        const catDescendantIds = getAllDescendantIds(cat.id, categoriesData);
         const count = allPosts.filter((post) =>
-          post.category?.id && descendantIds.includes(post.category.id)
+          post.category?.id && catDescendantIds.includes(post.category.id)
         ).length;
 
         return {
@@ -115,7 +138,7 @@ const UserBlogPage = () => {
     }
 
     setCategories(categoryList);
-  }, [allPosts, categoriesData]);
+  }, [allPosts, categoriesData, getAllDescendantIds]);
 
   useEffect(() => {
     const totalPosts = allPosts.length;
@@ -135,24 +158,11 @@ const UserBlogPage = () => {
     });
   }, [allPosts]);
 
-  useEffect(() => {
-    if (selectedCategory === "all") {
-      setPosts(allPosts);
-    } else if (selectedCategory === "uncategorized") {
-      setPosts(allPosts.filter((post) => !post.category?.id));
-    } else {
-      const descendantIds = getAllDescendantIds(selectedCategory, categoriesData);
-      setPosts(
-        allPosts.filter((post) => post.category?.id && descendantIds.includes(post.category.id))
-      );
-    }
-  }, [selectedCategory, allPosts, categoriesData]);
-
   return (
     <div className={styles.userBlogPage}>
       <Sidebar
         categories={categories}
-        onCategorySelect={setSelectedCategory}
+        onCategorySelect={handleCategorySelect}
         selectedCategory={selectedCategory}
         accountId={userId}
       />
@@ -202,7 +212,7 @@ const UserBlogPage = () => {
                 className={`${styles.categoryButton} ${
                   selectedCategory === category.id ? styles.active : ""
                 }`}
-                onClick={() => setSelectedCategory(category.id)}
+                onClick={() => handleCategorySelect(category.id)}
               >
                 {category.name}
               </button>
@@ -213,7 +223,12 @@ const UserBlogPage = () => {
             <h2 className={styles.sectionTitle}>
               {blogOwner?.nickname || "사용자"}님의 게시글
             </h2>
-            <PostList posts={posts} loading={loading} />
+            <PostList 
+              posts={pagedPostsData || {}} 
+              loading={loading} 
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+            />
           </div>
         </div>
       </div>

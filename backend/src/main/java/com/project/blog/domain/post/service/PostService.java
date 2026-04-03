@@ -1,10 +1,12 @@
 package com.project.blog.domain.post.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,15 +70,39 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostResDto> getPostsByAuthor(Long authorId, Pageable pageable, Long requesterId) {
+    public Page<PostResDto> getPostsByAuthor(Long authorId, String category, Pageable pageable, Long requesterId) {
         Page<Post> posts;
-        if (requesterId != null && requesterId.equals(authorId)) {
-            posts = postRepository.findByAuthorId(authorId, pageable);
+        boolean isOwner = (requesterId != null && requesterId.equals(authorId));
+
+        if (category == null || category.equalsIgnoreCase("all")) {
+            posts = isOwner ? postRepository.findByAuthorId(authorId, pageable)
+                    : postRepository.findByAuthorIdAndIsPublicTrue(authorId, pageable);
+        } else if (category.equalsIgnoreCase("uncategorized")) {
+            posts = isOwner ? postRepository.findByAuthorIdAndCategoryIsNull(authorId, pageable)
+                    : postRepository.findByAuthorIdAndCategoryIsNullAndIsPublicTrue(authorId, pageable);
         } else {
-            posts = postRepository.findByAuthorIdAndIsPublicTrue(authorId, pageable);
+            List<Long> categoryIds = Arrays.stream(category.split(","))
+                    .map(Long::valueOf)
+                    .collect(Collectors.toList());
+            posts = isOwner ? postRepository.findByAuthorIdAndCategoryIdIn(authorId, categoryIds, pageable)
+                    : postRepository.findByAuthorIdAndCategoryIdInAndIsPublicTrue(authorId, categoryIds, pageable);
         }
 
         return posts.map(PostResDto::from);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostResDto> getUnpagedPostsByAuthor(Long authorId, Long requesterId) {
+        List<Post> posts;
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        
+        if (requesterId != null && requesterId.equals(authorId)) {
+            posts = postRepository.findByAuthorId(authorId, sort);
+        } else {
+            posts = postRepository.findByAuthorIdAndIsPublicTrue(authorId, sort);
+        }
+
+        return posts.stream().map(PostResDto::from).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

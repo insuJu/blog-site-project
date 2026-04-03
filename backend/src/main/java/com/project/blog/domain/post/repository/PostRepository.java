@@ -1,7 +1,10 @@
 package com.project.blog.domain.post.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +19,19 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
         Page<Post> findByAuthorId(Long authorId, Pageable pageable);
 
+        List<Post> findByAuthorId(Long authorId, Sort sort);
+
         Page<Post> findByAuthorIdAndIsPublicTrue(Long authorId, Pageable pageable);
+
+        List<Post> findByAuthorIdAndIsPublicTrue(Long authorId, Sort sort);
+
+        Page<Post> findByAuthorIdAndCategoryIsNull(Long authorId, Pageable pageable);
+
+        Page<Post> findByAuthorIdAndCategoryIsNullAndIsPublicTrue(Long authorId, Pageable pageable);
+
+        Page<Post> findByAuthorIdAndCategoryIdIn(Long authorId, List<Long> categoryIds, Pageable pageable);
+
+        Page<Post> findByAuthorIdAndCategoryIdInAndIsPublicTrue(Long authorId, List<Long> categoryIds, Pageable pageable);
 
         Page<Post> findByCategoryId(Long categoryId, Pageable pageable);
 
@@ -48,6 +63,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
         @Query("SELECT COALESCE(SUM(p.viewCount), 0) FROM Post p")
         Long sumViewCount();
+
+        @Query("SELECT COALESCE(SUM(p.viewCount), 0) FROM Post p WHERE p.author.id = :authorId")
+        Long sumViewCountByAuthorId(@Param("authorId") Long authorId);
 
         boolean existsByCategoryId(Long categoryId);
 

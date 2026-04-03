@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useStats } from "../../../features/stat/hooks/useStats";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../../contexts/AuthContext";
+import { getAuthorStats } from "../../../features/stat/api/statsApi";
 import { useTags } from "../../../features/tag/hooks/useTags";
 import styles from "./Sidebar.module.css";
 
@@ -11,18 +12,40 @@ const Sidebar = ({
   accountId = null,
 }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [popularTags, setPopularTags] = useState([]);
-  const { stats } = useStats();
   const { tags } = useTags(accountId, 8);
+
+  const [authorStats, setAuthorStats] = useState({
+    postCount: 0,
+    commentCount: 0,
+    viewCount: 0,
+  });
 
   useEffect(() => {
     setPopularTags(tags || []);
   }, [tags]);
 
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!accountId) return;
+      try {
+        const data = await getAuthorStats(accountId);
+        setAuthorStats(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchStats();
+  }, [accountId]);
+
   const handleCategoryClick = (categoryId) => {
     if (onCategorySelect) {
       onCategorySelect(categoryId);
+    } else {
+      const path = accountId ? `/blog/${accountId}` : "/posts";
+      navigate(path);
     }
   };
 
@@ -37,9 +60,8 @@ const Sidebar = ({
             {categories.map((category) => (
               <li key={category.id} className={styles.categoryItem}>
                 <button
-                  className={`${styles.categoryButton} ${
-                    selectedCategory === category.id ? styles.active : ""
-                  } ${category.depth > 0 ? styles.childCategory : ""}`}
+                  className={`${styles.categoryButton} ${selectedCategory === category.id ? styles.active : ""
+                    } ${category.depth > 0 ? styles.childCategory : ""}`}
                   onClick={() => handleCategoryClick(category.id)}
                   style={{ paddingLeft: `${1 + (category.depth || 0) * 1.5}rem` }}
                 >
@@ -73,29 +95,39 @@ const Sidebar = ({
           </div>
         </div>
 
-        <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>최근 활동</h3>
-          <ul className={styles.activityList}>
-            <li className={styles.activityItem}>
-              <span className={styles.activityIcon}>📝</span>
-              <span className={styles.activityText}>
-                새 글 {stats?.postCount ?? 0}개
-              </span>
-            </li>
-            <li className={styles.activityItem}>
-              <span className={styles.activityIcon}>💬</span>
-              <span className={styles.activityText}>
-                댓글 {stats?.commentCount ?? 0}개
-              </span>
-            </li>
-            <li className={styles.activityItem}>
-              <span className={styles.activityIcon}>👁</span>
-              <span className={styles.activityText}>
-                조회수 {stats?.viewCount ?? 0}개
-              </span>
-            </li>
-          </ul>
-        </div>
+        {accountId && (
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>블로그 정보</h3>
+            <ul className={styles.activityList}>
+              <li className={styles.activityItem}>
+                <span className={styles.activityIcon}>📝</span>
+                <span className={styles.activityText}>
+                  전체 글 {authorStats.postCount}개
+                </span>
+              </li>
+              <li className={styles.activityItem}>
+                <span className={styles.activityIcon}>💬</span>
+                <span className={styles.activityText}>
+                  댓글 {authorStats.commentCount}개
+                </span>
+              </li>
+              <li className={styles.activityItem}>
+                <span className={styles.activityIcon}>👁</span>
+                <span className={styles.activityText}>
+                  조회수 {authorStats.viewCount}회
+                </span>
+              </li>
+            </ul>
+          </div>
+        )}
+
+        {user && user.id === Number(accountId) && (
+          <div className={styles.section}>
+            <Link to="/manage" className={styles.manageLink}>
+              블로그 관리
+            </Link>
+          </div>
+        )}
       </div>
     </aside>
   );

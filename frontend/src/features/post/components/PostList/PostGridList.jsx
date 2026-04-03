@@ -1,20 +1,9 @@
-import { useState } from 'react';
 import PostGridCard from '../PostCard/PostGridCard';
 import styles from './PostGridList.module.css';
 
-const PostGridList = ({ posts = [], loading = false }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 100;
-
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
-  const totalPages = Math.ceil(posts.length / postsPerPage);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+const PostGridList = ({ posts = {}, loading = false, currentPage = 1, onPageChange }) => {
+  const currentPosts = posts.content || [];
+  const totalPages = posts.totalPages || 1;
 
   if (loading) {
     return (
@@ -25,7 +14,7 @@ const PostGridList = ({ posts = [], loading = false }) => {
     );
   }
 
-  if (!posts || posts.length === 0) {
+  if (currentPosts.length === 0) {
     return (
       <div className={styles.empty}>
         <p>작성된 게시글이 없습니다.</p>
@@ -41,34 +30,32 @@ const PostGridList = ({ posts = [], loading = false }) => {
         ))}
       </div>
 
-      {totalPages > 1 && (
+      {totalPages > 1 && onPageChange && (
         <div className={styles.pagination}>
-          <button
+          <button 
             className={styles.pageButton}
-            onClick={() => handlePageChange(currentPage - 1)}
+            onClick={() => { onPageChange(currentPage - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
             disabled={currentPage === 1}
           >
             이전
           </button>
-
-          {[...Array(totalPages)].map((_, index) => {
-            const pageNumber = index + 1;
+          
+          {[...Array(totalPages)].map((_, i) => {
+            const pageNumber = i + 1;
             return (
-              <button
-                key={pageNumber}
-                className={`${styles.pageButton} ${
-                  currentPage === pageNumber ? styles.active : ''
-                }`}
-                onClick={() => handlePageChange(pageNumber)}
+              <button 
+                key={pageNumber} 
+                className={`${styles.pageButton} ${currentPage === pageNumber ? styles.active : ''}`}
+                onClick={() => { onPageChange(pageNumber); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
               >
                 {pageNumber}
               </button>
             );
           })}
-
-          <button
+          
+          <button 
             className={styles.pageButton}
-            onClick={() => handlePageChange(currentPage + 1)}
+            onClick={() => { onPageChange(currentPage + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
             disabled={currentPage === totalPages}
           >
             다음
