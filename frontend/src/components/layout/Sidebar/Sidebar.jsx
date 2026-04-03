@@ -10,6 +10,7 @@ const Sidebar = ({
   onCategorySelect,
   selectedCategory = "all",
   accountId = null,
+  isMyBlogPage = false,
 }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -60,8 +61,9 @@ const Sidebar = ({
             {categories.map((category) => (
               <li key={category.id} className={styles.categoryItem}>
                 <button
-                  className={`${styles.categoryButton} ${selectedCategory === category.id ? styles.active : ""
-                    } ${category.depth > 0 ? styles.childCategory : ""}`}
+                  className={`${styles.categoryButton} ${
+                    selectedCategory === category.id ? styles.active : ""
+                  } ${category.depth > 0 ? styles.childCategory : ""}`}
                   onClick={() => handleCategoryClick(category.id)}
                   style={{ paddingLeft: `${1 + (category.depth || 0) * 1.5}rem` }}
                 >
@@ -121,7 +123,7 @@ const Sidebar = ({
           </div>
         )}
 
-        {user && user.id === Number(accountId) && (
+        {isMyBlogPage && user && user.id === Number(accountId) && (
           <div className={styles.section}>
             <Link to="/manage" className={styles.manageLink}>
               블로그 관리
