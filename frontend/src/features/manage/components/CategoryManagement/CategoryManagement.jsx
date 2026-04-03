@@ -112,7 +112,7 @@ const CategoryTreeItem = ({
 };
 
 const CategoryManagement = ({ setSuccessMessage, setErrorMessage }) => {
-  const { categories, loading, formData, setFormData, handleDeleteBulk } =
+  const { categories, loading, formData, setFormData, handleDeleteBulk, loadCategories } =
     useCategoryManage();
 
   const [parentId, setParentId] = useState("");
@@ -154,7 +154,7 @@ const CategoryManagement = ({ setSuccessMessage, setErrorMessage }) => {
       setParentId("");
       setSuccessMessage("카테고리가 생성되었습니다.");
       setTimeout(() => setSuccessMessage(""), 3000);
-      window.location.reload();
+      await loadCategories();
     } catch (error) {
       setErrorMessage(
         error.response?.data?.errors?.name || "카테고리 생성에 실패했습니다."
@@ -163,8 +163,8 @@ const CategoryManagement = ({ setSuccessMessage, setErrorMessage }) => {
     }
   };
 
-  const handleReload = () => {
-    window.location.reload();
+  const handleReload = async () => {
+    await loadCategories();
   };
 
   const handleSelect = (id, checked) => {
@@ -211,7 +211,7 @@ const CategoryManagement = ({ setSuccessMessage, setErrorMessage }) => {
       setSelectedIds([]);
       setSuccessMessage(`${selectedIds.length}개의 카테고리가 삭제되었습니다.`);
       setTimeout(() => setSuccessMessage(""), 3000);
-      window.location.reload();
+      await loadCategories();
     } catch (error) {
       setErrorMessage(
         error.response?.data?.message || "카테고리 삭제에 실패했습니다."

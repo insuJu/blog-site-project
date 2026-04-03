@@ -4,7 +4,7 @@ import {
   createCategory,
   getAllCategories,
 } from "../../category/api/categoryApi";
-import { usePosts } from "../../post/hooks/usePosts";
+import { getUnpagedPostsByAuthor } from "../../post/api/postApi";
 import { deleteCategories } from "../api/manageApi";
 
 export const useCategoryManage = () => {
@@ -13,9 +13,6 @@ export const useCategoryManage = () => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ name: "", parentId: null });
-  const { posts: postsData } = usePosts({ type: "author", authorId: user.id });
-
-  const allPosts = postsData?.content || postsData || [];
 
   const getAllDescendantIds = useCallback((category) => {
     const ids = [category.id];
@@ -55,11 +52,16 @@ export const useCategoryManage = () => {
   );
 
   const loadCategories = useCallback(async () => {
-
+    if (!user?.id) return;
+    
     try {
       setLoading(true);
-      const data = await getAllCategories();
+      const [data, unpagedPosts] = await Promise.all([
+        getAllCategories(),
+        getUnpagedPostsByAuthor(user.id)
+      ]);
 
+      const allPosts = unpagedPosts || [];
       const categoriesWithCount = addPostCountToCategories(data, allPosts);
 
       const uncategorizedCount = allPosts.filter(
@@ -78,11 +80,10 @@ export const useCategoryManage = () => {
       setCategories(categoriesWithCount);
     } catch (error) {
       console.error("Failed to load categories:", error);
-      throw error;
     } finally {
       setLoading(false);
     }
-  }, [allPosts, addPostCountToCategories]);
+  }, [user?.id, addPostCountToCategories]);
 
   useEffect(() => {
     loadCategories();
@@ -166,5 +167,6 @@ export const useCategoryManage = () => {
     handleDeleteBulk,
     handleSelectAll,
     handleSelect,
+    loadCategories,
   };
 };
