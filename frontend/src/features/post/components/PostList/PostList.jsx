@@ -39,7 +39,7 @@ const PostList = ({ posts = {}, loading = false, currentPage = 1, onPageChange }
             return (
               <button
                 key={pageNumber}
-                className={`${styles.pageNumber} ${currentPage === pageNumber ? styles.active : ""}`}
+                className={`${styles.pageButton} ${currentPage === pageNumber ? styles.active : ""}`}
                 onClick={() => {
                   onPageChange(pageNumber);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
