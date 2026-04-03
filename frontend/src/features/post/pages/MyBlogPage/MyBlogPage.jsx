@@ -140,6 +140,7 @@ const MyBlogPage = () => {
         categories={categories}
         onCategorySelect={handleCategorySelect}
         selectedCategory={selectedCategory}
+        accountId={user?.id}
       />
 
       <div className={styles.mainContent}>
