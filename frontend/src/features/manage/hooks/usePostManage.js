@@ -1,32 +1,24 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
-import { getPostsByAuthor } from '../../post/api/postApi';
+import { usePosts } from '../../post/hooks/usePosts';
 import { deletePosts } from '../api/manageApi';
 
 export const usePostManage = () => {
   const { user } = useAuth();
-  const [posts, setPosts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
-  const [loading, setLoading] = useState(false);
 
-  const loadPosts = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      setLoading(true);
-      const data = await getPostsByAuthor(user.id, { size: 100 });
-      setPosts(data.content || []);
-    } catch (error) {
-      console.error('Failed to load posts:', error);
-      throw error;
-    } finally {
-      setLoading(false);
+  const {
+    posts,
+    loading,
+    reload
+  } = usePosts({
+    type: 'author',
+    authorId: user?.id,
+    params: {
+      page: currentPage - 1,
     }
-  }, [user]);
-
-  useEffect(() => {
-    loadPosts();
-  }, [loadPosts]);
+  });
 
   const handleDelete = useCallback(async () => {
     if (selectedIds.length === 0) {
@@ -36,15 +28,16 @@ export const usePostManage = () => {
     try {
       await deletePosts(selectedIds);
       setSelectedIds([]);
-      await loadPosts();
+      await reload();
     } catch (error) {
       throw error;
     }
-  }, [selectedIds, loadPosts]);
+  }, [selectedIds, reload]);
 
   const handleSelectAll = useCallback((checked) => {
+    const currentPosts = posts.content || [];
     if (checked) {
-      setSelectedIds(posts.map((post) => post.id));
+      setSelectedIds(currentPosts.map((post) => post.id));
     } else {
       setSelectedIds([]);
     }
@@ -56,12 +49,21 @@ export const usePostManage = () => {
     );
   }, []);
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    setSelectedIds([]);
+  };
+
   return {
-    posts,
+    posts: posts.content || [],
+    totalElements: posts.totalElements || 0,
+    totalPages: posts.totalPages || 1,
+    currentPage,
     selectedIds,
     loading,
     handleDelete,
     handleSelectAll,
     handleSelect,
+    handlePageChange,
   };
 };

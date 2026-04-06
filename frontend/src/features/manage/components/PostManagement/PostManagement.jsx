@@ -6,11 +6,15 @@ const PostManagement = ({ setSuccessMessage, setErrorMessage }) => {
   const navigate = useNavigate();
   const {
     posts,
+    totalElements,
+    totalPages,
+    currentPage,
     selectedIds,
     loading,
     handleDelete,
     handleSelectAll,
     handleSelect,
+    handlePageChange,
   } = usePostManage();
 
   const onDeletePosts = async () => {
@@ -40,7 +44,9 @@ const PostManagement = ({ setSuccessMessage, setErrorMessage }) => {
     <div className={styles["post-management"]}>
       <div className={styles.section}>
         <div className={styles["section-header"]}>
-          <h2 className={styles["section-title"]}>내 게시글 목록 <span className={styles["count-badge"]}>{posts.length}</span></h2>
+          <h2 className={styles["section-title"]}>
+            내 게시글 목록 <span className={styles["count-badge"]}>{totalElements}</span>
+          </h2>
           <div className={styles.actions}>
             <label className={styles["select-all"]}>
               <input
@@ -66,31 +72,80 @@ const PostManagement = ({ setSuccessMessage, setErrorMessage }) => {
         ) : posts.length === 0 ? (
           <div className={styles.empty}>게시글이 없습니다.</div>
         ) : (
-          <div className={styles["post-list"]}>
-            {posts.map((post) => (
-              <div key={post.id} className={styles["post-item"]}>
-                <input
-                  type="checkbox"
-                  checked={selectedIds.includes(post.id)}
-                  onChange={(e) => handleSelect(post.id, e.target.checked)}
-                  className={styles.checkbox}
-                />
-                <div className={styles["post-info"]}>
-                  <span className={styles["post-title"]}>{post.title}</span>
-                  <div className={styles["post-meta"]}>
-                    <span>카테고리: {post.category?.name || '없음'}</span>
-                    <span>태그: {post.tags?.map((t) => t.name).join(', ') || '없음'}</span>
+          <>
+            <div className={styles["post-list"]}>
+              {posts.map((post) => (
+                <div key={post.id} className={styles["post-item"]}>
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(post.id)}
+                    onChange={(e) => handleSelect(post.id, e.target.checked)}
+                    className={styles.checkbox}
+                  />
+                  <div className={styles["post-info"]}>
+                    <div className={styles["post-title-wrapper"]}>
+                      <span className={styles["post-title"]}>{post.title}</span>
+                      <span className={`${styles.statusBadge} ${post.isPublic ? styles.public : styles.private}`}>
+                        {post.isPublic ? '공개' : '비공개'}
+                      </span>
+                    </div>
+                    <div className={styles["post-meta"]}>
+                      <span>카테고리: {post.category?.name || '없음'}</span>
+                      <span>태그: {post.tags?.map((t) => t.name).join(', ') || '없음'}</span>
+                    </div>
                   </div>
+                  <button
+                    onClick={() => navigate(`/posts/${post.id}/edit`)}
+                    className={styles["edit-button"]}
+                  >
+                    수정
+                  </button>
                 </div>
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className={styles.pagination}>
                 <button
-                  onClick={() => navigate(`/posts/${post.id}/edit`)}
-                  className={styles["edit-button"]}
+                  className={styles.pageButton}
+                  onClick={() => {
+                    handlePageChange(currentPage - 1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  disabled={currentPage === 1}
                 >
-                  수정
+                  이전
+                </button>
+                
+                {[...Array(totalPages)].map((_, i) => {
+                  const pageNumber = i + 1;
+                  return (
+                    <button
+                      key={pageNumber}
+                      className={`${styles.pageButton} ${currentPage === pageNumber ? styles.active : ""}`}
+                      onClick={() => {
+                        handlePageChange(pageNumber);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
+
+                <button
+                  className={styles.pageButton}
+                  onClick={() => {
+                    handlePageChange(currentPage + 1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  disabled={currentPage === totalPages}
+                >
+                  다음
                 </button>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>
