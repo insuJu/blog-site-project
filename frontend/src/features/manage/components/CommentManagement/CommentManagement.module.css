@@ -8,6 +8,37 @@
 }
 
 /* ==================== */
+/* Tabs                 */
+/* ==================== */
+.tabs {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 1.5rem;
+}
+
+.tab-button {
+  padding: 0.75rem 0.5rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-button:hover {
+  color: #212529;
+}
+
+.tab-button.active {
+  color: #4C6EF5;
+  border-bottom-color: #4C6EF5;
+}
+
+/* ==================== */
 /* Section              */
 /* ==================== */
 .section {

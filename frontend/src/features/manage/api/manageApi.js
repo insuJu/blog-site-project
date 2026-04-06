@@ -25,6 +25,11 @@ export const getMyComments = async () => {
   return response.data.data;
 };
 
+export const getReceivedComments = async () => {
+  const response = await client.get('/comments/received');
+  return response.data.data;
+};
+
 export const getMyPostLikes = async () => {
   const response = await client.get('/posts/likes/me');
   return response.data.data;

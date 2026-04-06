@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.blog.domain.comment.dto.req.CommentReqDto;
 import com.project.blog.domain.comment.dto.res.CommentResDto;
-import com.project.blog.domain.comment.dto.res.MyCommentResDto;
+import com.project.blog.domain.comment.dto.res.CommentSummaryResDto;
 import com.project.blog.domain.comment.service.CommentService;
 import com.project.blog.global.dto.ApiResDto;
 import com.project.blog.global.security.service.AuthenticatedUser;
@@ -92,10 +92,20 @@ public class CommentController {
         }
 
         @GetMapping("/comments/me")
-        public ResponseEntity<ApiResDto<List<MyCommentResDto>>> getMyComments(
+        public ResponseEntity<ApiResDto<List<CommentSummaryResDto>>> getMyComments(
                         @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
-                List<MyCommentResDto> comments = commentService.getMyComments(authenticatedUser);
-                return ResponseEntity.ok(ApiResDto.<List<MyCommentResDto>>builder()
+                List<CommentSummaryResDto> comments = commentService.getMyComments(authenticatedUser);
+                return ResponseEntity.ok(ApiResDto.<List<CommentSummaryResDto>>builder()
+                                .data(comments)
+                                .build());
+        }
+
+        @GetMapping("/comments/author/{authorId}")
+        public ResponseEntity<ApiResDto<List<CommentSummaryResDto>>> getCommentsByAuthorId(
+                        @PathVariable("authorId") Long authorId,
+                        @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+                List<CommentSummaryResDto> comments = commentService.getCommentsByAuthorId(authorId, authenticatedUser);
+                return ResponseEntity.ok(ApiResDto.<List<CommentSummaryResDto>>builder()
                                 .data(comments)
                                 .build());
         }

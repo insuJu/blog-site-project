@@ -66,11 +66,6 @@ const UserBlogPage = () => {
   const allPosts = unpagedPostsData || [];
 
   const [categories, setCategories] = useState([]);
-  const [stats, setStats] = useState({
-    postCount: 0,
-    commentCount: 0,
-    viewCount: 0,
-  });
   const [blogOwner, setBlogOwner] = useState(null);
 
   useEffect(() => {
@@ -140,24 +135,6 @@ const UserBlogPage = () => {
     setCategories(categoryList);
   }, [allPosts, categoriesData, getAllDescendantIds]);
 
-  useEffect(() => {
-    const totalPosts = allPosts.length;
-    const totalComments = allPosts.reduce(
-      (sum, post) => sum + (post.commentCount || 0),
-      0
-    );
-    const totalViews = allPosts.reduce(
-      (sum, post) => sum + (post.viewCount || 0),
-      0
-    );
-
-    setStats({
-      postCount: totalPosts,
-      commentCount: totalComments,
-      viewCount: totalViews,
-    });
-  }, [allPosts]);
-
   return (
     <div className={styles.userBlogPage}>
       <Sidebar
@@ -187,20 +164,6 @@ const UserBlogPage = () => {
                   {blogOwner?.nickname || "사용자"}
                 </h1>
                 <p className={styles.bio}>개발과 일상을 기록하는 공간입니다.</p>
-              </div>
-            </div>
-            <div className={styles.stats}>
-              <div className={styles.statItem}>
-                <span className={styles.statValue}>{stats.postCount}</span>
-                <span className={styles.statLabel}>게시글</span>
-              </div>
-              <div className={styles.statItem}>
-                <span className={styles.statValue}>{stats.commentCount}</span>
-                <span className={styles.statLabel}>댓글</span>
-              </div>
-              <div className={styles.statItem}>
-                <span className={styles.statValue}>{stats.viewCount}</span>
-                <span className={styles.statLabel}>조회수</span>
               </div>
             </div>
           </div>

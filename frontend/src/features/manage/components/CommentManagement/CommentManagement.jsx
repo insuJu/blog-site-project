@@ -8,6 +8,8 @@ const CommentManagement = ({ setSuccessMessage, setErrorMessage }) => {
     comments,
     selectedIds,
     loading,
+    activeTab,
+    setActiveTab,
     handleSelect,
     handleSelectAll,
     handleDelete,
@@ -39,8 +41,26 @@ const CommentManagement = ({ setSuccessMessage, setErrorMessage }) => {
   return (
     <div className={styles["comment-management"]}>
       <div className={styles.section}>
+        <div className={styles["tabs"]}>
+          <button 
+            className={`${styles["tab-button"]} ${activeTab === 'mine' ? styles.active : ''}`}
+            onClick={() => setActiveTab('mine')}
+          >
+            내가 쓴 댓글
+          </button>
+          <button 
+            className={`${styles["tab-button"]} ${activeTab === 'received' ? styles.active : ''}`}
+            onClick={() => setActiveTab('received')}
+          >
+            내게 달린 댓글
+          </button>
+        </div>
+
         <div className={styles["section-header"]}>
-          <h2 className={styles["section-title"]}>내 댓글 목록 <span className={styles["count-badge"]}>{comments.length}</span></h2>
+          <h2 className={styles["section-title"]}>
+            {activeTab === 'mine' ? '내 댓글 목록' : '달린 댓글 목록'} 
+            <span className={styles["count-badge"]}>{comments.length}</span>
+          </h2>
           <div className={styles.actions}>
             <label className={styles["select-all"]}>
               <input
@@ -64,7 +84,9 @@ const CommentManagement = ({ setSuccessMessage, setErrorMessage }) => {
         {loading ? (
           <div className={styles.loading}>로딩 중...</div>
         ) : comments.length === 0 ? (
-          <div className={styles.empty}>작성한 댓글이 없습니다.</div>
+          <div className={styles.empty}>
+            {activeTab === 'mine' ? '작성한 댓글이 없습니다.' : '받은 댓글이 없습니다.'}
+          </div>
         ) : (
           <div className={styles["comment-list"]}>
             {comments.map((comment) => (
@@ -87,6 +109,7 @@ const CommentManagement = ({ setSuccessMessage, setErrorMessage }) => {
                   </div>
                   <div className={styles["comment-content"]}>{comment.content}</div>
                   <div className={styles["comment-meta"]}>
+                    {activeTab === 'received' && <span>작성자: {comment.authorNickname}</span>}
                     <span>좋아요: {comment.likeCount}</span>
                     <span>{comment.isPublic ? '공개' : '비공개'}</span>
                     <span>{new Date(comment.createdAt).toLocaleDateString()}</span>

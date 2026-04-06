@@ -9,7 +9,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class MyCommentResDto {
+public class CommentSummaryResDto {
     private Long id;
     private String content;
     private Long postId;
@@ -20,13 +20,13 @@ public class MyCommentResDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static MyCommentResDto from(Comment comment) {
-        return MyCommentResDto.builder()
+    public static CommentSummaryResDto from(Comment comment) {
+        return CommentSummaryResDto.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
                 .postId(comment.getPost().getId())
                 .postTitle(comment.getPost().getTitle())
-                .authorNickname(comment.getAuthor() != null ? comment.getAuthor().getProfile().getNickname() : "익명")
+                .authorNickname(comment.getAuthor() != null ? comment.getAuthor().getProfile().getNickname() : "탈퇴한 사용자")
                 .likeCount(comment.getLikeCount())
                 .isPublic(comment.isPublic())
                 .createdAt(comment.getCreatedAt())

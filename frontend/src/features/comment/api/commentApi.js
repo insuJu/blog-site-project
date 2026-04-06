@@ -15,6 +15,11 @@ export const getCommentById = async (postId, commentId) => {
   return response.data.data;
 };
 
+export const getCommentsByAuthorId = async (authorId) => {
+  const response = await client.get(`/comments/author/${authorId}`);
+  return response.data.data;
+};
+
 export const updateComment = async (postId, commentId, commentData) => {
   const response = await client.put(`/posts/${postId}/comments/${commentId}`, commentData);
   return response.data.data;

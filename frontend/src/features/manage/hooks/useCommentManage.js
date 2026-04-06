@@ -1,15 +1,18 @@
-import { useState, useEffect } from 'react';
-import { getMyComments, deleteComments } from '../api/manageApi';
+import { useState, useEffect, useCallback } from 'react';
+import { getMyComments, getReceivedComments, deleteComments } from '../api/manageApi';
 
 export const useCommentManage = () => {
   const [comments, setComments] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('mine'); // 'mine' or 'received'
 
-  const loadComments = async () => {
+  const loadComments = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getMyComments();
+      const data = activeTab === 'mine' 
+        ? await getMyComments() 
+        : await getReceivedComments();
       setComments(data || []);
       setSelectedIds([]);
     } catch (error) {
@@ -17,11 +20,11 @@ export const useCommentManage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab]);
 
   useEffect(() => {
     loadComments();
-  }, []);
+  }, [loadComments]);
 
   const handleSelect = (id, checked) => {
     setSelectedIds((prev) =>
@@ -60,8 +63,11 @@ export const useCommentManage = () => {
     comments,
     selectedIds,
     loading,
+    activeTab,
+    setActiveTab,
     handleSelect,
     handleSelectAll,
     handleDelete,
+    reload: loadComments
   };
 };

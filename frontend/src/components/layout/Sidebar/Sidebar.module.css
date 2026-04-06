@@ -1,238 +1,211 @@
-/* ==================== */
-/* Sidebar Container    */
-/* ==================== */
 .sidebar {
-  position: sticky;
-  top: 70px;
-  flex-shrink: 0;
   width: 280px;
-  height: calc(100vh - 70px);
-  background: white;
+  height: 100%;
+  background-color: white;
   border-right: 1px solid #e9ecef;
-  overflow-y: auto;
   transition: all 0.3s ease;
+  overflow-y: auto;
 }
 
-.sidebar.collapsed {
-  width: 60px;
-}
-
-.sidebar.collapsed .sidebarContent {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ==================== */
-/* Sidebar Content      */
-/* ==================== */
 .sidebarContent {
   padding: 2rem 1.5rem;
-  transition: opacity 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
 }
 
-/* ==================== */
-/* Section              */
-/* ==================== */
 .section {
-  margin-bottom: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.section:last-child {
-  margin-bottom: 0;
-}
-
-/* Section Title */
 .sectionTitle {
-  margin: 0 0 1rem 0;
-  padding: 0 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: #495057;
+  color: #868e96;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-/* ==================== */
-/* Category Section     */
-/* ==================== */
+.titleIcon {
+  font-size: 0.9rem;
+}
+
+/* Category List */
 .categoryList {
-  margin: 0;
-  padding: 0;
   list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.categoryItem {
-  margin-bottom: 0.25rem;
-}
-
-/* Category Button */
 .categoryButton {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: transparent;
+  padding: 0.6rem 0.75rem;
+  background: none;
   border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  border-radius: 6px;
   color: #495057;
-  text-align: left;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s;
+  text-align: left;
 }
 
 .categoryButton:hover {
-  background: #f8f9fa;
+  background-color: #f8f9fa;
+  color: #212529;
 }
 
 .categoryButton.active {
-  background: #e7f5ff;
-  color: #1971c2;
+  background-color: #e7f5ff;
+  color: #228be6;
   font-weight: 600;
-}
-
-.categoryButton.childCategory {
-  font-size: 0.9rem;
-  color: #6c757d;
-}
-
-.categoryButton.childCategory:hover {
-  background: #f1f3f5;
-}
-
-.categoryButton.childCategory.active {
-  background: #d0ebff;
-  color: #1971c2;
-}
-
-.categoryIndicator {
-  margin-right: 0.5rem;
-  color: #adb5bd;
-  font-size: 0.9rem;
 }
 
 .categoryName {
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .categoryCount {
-  min-width: 28px;
-  padding: 0.125rem 0.5rem;
-  background: #f1f3f5;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #868e96;
-  text-align: center;
+  font-size: 0.8rem;
+  color: #adb5bd;
+  margin-left: 0.5rem;
 }
 
-.categoryButton.active .categoryCount {
-  background: #d0ebff;
-  color: #1971c2;
+.categoryIndicator {
+  margin-right: 0.5rem;
+  color: #dee2e6;
 }
 
-/* ==================== */
-/* Tags Section         */
-/* ==================== */
+/* Tag Cloud */
 .tagCloud {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  padding: 0 0.5rem;
 }
 
-/* Tag Button */
 .tagButton {
-  padding: 0.5rem 0.875rem;
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 16px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  padding: 0.3rem 0.6rem;
+  background-color: #f1f3f5;
+  border: none;
+  border-radius: 4px;
   color: #495057;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .tagButton:hover {
-  background: #e7f5ff;
-  border-color: #339af0;
-  color: #1971c2;
-  transform: translateY(-1px);
+  background-color: #e9ecef;
+  color: #212529;
 }
 
-/* ==================== */
-/* Activity Section     */
-/* ==================== */
-.activityList {
-  margin: 0;
-  padding: 0 0.5rem;
+/* Activity List & Latest List */
+.activityList, .latestList {
   list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .activityItem {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #f1f3f5;
+  color: #495057;
+  font-size: 0.9rem;
 }
 
-.activityItem:last-child {
+.activityIcon {
+  color: #adb5bd;
+  font-size: 1rem;
+}
+
+.latestItem {
+  border-bottom: 1px solid #f1f3f5;
+  padding-bottom: 0.5rem;
+}
+
+.latestItem:last-child {
   border-bottom: none;
 }
 
-/* Activity Icon & Text */
-.activityIcon {
-  font-size: 1rem;
-  color: #adb5bd;
-}
-
-.activityText {
-  font-size: 0.9rem;
+.latestLink {
+  text-decoration: none;
   color: #495057;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  transition: color 0.2s;
 }
 
-/* ==================== */
-/* Manage Link Section  */
-/* ==================== */
+.latestLink:hover {
+  color: #228be6;
+}
+
+.commentPreview {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.commentAuthor {
+  font-size: 0.8rem;
+  color: #868e96;
+}
+
+.emptyText {
+  font-size: 0.85rem;
+  color: #adb5bd;
+  font-style: italic;
+}
+
+/* Manage Link */
 .manageLink {
   display: block;
-  padding: 0.875rem 1rem;
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
   color: #495057;
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-align: center;
   text-decoration: none;
-  transition: all 0.2s ease;
-  cursor: pointer;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
 .manageLink:hover {
-  background: #e9ecef;
+  background-color: #e9ecef;
+  border-color: #dee2e6;
   color: #212529;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* ==================== */
-/* Media Queries        */
-/* ==================== */
-@media (max-width: 1024px) {
-  .sidebar {
-    width: 240px;
-  }
-
-  .sidebarContent {
-    padding: 1.5rem 1rem;
-  }
+/* Collapsed State */
+.collapsed {
+  width: 0;
+  border: none;
+  overflow: hidden;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .sidebar {
     display: none;
   }

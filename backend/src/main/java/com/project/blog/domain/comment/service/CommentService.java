@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.project.blog.domain.account.entity.Account;
 import com.project.blog.domain.comment.dto.req.CommentReqDto;
 import com.project.blog.domain.comment.dto.res.CommentResDto;
-import com.project.blog.domain.comment.dto.res.MyCommentResDto;
+import com.project.blog.domain.comment.dto.res.CommentSummaryResDto;
 import com.project.blog.domain.comment.entity.Comment;
 import com.project.blog.domain.comment.repository.CommentRepository;
 import com.project.blog.domain.post.entity.Post;
@@ -166,11 +166,31 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<MyCommentResDto> getMyComments(AuthenticatedUser authenticatedUser) {
+    public List<CommentSummaryResDto> getMyComments(AuthenticatedUser authenticatedUser) {
         Long authorId = authenticatedUser.getAccount().getId();
         List<Comment> comments = commentRepository.findByAuthorId(authorId);
         return comments.stream()
-                .map(MyCommentResDto::from)
+                .map(CommentSummaryResDto::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<CommentSummaryResDto> getCommentsByAuthorId(Long authorId, AuthenticatedUser authenticatedUser) {
+        List<Comment> comments = commentRepository.findAllByAuthorIdOrPostAuthorId(authorId);
+        Long currentUserId = authenticatedUser != null ? authenticatedUser.getAccount().getId() : null;
+
+        return comments.stream()
+                .filter(c -> {
+                    if (c.isPublic()) return true;
+                    if (currentUserId == null) return false;
+                    
+                    Long commentAuthorId = c.getAuthor() != null ? c.getAuthor().getId() : null;
+                    Long postAuthorId = c.getPost().getAuthor() != null ? c.getPost().getAuthor().getId() : null;
+                    
+                    // 본인이거나 게시글 주인인 경우 비밀 댓글 노출
+                    return currentUserId.equals(commentAuthorId) || currentUserId.equals(postAuthorId);
+                })
+                .map(CommentSummaryResDto::from)
                 .collect(Collectors.toList());
     }
 }
