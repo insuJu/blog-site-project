@@ -38,15 +38,18 @@ const Sidebar = ({
       if (!accountId) return;
       
       try {
+        // 통계 정보 (게시글, 조회수)
         const statsData = await getAuthorStats(accountId);
         setAuthorStats({
           postCount: statsData.postCount,
           viewCount: statsData.viewCount,
         });
 
+        // 최신 게시글 5개
         const postsData = await getPostsByAuthor(accountId, { size: 5 });
         setLatestPosts(postsData.content || []);
 
+        // 최신 댓글 5개 (해당 블로그와 연관된 모든 댓글 통합 조회)
         const commentsData = await getCommentsByAuthorId(accountId);
         setLatestComments((commentsData || []).slice(0, 5));
         
@@ -72,6 +75,7 @@ const Sidebar = ({
       className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ""}`}
     >
       <div className={styles.sidebarContent}>
+        {/* 블로그 정보 */}
         {accountId && (
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>블로그 정보</h3>
@@ -92,19 +96,10 @@ const Sidebar = ({
           </div>
         )}
 
+        {/* 카테고리 */}
         <div className={styles.section}>
           <h3 className={styles.sectionTitle}>카테고리</h3>
           <ul className={styles.categoryList}>
-            <li className={styles.categoryItem}>
-              <button
-                className={`${styles.categoryButton} ${
-                  selectedCategory === "all" ? styles.active : ""
-                }`}
-                onClick={() => handleCategoryClick("all")}
-              >
-                <span className={styles.categoryName}>전체보기</span>
-              </button>
-            </li>
             {categories.map((category) => (
               <li key={category.id} className={styles.categoryItem}>
                 <button
@@ -129,6 +124,7 @@ const Sidebar = ({
           </ul>
         </div>
 
+        {/* 최신 게시글 */}
         <div className={styles.section}>
           <h3 className={styles.sectionTitle}>
             <FaHistory className={styles.titleIcon} /> 최신 게시글
@@ -145,6 +141,7 @@ const Sidebar = ({
           </ul>
         </div>
 
+        {/* 최신 댓글 */}
         <div className={styles.section}>
           <h3 className={styles.sectionTitle}>
             <FaCommentDots className={styles.titleIcon} /> 최신 댓글
@@ -162,6 +159,7 @@ const Sidebar = ({
           </ul>
         </div>
 
+        {/* 인기 태그 */}
         <div className={styles.section}>
           <h3 className={styles.sectionTitle}>인기 태그</h3>
           <div className={styles.tagCloud}>

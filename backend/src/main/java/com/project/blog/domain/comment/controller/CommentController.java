@@ -100,6 +100,15 @@ public class CommentController {
                                 .build());
         }
 
+        @GetMapping("/comments/received")
+        public ResponseEntity<ApiResDto<List<CommentSummaryResDto>>> getReceivedComments(
+                        @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+                List<CommentSummaryResDto> comments = commentService.getReceivedComments(authenticatedUser);
+                return ResponseEntity.ok(ApiResDto.<List<CommentSummaryResDto>>builder()
+                                .data(comments)
+                                .build());
+        }
+
         @GetMapping("/comments/author/{authorId}")
         public ResponseEntity<ApiResDto<List<CommentSummaryResDto>>> getCommentsByAuthorId(
                         @PathVariable("authorId") Long authorId,

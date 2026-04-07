@@ -30,4 +30,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("SELECT c FROM Comment c WHERE c.author.id = :authorId OR c.post.author.id = :authorId ORDER BY c.createdAt DESC")
     List<Comment> findAllByAuthorIdOrPostAuthorId(@Param("authorId") Long authorId);
+
+    @Query("SELECT c FROM Comment c WHERE c.post.author.id = :authorId AND c.author.id != :authorId ORDER BY c.createdAt DESC")
+    List<Comment> findReceivedCommentsByAuthorId(@Param("authorId") Long authorId);
 }

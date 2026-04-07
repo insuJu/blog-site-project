@@ -175,6 +175,15 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
+    public List<CommentSummaryResDto> getReceivedComments(AuthenticatedUser authenticatedUser) {
+        Long authorId = authenticatedUser.getAccount().getId();
+        List<Comment> comments = commentRepository.findReceivedCommentsByAuthorId(authorId);
+        return comments.stream()
+                .map(CommentSummaryResDto::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<CommentSummaryResDto> getCommentsByAuthorId(Long authorId, AuthenticatedUser authenticatedUser) {
         List<Comment> comments = commentRepository.findAllByAuthorIdOrPostAuthorId(authorId);
         Long currentUserId = authenticatedUser != null ? authenticatedUser.getAccount().getId() : null;
@@ -187,7 +196,6 @@ public class CommentService {
                     Long commentAuthorId = c.getAuthor() != null ? c.getAuthor().getId() : null;
                     Long postAuthorId = c.getPost().getAuthor() != null ? c.getPost().getAuthor().getId() : null;
                     
-                    // 본인이거나 게시글 주인인 경우 비밀 댓글 노출
                     return currentUserId.equals(commentAuthorId) || currentUserId.equals(postAuthorId);
                 })
                 .map(CommentSummaryResDto::from)

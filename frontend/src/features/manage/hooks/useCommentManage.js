@@ -5,7 +5,7 @@ export const useCommentManage = () => {
   const [comments, setComments] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('mine'); // 'mine' or 'received'
+  const [activeTab, setActiveTab] = useState('mine'); 
 
   const loadComments = useCallback(async () => {
     setLoading(true);
