@@ -3,7 +3,7 @@
 /* ==================== */
 .userBlogPage {
   display: flex;
-  height: calc(100vh - 128px);
+  height: calc(100vh - 64px);
   background: #f8f9fa;
   overflow: hidden;
   border-radius: 12px;
@@ -206,6 +206,7 @@
 @media (max-width: 768px) {
   .userBlogPage {
     flex-direction: column;
+    height: calc(100vh - 56px);
   }
 
   .mainContent {

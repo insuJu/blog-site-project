@@ -42,9 +42,8 @@ const AppRoutes = () => {
         path="/settings"
         element={
           <ProtectedRoute>
-            <Layout>
-              <SettingsPage />
-            </Layout>
+            <Header />
+            <SettingsPage />
           </ProtectedRoute>
         }
       />
@@ -53,9 +52,8 @@ const AppRoutes = () => {
         path="/manage"
         element={
           <ProtectedRoute>
-            <Layout>
-              <ManagePage />
-            </Layout>
+            <Header />
+            <ManagePage />
           </ProtectedRoute>
         }
       />
