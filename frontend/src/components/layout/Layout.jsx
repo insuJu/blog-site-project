@@ -1,5 +1,4 @@
 import Header from './Header/Header';
-import Footer from './Footer/Footer';
 import styles from './Layout.module.css';
 
 const Layout = ({ children }) => {
@@ -9,7 +8,6 @@ const Layout = ({ children }) => {
       <main className={styles.main}>
         {children}
       </main>
-      <Footer />
     </div>
   );
 };

@@ -2,10 +2,11 @@ import { Route, Routes } from "react-router-dom";
 import Footer from "../components/layout/Footer/Footer";
 import Header from "../components/layout/Header/Header";
 import Layout from "../components/layout/Layout";
-import ProtectedRoute from "../components/routes/ProtectedRoute";
 import AdminRoute from "../components/routes/AdminRoute";
+import ProtectedRoute from "../components/routes/ProtectedRoute";
+import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage/AdminDashboardPage";
 import OAuth2RedirectPage from "../features/auth/pages/OAuth2RedirectPage/OAuth2RedirectPage";
-import CategoryListPage from "../features/category/pages/CategoryListPage/CategoryListPage";
+import ManagePage from "../features/manage/pages/ManagePage/ManagePage";
 import EditPage from "../features/post/pages/EditPage/EditPage";
 import IndexPage from "../features/post/pages/IndexPage/IndexPage";
 import MyBlogPage from "../features/post/pages/MyBlogPage/MyBlogPage";
@@ -15,10 +16,8 @@ import TagPostsPage from "../features/post/pages/TagPostsPage/TagPostsPage";
 import UserBlogPage from "../features/post/pages/UserBlogPage/UserBlogPage";
 import WritePage from "../features/post/pages/WritePage/WritePage";
 import SettingsPage from "../features/settings/pages/SettingsPage/SettingsPage";
-import ManagePage from "../features/manage/pages/ManagePage/ManagePage";
-import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage/AdminDashboardPage";
-import TermsPage from "../pages/TermsPage/TermsPage";
 import PrivacyPage from "../pages/PrivacyPage/PrivacyPage";
+import TermsPage from "../pages/TermsPage/TermsPage";
 
 const AppRoutes = () => {
   return (
@@ -67,7 +66,6 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Header />
             <WritePage />
-            <Footer />
           </ProtectedRoute>
         }
       />
@@ -78,7 +76,6 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Header />
             <EditPage />
-            <Footer />
           </ProtectedRoute>
         }
       />
@@ -89,7 +86,6 @@ const AppRoutes = () => {
           <>
             <Header />
             <PostDetailPage />
-            <Footer />
           </>
         }
       />
@@ -100,7 +96,6 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Header />
             <MyBlogPage />
-            <Footer />
           </ProtectedRoute>
         }
       />
@@ -111,7 +106,6 @@ const AppRoutes = () => {
           <>
             <Header />
             <UserBlogPage />
-            <Footer />
           </>
         }
       />
@@ -122,7 +116,6 @@ const AppRoutes = () => {
           <>
             <Header />
             <TagPostsPage />
-            <Footer />
           </>
         }
       />
@@ -133,7 +126,6 @@ const AppRoutes = () => {
           <>
             <Header />
             <SearchResultPage />
-            <Footer />
           </>
         }
       />
@@ -144,7 +136,6 @@ const AppRoutes = () => {
           <AdminRoute>
             <Header />
             <AdminDashboardPage />
-            <Footer />
           </AdminRoute>
         }
       />

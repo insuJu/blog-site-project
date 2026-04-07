@@ -164,11 +164,27 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 500;
+  margin-bottom: 0.2rem;
+}
+
+.commentMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #868e96;
 }
 
 .commentAuthor {
-  font-size: 0.8rem;
-  color: #868e96;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.commentDate {
+  font-size: 0.75rem;
+  color: #adb5bd;
 }
 
 .emptyText {
