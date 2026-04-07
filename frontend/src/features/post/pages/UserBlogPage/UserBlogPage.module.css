@@ -3,8 +3,11 @@
 /* ==================== */
 .userBlogPage {
   display: flex;
-  min-height: calc(100vh - 70px);
+  height: calc(100vh - 128px);
   background: #f8f9fa;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
 }
 
 /* ==================== */
@@ -12,8 +15,26 @@
 /* ==================== */
 .mainContent {
   flex: 1;
-  padding: 3rem 0;
+  height: 100%;
+  padding: 0;
+  overflow-y: auto;
   overflow-x: hidden;
+  background: white;
+  scrollbar-width: thin;
+  scrollbar-color: #dee2e6 transparent;
+}
+
+.mainContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mainContent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mainContent::-webkit-scrollbar-thumb {
+  background-color: #dee2e6;
+  border-radius: 3px;
 }
 
 /* Inner Container */
