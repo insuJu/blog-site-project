@@ -44,8 +44,7 @@ public class CategoryController {
         public ResponseEntity<ApiResDto<List<CategoryResDto>>> getAllCategories(
                         @RequestParam(required = false) Long accountId,
                         @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
-                Long targetAccountId = accountId != null ? accountId : authenticatedUser.getAccount().getId();
-                List<CategoryResDto> categories = categoryService.getAllCategories(targetAccountId);
+                List<CategoryResDto> categories = categoryService.getAllCategories(accountId, authenticatedUser);
                 return ResponseEntity.ok(ApiResDto.<List<CategoryResDto>>builder()
                                 .data(categories)
                                 .build());
@@ -64,8 +63,7 @@ public class CategoryController {
                         @PathVariable Long id,
                         @RequestParam(required = false) Long accountId,
                         @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
-                Long targetAccountId = accountId != null ? accountId : authenticatedUser.getAccount().getId();
-                List<CategoryResDto> categories = categoryService.getCategoriesByParentId(id, targetAccountId);
+                List<CategoryResDto> categories = categoryService.getCategoriesByParentId(id, accountId, authenticatedUser);
                 return ResponseEntity.ok(ApiResDto.<List<CategoryResDto>>builder()
                                 .data(categories)
                                 .build());

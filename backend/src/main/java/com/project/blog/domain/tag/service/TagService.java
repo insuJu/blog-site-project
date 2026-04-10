@@ -49,8 +49,17 @@ public class TagService {
     }
 
     @Transactional(readOnly = true)
-    public List<TagResDto> getAllTags(Long accountId) {
-        List<Tag> tags = tagRepository.findByAccountId(accountId);
+    public List<TagResDto> getAllTags(Long accountId, AuthenticatedUser authenticatedUser) {
+        Long targetAccountId = accountId;
+        if (targetAccountId == null && authenticatedUser != null) {
+            targetAccountId = authenticatedUser.getAccount().getId();
+        }
+
+        if (targetAccountId == null) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
+        }
+
+        List<Tag> tags = tagRepository.findByAccountId(targetAccountId);
         return tags.stream()
                 .map(TagResDto::from)
                 .collect(Collectors.toList());
@@ -64,8 +73,17 @@ public class TagService {
     }
 
     @Transactional(readOnly = true)
-    public List<TagResDto> searchTags(String keyword, Long accountId) {
-        List<Tag> tags = tagRepository.findByNameContainingAndAccountId(keyword, accountId);
+    public List<TagResDto> searchTags(String keyword, Long accountId, AuthenticatedUser authenticatedUser) {
+        Long targetAccountId = accountId;
+        if (targetAccountId == null && authenticatedUser != null) {
+            targetAccountId = authenticatedUser.getAccount().getId();
+        }
+
+        if (targetAccountId == null) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
+        }
+
+        List<Tag> tags = tagRepository.findByNameContainingAndAccountId(keyword, targetAccountId);
         return tags.stream()
                 .map(TagResDto::from)
                 .collect(Collectors.toList());

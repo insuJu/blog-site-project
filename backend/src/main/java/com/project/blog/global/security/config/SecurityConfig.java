@@ -68,6 +68,10 @@ public class SecurityConfig {
                                                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                                                 .requestMatchers("/uploads/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/stats/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/tags/**").permitAll()
                                                 .requestMatchers("/api/admin/**").authenticated()
                                                 .anyRequest().authenticated());
 

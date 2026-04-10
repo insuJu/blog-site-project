@@ -62,8 +62,17 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryResDto> getAllCategories(Long accountId) {
-        List<Category> topLevelCategories = categoryRepository.findByParentIsNullAndAccountId(accountId);
+    public List<CategoryResDto> getAllCategories(Long accountId, AuthenticatedUser authenticatedUser) {
+        Long targetAccountId = accountId;
+        if (targetAccountId == null && authenticatedUser != null) {
+            targetAccountId = authenticatedUser.getAccount().getId();
+        }
+
+        if (targetAccountId == null) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
+        }
+
+        List<Category> topLevelCategories = categoryRepository.findByParentIsNullAndAccountId(targetAccountId);
         return topLevelCategories.stream()
                 .map(CategoryResDto::from)
                 .collect(Collectors.toList());
@@ -77,11 +86,20 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryResDto> getCategoriesByParentId(Long parentId, Long accountId) {
+    public List<CategoryResDto> getCategoriesByParentId(Long parentId, Long accountId, AuthenticatedUser authenticatedUser) {
+        Long targetAccountId = accountId;
+        if (targetAccountId == null && authenticatedUser != null) {
+            targetAccountId = authenticatedUser.getAccount().getId();
+        }
+
+        if (targetAccountId == null) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
+        }
+
         categoryRepository.findById(parentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PARENT_CATEGORY_NOT_FOUND));
 
-        List<Category> children = categoryRepository.findByParentIdAndAccountId(parentId, accountId);
+        List<Category> children = categoryRepository.findByParentIdAndAccountId(parentId, targetAccountId);
         return children.stream()
                 .map(CategoryResDto::fromWithoutChildren)
                 .collect(Collectors.toList());

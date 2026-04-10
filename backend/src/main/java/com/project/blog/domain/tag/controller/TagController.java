@@ -43,8 +43,7 @@ public class TagController {
         public ResponseEntity<ApiResDto<List<TagResDto>>> getAllTags(
                         @RequestParam(required = false) Long accountId,
                         @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
-                Long targetAccountId = accountId != null ? accountId : authenticatedUser.getAccount().getId();
-                List<TagResDto> tags = tagService.getAllTags(targetAccountId);
+                List<TagResDto> tags = tagService.getAllTags(accountId, authenticatedUser);
                 return ResponseEntity.ok(ApiResDto.<List<TagResDto>>builder()
                                 .data(tags)
                                 .build());
@@ -55,8 +54,7 @@ public class TagController {
                         @RequestParam("keyword") String keyword,
                         @RequestParam(required = false) Long accountId,
                         @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
-                Long targetAccountId = accountId != null ? accountId : authenticatedUser.getAccount().getId();
-                List<TagResDto> tags = tagService.searchTags(keyword, targetAccountId);
+                List<TagResDto> tags = tagService.searchTags(keyword, accountId, authenticatedUser);
                 return ResponseEntity.ok(ApiResDto.<List<TagResDto>>builder()
                                 .data(tags)
                                 .build());
