@@ -57,40 +57,40 @@
 ```text
 backend/src/main/java/com/project/blog/
 ├── domain/
-│   ├── account/        # 계정
-│   ├── admin/          # 관리자
-│   ├── profile/        # 프로필
-│   ├── post/           # 게시글
-│   ├── comment/        # 댓글
-│   ├── category/       # 카테고리
-│   ├── tag/            # 태그
-│   ├── like/           # 좋아요
-│   └── stat/           # 통계
+│   ├── account/        
+│   ├── admin/          
+│   ├── profile/        
+│   ├── post/          
+│   ├── comment/        
+│   ├── category/      
+│   ├── tag/         
+│   ├── like/          
+│   └── stat/          
 └── global/
-    ├── security/       # JWT, OAuth2, 인증 필터
-    ├── verification/   # 이메일 인증 (Redis)
-    ├── mail/           # 메일 발송
-    ├── file/           # 파일 업로드
-    ├── error/          # 예외 처리
-    └── config/         # 설정
+    ├── security/      
+    ├── verification/ 
+    ├── mail/         
+    ├── file/          
+    ├── error/         
+    └── config/        
 ```
 
 ### Frontend - Feature 기반 구조
 ```text
 frontend/src/
 ├── features/
-│   ├── auth/           # 인증 (로그인, 회원가입, OAuth2)
-│   ├── admin/          # 관리자
-│   ├── post/           # 게시글
-│   ├── comment/        # 댓글
-│   ├── category/       # 카테고리
-│   ├── tag/            # 태그
-│   ├── settings/       # 설정
-│   └── like/           # 좋아요
-├── components/         # 공통 컴포넌트
-├── contexts/           # 전역 상태
-├── routes/             # 라우팅
-└── api/                # API 클라이언트
+│   ├── auth/         
+│   ├── admin/          
+│   ├── post/          
+│   ├── comment/       
+│   ├── category/      
+│   ├── tag/           
+│   ├── settings/      
+│   └── like/           
+├── components/      
+├── contexts/         
+├── routes/            
+└── api/               
 ```
 
 ---
