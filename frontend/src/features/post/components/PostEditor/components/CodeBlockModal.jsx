@@ -106,10 +106,10 @@ const CodeBlockModal = ({ isOpen, onClose, onSave, initialCode = "", initialLang
         />
 
         <div className={styles.actions}>
-          <button className={styles.cancelButton} onClick={onClose}>
+          <button type="button" className={styles.cancelButton} onClick={onClose}>
             취소
           </button>
-          <button className={styles.saveButton} onClick={handleSave}>
+          <button type="button" className={styles.saveButton} onClick={handleSave}>
             저장
           </button>
         </div>

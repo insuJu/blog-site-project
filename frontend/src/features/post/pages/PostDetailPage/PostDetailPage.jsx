@@ -7,35 +7,26 @@ import { usePost } from "../../hooks/usePost";
 import styles from "./PostDetailPage.module.css";
 import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
 import { useLike } from "../../../like/hooks/useLike";
-import { useEffect, useRef } from "react";
-import { markdownToHtml } from "../../components/PostEditor/utils/contentConverter";
-import Prism from "../../../../utils/prismConfig";
+import { useEffect } from "react";
+import PostContent from "../../components/PostContent/PostContent";
 
 const PostDetailPage = () => {
   const { id } = useParams();
+  return <PostDetail key={id} id={id} />;
+};
+
+const PostDetail = ({ id }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { post, loading, error, update, remove, reload } = usePost(id);
   const { liked, toggle: toggleLike, checkLiked } = useLike('post', id);
   const comments = useComments(id);
-  const contentRef = useRef(null);
 
   useEffect(() => {
     if (id && user) {
       checkLiked();
     }
   }, [id, user, checkLiked]);
-
-  useEffect(() => {
-    const contentElements = document.querySelectorAll('.contentText [contenteditable]');
-    contentElements.forEach((element) => {
-      element.removeAttribute('contenteditable');
-    });
-
-    if (contentRef.current) {
-      Prism.highlightAllUnder(contentRef.current);
-    }
-  }, [post]);
 
   const handleLike = async () => {
     if (!user) {
@@ -93,19 +84,6 @@ const PostDetailPage = () => {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${year}.${month}.${day} ${hours}:${minutes}`;
-  };
-
-  const renderContent = (content) => {
-    if (!content) return "";
-
-    const hasHtmlTags = content.includes("<h") || content.includes("<pre") || content.includes("<img");
-    const hasMarkdownSyntax = content.includes("```") || content.includes("# ");
-
-    if (hasHtmlTags && !hasMarkdownSyntax) {
-      return content;
-    }
-
-    return markdownToHtml(content);
   };
 
   if (loading) {
@@ -199,11 +177,7 @@ const PostDetailPage = () => {
           </header>
 
           <div className={styles.content}>
-            <div
-              ref={contentRef}
-              className={styles.contentText}
-              dangerouslySetInnerHTML={{ __html: renderContent(post.content) }}
-            />
+            <PostContent content={post.content} />
           </div>
 
           <div className={styles.actions}>

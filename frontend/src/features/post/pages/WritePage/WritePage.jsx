@@ -30,7 +30,7 @@ const WritePage = () => {
     if (result.success) {
       navigate('/');
     } else {
-      throw new Error('게시글 생성에 실패했습니다.');
+      throw new Error(result.errors?.content || '게시글 생성에 실패했습니다.');
     }
   };
 

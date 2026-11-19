@@ -1,0 +1,119 @@
+/* ==================== */
+/* Toolbar Container    */
+/* ==================== */
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0;
+  min-inline-size: 0;
+  padding: 0.375rem 0.75rem;
+  background: #fbfcff;
+  border: 0;
+  border-bottom: 1px solid var(--editor-divider);
+  position: sticky;
+  inset-block-start: var(--editor-header-height);
+  z-index: 99;
+}
+
+/* Toolbar Group */
+.toolbarGroup {
+  display: flex;
+  gap: 0.125rem;
+}
+
+/* Toolbar Divider */
+.toolbarDivider {
+  width: 1px;
+  height: 18px;
+  margin-inline: 0.125rem;
+  background: var(--editor-divider);
+}
+
+/* ==================== */
+/* Toolbar Buttons      */
+/* ==================== */
+.toolbarButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--editor-control-height);
+  height: var(--editor-control-height);
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: #35455c;
+  cursor: pointer;
+}
+
+.toolbarButton:hover:not(:disabled) {
+  background: #eaf0f8;
+  color: #294497;
+}
+
+.blockStyleSelect {
+  min-height: var(--editor-control-height);
+  min-width: 7rem;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid #dce3ee;
+  border-radius: 7px;
+  background: #fff;
+  color: #35455c;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.blockStyleSelect:hover:not(:disabled) {
+  border-color: #b3c2da;
+}
+
+.colorPicker {
+  display: inline-flex;
+  align-items: center;
+}
+
+.colorPicker input {
+  box-sizing: border-box;
+  width: var(--editor-control-height);
+  height: var(--editor-control-height);
+  padding: 0.375rem;
+  border: 1px solid #dce3ee;
+  border-radius: 7px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.colorPicker input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.toolbarButton:focus-visible,
+.blockStyleSelect:focus-visible,
+.colorPicker input:focus-visible {
+  outline: 2px solid #4c6ef5;
+  outline-offset: 1px;
+}
+
+.toolbarButton:disabled,
+.blockStyleSelect:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ==================== */
+/* Media Queries        */
+/* ==================== */
+@media (max-width: 620px) {
+  .toolbar {
+    position: static;
+  }
+
+  .toolbarDivider {
+    display: none;
+  }
+}

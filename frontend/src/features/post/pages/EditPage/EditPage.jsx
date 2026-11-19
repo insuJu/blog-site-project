@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import PostEditor from '../../components/PostEditor/PostEditor';
 import { usePost } from '../../hooks/usePost';
@@ -6,26 +5,12 @@ import styles from './EditPage.module.css';
 
 const EditPage = () => {
   const { id } = useParams();
+  return <EditPost key={id} id={id} />;
+};
+
+const EditPost = ({ id }) => {
   const navigate = useNavigate();
-  const { post, loading, error, update, reload } = usePost(id);
-  const [initialData, setInitialData] = useState(null);
-
-  useEffect(() => {
-    reload();
-  }, [id]);
-
-  useEffect(() => {
-    if (post) {
-      const editorData = {
-        title: post.title,
-        content: post.content,
-        categoryId: post.category?.id || '',
-        tags: post.tags?.map(tag => `#${tag.name}`).join(' ') || '',
-        isPublic: post.isPublic !== undefined ? post.isPublic : true,
-      };
-      setInitialData(editorData);
-    }
-  }, [post]);
+  const { post, loading, error, update } = usePost(id);
 
   const handleSubmit = async (formData) => {
     const tagNames = [];
@@ -50,11 +35,11 @@ const EditPage = () => {
     if (result.success) {
       navigate(`/posts/${id}`);
     } else {
-      throw new Error('게시글 수정에 실패했습니다.');
+      throw new Error(result.errors?.content || '게시글 수정에 실패했습니다.');
     }
   };
 
-  if (loading || !initialData) {
+  if (loading) {
     return (
       <div className={styles.editPage}>
         <div className={styles.loadingContainer}>
@@ -75,6 +60,14 @@ const EditPage = () => {
       </div>
     );
   }
+
+  const initialData = {
+    title: post.title,
+    content: post.content,
+    categoryId: post.category?.id || '',
+    tags: post.tags?.map(tag => `#${tag.name}`).join(' ') || '',
+    isPublic: post.isPublic !== undefined ? post.isPublic : true,
+  };
 
   return (
     <div className={styles.editPage}>

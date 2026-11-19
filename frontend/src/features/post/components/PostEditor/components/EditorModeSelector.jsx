@@ -1,54 +1,44 @@
 import styles from './EditorModeSelector.module.css';
 
-const EditorModeSelector = ({ editorMode, onModeChange, fontSize, onFontSizeChange }) => {
+export default function EditorModeSelector({
+  editorMode, modeLabels, controls, onModeChange, fontSize, onFontSizeChange, disabled, sourceActions,
+}) {
   return (
-    <div className={styles.modeSelector}>
-      <button
-        type="button"
-        className={`${styles.modeButton} ${
-          editorMode === 'wysiwyg' ? styles.activeModeButton : ''
-        }`}
-        onClick={() => onModeChange('wysiwyg')}
-      >
-        일반 모드
-      </button>
-      <button
-        type="button"
-        className={`${styles.modeButton} ${
-          editorMode === 'markdown' ? styles.activeModeButton : ''
-        }`}
-        onClick={() => onModeChange('markdown')}
-      >
-        Markdown
-      </button>
-      <button
-        type="button"
-        className={`${styles.modeButton} ${
-          editorMode === 'html' ? styles.activeModeButton : ''
-        }`}
-        onClick={() => onModeChange('html')}
-      >
-        HTML
-      </button>
-
-      {editorMode === 'wysiwyg' && (
-        <>
-          <div className={styles.modeSpacer}></div>
-
+    <div
+      className={sourceActions ? `${styles.modeSelector} ${styles.sourceModeSelector}` : styles.modeSelector}
+      role="group"
+      aria-label="본문 편집 방식"
+    >
+      {Object.entries(modeLabels).map(([mode, title]) => (
+        <button
+          key={mode}
+          type="button"
+          className={`${styles.modeButton} ${editorMode === mode ? styles.activeModeButton : ''}`}
+          aria-controls={controls}
+          aria-pressed={editorMode === mode}
+          disabled={disabled}
+          onClick={() => onModeChange(mode)}
+        >
+          {title}
+        </button>
+      ))}
+      {editorMode === 'visual' && (
+        <label className={styles.fontSizeControl}>
+          <span>보기 크기</span>
           <select
             className={styles.fontSizeSelect}
             value={fontSize}
-            onChange={(e) => onFontSizeChange(e.target.value)}
+            disabled={disabled}
+            onChange={(event) => onFontSizeChange(event.target.value)}
           >
             <option value="small">작게</option>
             <option value="medium">보통</option>
             <option value="large">크게</option>
             <option value="xlarge">매우 크게</option>
           </select>
-        </>
+        </label>
       )}
+      {sourceActions}
     </div>
   );
-};
-
-export default EditorModeSelector;
+}

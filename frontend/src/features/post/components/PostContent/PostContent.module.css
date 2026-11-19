@@ -1,0 +1,122 @@
+.body {
+  color: #333;
+  line-height: 1.8;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.body :is(h1, h2, h3, h4, h5, h6) {
+  margin: 1.5rem 0 0.75rem;
+  line-height: 1.35;
+  color: #212529;
+}
+
+.body h1 { font-size: 2em; }
+.body h2 { font-size: 1.625em; }
+.body h3 { font-size: 1.375em; }
+.body h4 { font-size: 1.25em; }
+.body h5 { font-size: 1.125em; }
+.body h6 { font-size: 1em; }
+
+.body p {
+  margin: 0.75rem 0;
+}
+
+.body :is(ul, ol) {
+  margin: 0.75rem 0;
+  padding-inline-start: 2rem;
+}
+
+.body ul {
+  list-style-type: disc;
+}
+
+.body ol:not([type]) {
+  list-style-type: decimal;
+}
+
+.body li > p {
+  margin-block: 0.25rem;
+}
+
+.body table {
+  width: 100%;
+  margin-block: 1rem;
+  border-collapse: collapse;
+}
+
+.body :is(th, td) {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid #dee2e6;
+  text-align: start;
+}
+
+.body th {
+  background: #f8f9fa;
+}
+
+.body :is(th, td) > p {
+  margin: 0;
+}
+
+.body blockquote {
+  margin: 1rem 0;
+  padding: 0.25rem 1rem;
+  border-inline-start: 4px solid #4c6ef5;
+  background: #f8f9fa;
+  color: #495057;
+}
+
+.body a {
+  color: #364fc7;
+  text-decoration: underline;
+}
+
+.body img {
+  max-width: 100%;
+  vertical-align: middle;
+  border-radius: 4px;
+}
+
+.body img:not([height]) {
+  height: auto;
+}
+
+.body code {
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  background: #f8f9fa;
+  font-family: Consolas, Monaco, monospace;
+  font-size: 0.9em;
+}
+
+.body pre {
+  margin: 1rem 0;
+  padding: 1rem;
+  overflow: auto;
+  border-radius: 8px;
+  background: #282c34;
+  color: #e4e7eb;
+  font-family: Consolas, Monaco, monospace;
+  line-height: 1.5;
+}
+
+.body pre {
+  white-space: pre;
+  overflow-wrap: normal;
+  tab-size: 4;
+}
+
+.body pre code {
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  white-space: inherit;
+}
+
+.body pre p {
+  margin: 0;
+}

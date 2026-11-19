@@ -195,94 +195,6 @@
   margin-bottom: 2.5rem;
 }
 
-.contentText {
-  font-size: 1.0625rem;
-  line-height: 1.8;
-  color: #333;
-  white-space: pre-wrap;
-  word-break: break-word;
-  user-select: text;
-}
-
-/* ==================== */
-/* List Styles          */
-/* ==================== */
-.contentText ul,
-.contentText ol {
-  margin: 1.5rem 0;
-  padding-left: 2rem;
-}
-
-.contentText ul {
-  list-style-type: disc;
-}
-
-.contentText ol {
-  list-style-type: decimal;
-}
-
-.contentText li {
-  margin-bottom: 0.5rem;
-}
-
-.contentText li:last-child {
-  margin-bottom: 0;
-}
-
-/* ==================== */
-/* Strikethrough Styles */
-/* ==================== */
-.contentText del,
-.contentText s,
-.contentText strike {
-  text-decoration: line-through;
-  color: #868e96;
-}
-
-.contentText pre {
-  background-color: #282c34;
-  color: #abb2bf;
-  padding: 16px;
-  border-radius: 8px;
-  overflow: auto;
-  font-family: monospace;
-  font-size: 0.9em;
-  line-height: 1.2;
-  white-space: pre-wrap;
-  margin: 1rem 0;
-  pointer-events: none;
-  user-select: text;
-}
-
-.contentText pre * {
-  pointer-events: none;
-  user-select: text;
-}
-
-.contentText pre code {
-  background: none;
-  padding: 0;
-  color: inherit;
-  font-size: inherit;
-  white-space: pre-wrap;
-  line-height: 1.2;
-}
-
-.contentText pre p {
-  margin: 0;
-  padding: 0;
-  line-height: 1.2;
-}
-
-.contentText code {
-  background-color: #f8f9fa;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: monospace;
-  font-size: 0.9em;
-  color: #e83e8c;
-}
-
 /* ==================== */
 /* Action Buttons       */
 /* ==================== */
@@ -441,9 +353,6 @@
     gap: 1rem;
   }
 
-  .contentText {
-    font-size: 1rem;
-  }
 
   .actions {
     flex-direction: column;

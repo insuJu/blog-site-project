@@ -1,47 +1,24 @@
-import { useEffect, useRef, useState } from "react";
-import { flushSync } from "react-dom";
+import { useRef, useState } from "react";
 import { useCategories } from "../../../category/hooks/useCategories";
 import { uploadPostImage } from "../../api/postApi";
-import EditorModeSelector from "./components/EditorModeSelector";
-import EditorToolbar from "./components/EditorToolbar";
-import CodeBlockModal from "./components/CodeBlockModal";
-import { useEditorFormat } from "./hooks/useEditorFormat";
-import { htmlToMarkdown, markdownToHtml } from "./utils/contentConverter";
+import PostBodyModeSwitcher from "./next/PostBodyModeSwitcher";
 import styles from "./PostEditor.module.css";
-import Prism from "../../../../utils/prismConfig";
 
 const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
-    content: initialData?.content || "",
     categoryId: initialData?.categoryId || "",
     tags: initialData?.tags || "",
-    isPublic: initialData?.isPublic !== undefined ? initialData.isPublic : true,
+    isPublic: initialData?.isPublic ?? true,
   });
   const [currentTagInput, setCurrentTagInput] = useState("");
-
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editorMode, setEditorMode] = useState("wysiwyg");
-  const [showPreview, setShowPreview] = useState(false);
-  const [fontSize, setFontSize] = useState("medium");
-  const [pendingImages, setPendingImages] = useState([]);
-  const textareaRef = useRef(null);
-  const wysiwygRef = useRef(null);
-  const latestContentRef = useRef(formData.content);
-  const imageInputRef = useRef(null);
-  const previewRef = useRef(null);
-
-  const [codeModalOpen, setCodeModalOpen] = useState(false);
-  const [editingCodeBlock, setEditingCodeBlock] = useState(null);
-  const [codeModalInitialCode, setCodeModalInitialCode] = useState("");
-  const [codeModalInitialLang, setCodeModalInitialLang] = useState("plaintext");
-  const savedSelectionRef = useRef(null);
-
-  const { htmlFormats, markdownFormats } = useEditorFormat(
-    textareaRef,
-    setFormData
-  );
+  const [isPreparingImage, setIsPreparingImage] = useState(false);
+  const bodyEditor = useRef(null);
+  const pendingImages = useRef(new Map());
+  const submitting = useRef(false);
+  const isBusy = isSubmitting || isPreparingImage;
   const { categories } = useCategories();
 
   const flattenForSelect = (cats, depth = 0, out = []) => {
@@ -53,172 +30,9 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
     return out;
   };
 
-  const ensurePreEscapeParagraphs = (html) => {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = html;
-
-    const preElements = tempDiv.querySelectorAll('pre');
-    preElements.forEach(pre => {
-      pre.removeAttribute('contenteditable');
-
-      const prevP = pre.previousElementSibling;
-      if (prevP && prevP.tagName === 'P' && prevP.innerHTML.trim() === '') {
-        prevP.innerHTML = '<br>';
-      }
-
-      const nextP = pre.nextElementSibling;
-      if (nextP && nextP.tagName === 'P' && nextP.innerHTML.trim() === '') {
-        nextP.innerHTML = '<br>';
-      }
-    });
-
-    return tempDiv.innerHTML;
-  };
-
-  useEffect(() => {
-    if (wysiwygRef.current && initialData?.content) {
-      const processedContent = ensurePreEscapeParagraphs(initialData.content);
-      wysiwygRef.current.innerHTML = processedContent;
-    }
-
-    try {
-      document.execCommand("enableObjectResizing", false, true);
-      document.execCommand("enableInlineTableEditing", false, false);
-    } catch (e) {
-      console.log("Object resizing not supported");
-    }
-  }, []);
-
-  useEffect(() => {
-    if (showPreview && previewRef.current) {
-      Prism.highlightAllUnder(previewRef.current);
-    }
-  }, [showPreview, formData.content]);
-
-  const wysiwygFormats = {
-    bold: () => {
-      document.execCommand("bold", false, null);
-      wysiwygRef.current?.focus();
-    },
-    italic: () => {
-      document.execCommand("italic", false, null);
-      wysiwygRef.current?.focus();
-    },
-    underline: () => {
-      document.execCommand("underline", false, null);
-      wysiwygRef.current?.focus();
-    },
-    strikethrough: () => {
-      document.execCommand("strikeThrough", false, null);
-      wysiwygRef.current?.focus();
-    },
-    heading: (level) => {
-      document.execCommand("formatBlock", false, `<h${level}>`);
-      wysiwygRef.current?.focus();
-    },
-    list: () => {
-      document.execCommand("insertUnorderedList", false, null);
-      wysiwygRef.current?.focus();
-    },
-    orderedList: () => {
-      document.execCommand("insertOrderedList", false, null);
-      wysiwygRef.current?.focus();
-    },
-    quote: () => {
-      const selection = window.getSelection();
-      if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const container = range.startContainer;
-        let element =
-          container.nodeType === Node.TEXT_NODE
-            ? container.parentElement
-            : container;
-        let existingBlockquote = element.closest("blockquote");
-
-        if (existingBlockquote) {
-          document.execCommand("formatBlock", false, "<p>");
-        } else {
-          document.execCommand("formatBlock", false, "<blockquote>");
-        }
-      }
-      wysiwygRef.current?.focus();
-    },
-    code: () => {
-      const selection = window.getSelection();
-      if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const container = range.startContainer;
-        let element =
-          container.nodeType === Node.TEXT_NODE
-            ? container.parentElement
-            : container;
-        let existingCode = element.closest("code");
-
-        if (existingCode && existingCode.parentElement) {
-          const textContent = existingCode.textContent;
-          const textNode = document.createTextNode(textContent);
-          existingCode.parentNode.replaceChild(textNode, existingCode);
-
-          const newRange = document.createRange();
-          newRange.setStart(textNode, textContent.length);
-          newRange.setEnd(textNode, textContent.length);
-          selection.removeAllRanges();
-          selection.addRange(newRange);
-        } else {
-          const selectedText = range.toString();
-          if (selectedText) {
-            const code = document.createElement("code");
-            code.className = "inline-code";
-            code.textContent = selectedText;
-
-            range.deleteContents();
-            range.insertNode(code);
-
-            range.setStartAfter(code);
-            range.setEndAfter(code);
-            selection.removeAllRanges();
-            selection.addRange(range);
-          }
-        }
-      }
-      wysiwygRef.current?.focus();
-    },
-    codeBlock: () => {
-      const selection = window.getSelection();
-      let selectedText = "";
-      if (selection && selection.rangeCount > 0) {
-        selectedText = selection.toString();
-        const range = selection.getRangeAt(0);
-        savedSelectionRef.current = range.cloneRange();
-      } else {
-        savedSelectionRef.current = null;
-      }
-      setCodeModalInitialCode(selectedText);
-      setCodeModalInitialLang("plaintext");
-      setEditingCodeBlock(null);
-      setCodeModalOpen(true);
-    },
-    link: () => {
-      const url = prompt("링크 URL을 입력하세요:", "https://");
-      if (url) document.execCommand("createLink", false, url);
-      wysiwygRef.current?.focus();
-    },
-    image: () => {
-      imageInputRef.current?.click();
-    },
-    horizontalRule: () => {
-      document.execCommand("insertHorizontalRule", false, null);
-      wysiwygRef.current?.focus();
-    },
-  };
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const newValue = type === "checkbox" ? checked : value;
-
-    if (name === "content") {
-      latestContentRef.current = newValue;
-    }
 
     if (name === "tags") {
       setCurrentTagInput(newValue);
@@ -272,37 +86,6 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
     }
   };
 
-  const validate = () => {
-    const newErrors = {};
-
-    if (!formData.title.trim()) {
-      newErrors.title = "제목을 입력해주세요.";
-    } else if (formData.title.length > 100) {
-      newErrors.title = "제목은 100자를 초과할 수 없습니다.";
-    }
-
-    let content =
-      editorMode === "wysiwyg" && wysiwygRef.current
-        ? wysiwygRef.current.innerHTML
-        : formData.content;
-
-    const hasText =
-      editorMode === "wysiwyg" && wysiwygRef.current
-        ? (
-            wysiwygRef.current.innerText || wysiwygRef.current.textContent
-          ).trim()
-        : content.trim();
-
-    const hasImage = content.includes("<img") || content.includes("![");
-
-    if (!hasText && !hasImage) {
-      newErrors.content = "내용을 입력해주세요.";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const parseTags = (tagsString) => {
     if (!tagsString) return [];
 
@@ -328,516 +111,77 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  async function prepareImage(file) {
+    if (!file.type.startsWith("image/")) throw new Error("이미지 파일만 첨부할 수 있습니다.");
 
-    if (editorMode === "wysiwyg" && wysiwygRef.current) {
-      setFormData((prev) => ({
-        ...prev,
-        content: wysiwygRef.current.innerHTML,
-      }));
-    }
-
-    if (!validate()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
+    setIsPreparingImage(true);
     try {
-      let content =
-        editorMode === "wysiwyg" && wysiwygRef.current
-          ? wysiwygRef.current.innerHTML
-          : formData.content;
+      const src = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reader.onabort = () => reject(new Error("이미지 파일을 읽지 못했습니다."));
+        reader.readAsDataURL(file);
+      });
+      if (!pendingImages.current.has(src)) pendingImages.current.set(src, { file });
+      return src;
+    } finally {
+      setIsPreparingImage(false);
+    }
+  }
 
-      if (pendingImages.length > 0) {
-        for (const { file, dataUrl } of pendingImages) {
-          try {
-            const imageUrl = await uploadPostImage(file);
-            content = content.replaceAll(dataUrl, imageUrl);
-          } catch (error) {
-            throw new Error("이미지 업로드에 실패했습니다.");
-          }
-        }
-        content = content.replace(/\s*data-pending-image="[^"]*"/g, "");
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (submitting.current || isPreparingImage) return;
+
+    // Markdown 모드에 머무르고 있어도 저장 시점의 초안을 읽는다.
+    const result = bodyEditor.current?.readHtml();
+    const newErrors = {};
+    if (!formData.title.trim()) {
+      newErrors.title = "제목을 입력해주세요.";
+    } else if (formData.title.length > 100) {
+      newErrors.title = "제목은 100자를 초과할 수 없습니다.";
+    }
+
+    const body = document.createElement("template");
+    if (!result?.ok) {
+      newErrors.content = "현재 초안을 HTML로 변환할 수 없습니다. 본문을 확인해주세요.";
+    } else {
+      body.innerHTML = result.value;
+      if (!body.content.textContent.trim() && !body.content.querySelector("img[src]")) {
+        newErrors.content = "내용을 입력해주세요.";
       }
-      const submitData = { ...formData, content };
-      await onSubmit(submitData);
+    }
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
+    submitting.current = true;
+    setIsSubmitting(true);
+    try {
+      let content = result.value;
+      const sources = new Set(Array.from(body.content.querySelectorAll("img[src]"), image => image.getAttribute("src")));
+      for (const src of sources) {
+        const image = pendingImages.current.get(src);
+        if (!image) continue;
+
+        try {
+          // 이미지를 삭제한 경우 업로드하지 않고, 다시 저장할 때 성공한 업로드는 재사용한다.
+          image.uploadedUrl ||= await uploadPostImage(image.file);
+          if (!image.uploadedUrl) throw new Error();
+          const url = image.uploadedUrl.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+          content = content.replaceAll(src, url);
+        } catch {
+          throw new Error("이미지 업로드에 실패했습니다.");
+        }
+      }
+      await onSubmit({ ...formData, content });
     } catch (error) {
       setErrors({ submit: error.message || "글 저장에 실패했습니다." });
     } finally {
+      submitting.current = false;
       setIsSubmitting(false);
     }
   };
-
-  const handleModeChange = (newMode) => {
-    const currentMode = editorMode;
-
-    if (currentMode === "wysiwyg" && wysiwygRef.current) {
-      const htmlContent = wysiwygRef.current.innerHTML;
-      let convertedContent = htmlContent;
-
-      if (newMode === "markdown") {
-        convertedContent = htmlToMarkdown(htmlContent);
-      }
-
-      latestContentRef.current = convertedContent;
-
-      flushSync(() => {
-        setFormData((prev) => ({ ...prev, content: convertedContent }));
-      });
-    } else if (currentMode === "markdown" && newMode === "wysiwyg") {
-      const markdownContent = formData.content;
-      let htmlContent = markdownToHtml(markdownContent);
-      htmlContent = ensurePreEscapeParagraphs(htmlContent);
-
-      latestContentRef.current = htmlContent;
-
-      flushSync(() => {
-        setFormData((prev) => ({ ...prev, content: htmlContent }));
-      });
-
-      if (wysiwygRef.current) {
-        wysiwygRef.current.innerHTML = htmlContent;
-      }
-    } else if (currentMode === "html" && newMode === "wysiwyg") {
-      if (wysiwygRef.current && formData.content) {
-        let htmlContent = ensurePreEscapeParagraphs(formData.content);
-        wysiwygRef.current.innerHTML = htmlContent;
-      }
-    } else if (currentMode === "markdown" && newMode === "html") {
-      const htmlContent = markdownToHtml(formData.content);
-      flushSync(() => {
-        setFormData((prev) => ({ ...prev, content: htmlContent }));
-      });
-    } else if (currentMode === "html" && newMode === "markdown") {
-      const markdownContent = htmlToMarkdown(formData.content);
-      flushSync(() => {
-        setFormData((prev) => ({ ...prev, content: markdownContent }));
-      });
-    } else {
-      if (newMode === "wysiwyg" && wysiwygRef.current && formData.content) {
-        let htmlContent = ensurePreEscapeParagraphs(formData.content);
-        wysiwygRef.current.innerHTML = htmlContent;
-      }
-    }
-
-    setEditorMode(newMode);
-    setShowPreview(false);
-  };
-
-  const renderPreview = () => {
-    if (editorMode === "markdown") {
-      return markdownToHtml(formData.content);
-    }
-    return formData.content;
-  };
-
-  const handleCodeBlockClick = (pre) => {
-    const code = pre.querySelector("code");
-    const rawCode = code?.textContent || pre.textContent || "";
-    const langMatch = pre.className.match(/language-(\w+)/);
-    const lang = langMatch ? langMatch[1] : "plaintext";
-
-    setCodeModalInitialCode(rawCode);
-    setCodeModalInitialLang(lang);
-    setEditingCodeBlock(pre);
-    setCodeModalOpen(true);
-  };
-
-  const handleCodeModalSave = (code, language, highlightedHtml) => {
-    if (editingCodeBlock) {
-      const pre = editingCodeBlock;
-      pre.className = `language-${language}`;
-      const codeEl = pre.querySelector("code") || document.createElement("code");
-      codeEl.className = `language-${language}`;
-      codeEl.innerHTML = highlightedHtml;
-      if (!pre.contains(codeEl)) {
-        pre.innerHTML = "";
-        pre.appendChild(codeEl);
-      }
-      pre.setAttribute("data-raw-code", code);
-    } else {
-      const pre = document.createElement("pre");
-      pre.className = `language-${language}`;
-      pre.spellcheck = false;
-      pre.setAttribute("data-raw-code", code);
-
-      const codeEl = document.createElement("code");
-      codeEl.className = `language-${language}`;
-      codeEl.innerHTML = highlightedHtml;
-      pre.appendChild(codeEl);
-
-      if (savedSelectionRef.current && wysiwygRef.current) {
-        const range = savedSelectionRef.current;
-        range.deleteContents();
-        range.insertNode(pre);
-
-        const beforeParagraph = document.createElement("p");
-        beforeParagraph.innerHTML = "<br>";
-        pre.parentNode.insertBefore(beforeParagraph, pre);
-
-        const afterParagraph = document.createElement("p");
-        afterParagraph.innerHTML = "<br>";
-        pre.parentNode.insertBefore(afterParagraph, pre.nextSibling);
-
-        savedSelectionRef.current = null;
-      } else if (wysiwygRef.current) {
-        const afterParagraph = document.createElement("p");
-        afterParagraph.innerHTML = "<br>";
-        wysiwygRef.current.appendChild(pre);
-        wysiwygRef.current.appendChild(afterParagraph);
-      }
-    }
-
-    setEditingCodeBlock(null);
-    wysiwygRef.current?.focus();
-  };
-
-  const handleImageSelect = (img) => {
-    if (img.parentNode.classList?.contains('image-resize-wrapper')) {
-      return;
-    }
-
-    const existingWrapper = document.querySelector(".image-resize-wrapper");
-    if (existingWrapper) {
-      const imgInWrapper = existingWrapper.querySelector('img');
-      if (imgInWrapper && imgInWrapper !== img) {
-        existingWrapper.replaceWith(imgInWrapper);
-      }
-    }
-
-    const wrapper = document.createElement("div");
-    wrapper.className = "image-resize-wrapper";
-    wrapper.style.position = "relative";
-    wrapper.style.display = "inline-block";
-    wrapper.style.border = "2px solid #4C6EF5";
-    wrapper.style.boxShadow = "0 0 0 3px rgba(76, 110, 245, 0.1)";
-
-    img.parentNode.insertBefore(wrapper, img);
-    wrapper.appendChild(img);
-
-    const handles = ["nw", "ne", "sw", "se"];
-    handles.forEach((position) => {
-      const handle = document.createElement("div");
-      handle.className = `resize-handle resize-handle-${position}`;
-      handle.style.position = "absolute";
-      handle.style.width = "10px";
-      handle.style.height = "10px";
-      handle.style.background = "#4C6EF5";
-      handle.style.border = "2px solid white";
-      handle.style.borderRadius = "50%";
-      handle.style.cursor =
-        position.includes("n") && position.includes("w")
-          ? "nw-resize"
-          : position.includes("n") && position.includes("e")
-          ? "ne-resize"
-          : position.includes("s") && position.includes("w")
-          ? "sw-resize"
-          : "se-resize";
-      handle.style.zIndex = "1000";
-
-      if (position.includes("n")) handle.style.top = "-5px";
-      if (position.includes("s")) handle.style.bottom = "-5px";
-      if (position.includes("w")) handle.style.left = "-5px";
-      if (position.includes("e")) handle.style.right = "-5px";
-
-      let startX, startY, startWidth, startHeight, aspectRatio;
-
-      handle.addEventListener("mousedown", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        startX = e.clientX;
-        startY = e.clientY;
-        startWidth = img.offsetWidth;
-        startHeight = img.offsetHeight;
-        aspectRatio = startWidth / startHeight;
-
-        const onMouseMove = (e) => {
-          const deltaX = e.clientX - startX;
-          const deltaY = e.clientY - startY;
-
-          let newWidth = startWidth;
-          let newHeight = startHeight;
-
-          if (position.includes("e")) {
-            newWidth = startWidth + deltaX;
-          } else if (position.includes("w")) {
-            newWidth = startWidth - deltaX;
-          }
-
-          if (position.includes("s")) {
-            newHeight = startHeight + deltaY;
-          } else if (position.includes("n")) {
-            newHeight = startHeight - deltaY;
-          }
-
-          newHeight = newWidth / aspectRatio;
-
-          if (newWidth > 50 && newHeight > 50) {
-            img.style.width = newWidth + "px";
-            img.style.height = newHeight + "px";
-            img.style.maxWidth = "none";
-          }
-        };
-
-        const onMouseUp = () => {
-          document.removeEventListener("mousemove", onMouseMove);
-          document.removeEventListener("mouseup", onMouseUp);
-        };
-
-        document.addEventListener("mousemove", onMouseMove);
-        document.addEventListener("mouseup", onMouseUp);
-      });
-
-      wrapper.appendChild(handle);
-    });
-
-    const handleClickOutside = (e) => {
-      if (!wrapper.contains(e.target)) {
-        wrapper.replaceWith(img);
-        document.removeEventListener("click", handleClickOutside);
-      }
-    };
-
-    setTimeout(() => {
-      document.addEventListener("click", handleClickOutside);
-    }, 0);
-  };
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      alert("이미지 파일만 업로드할 수 있습니다.");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const dataUrl = event.target.result;
-
-      setPendingImages((prev) => [...prev, { file, dataUrl }]);
-
-      if (editorMode === "wysiwyg" && wysiwygRef.current) {
-        const img = document.createElement("img");
-        img.src = dataUrl;
-        img.style.maxWidth = "100%";
-        img.style.height = "auto";
-        img.style.cursor = "pointer";
-        img.style.userSelect = "none";
-        img.setAttribute("data-pending-image", dataUrl);
-        img.setAttribute("contenteditable", "false");
-        img.setAttribute("unselectable", "on");
-        img.draggable = false;
-
-        img.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          handleImageSelect(img);
-        });
-
-        img.ondblclick = (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        };
-
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-          const range = selection.getRangeAt(0);
-          range.insertNode(img);
-
-          const textNode = document.createTextNode("\u00A0");
-          range.setStartAfter(img);
-          range.insertNode(textNode);
-          range.setStartAfter(textNode);
-          range.collapse(true);
-
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
-
-        wysiwygRef.current.focus();
-      } else if (editorMode === "markdown") {
-        const altText = file.name.replace(/\.[^/.]+$/, "");
-        const markdownImage = `![${altText}](${dataUrl})\n`;
-        setFormData((prev) => ({
-          ...prev,
-          content: prev.content + markdownImage,
-        }));
-      } else {
-        const htmlImage = `<img src="${dataUrl}" alt="${file.name}" style="max-width: 100%; height: auto;" />\n`;
-        setFormData((prev) => ({
-          ...prev,
-          content: prev.content + htmlImage,
-        }));
-      }
-    };
-
-    reader.readAsDataURL(file);
-    e.target.value = "";
-  };
-
-  const handleWysiwygKeyDown = (e) => {
-    if (e.key === "Tab") {
-      e.preventDefault();
-
-      const selection = window.getSelection();
-      if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-
-        if (range.collapsed) {
-          document.execCommand('insertText', false, '    ');
-        } else {
-          const selectedText = range.toString();
-          const lines = selectedText.split('\n');
-          const indentedText = lines.map(line => '    ' + line).join('\n');
-          document.execCommand('insertText', false, indentedText);
-        }
-      }
-      return;
-    }
-
-    if (e.key === "Escape") {
-      const selection = window.getSelection();
-      if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const container = range.startContainer;
-        let element = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
-
-        let pre = element.closest("pre");
-        if (pre) {
-          e.preventDefault();
-
-          let targetP = pre.nextElementSibling;
-          if (!targetP || targetP.tagName !== 'P') {
-            targetP = document.createElement('p');
-            targetP.innerHTML = '<br>';
-            pre.parentNode.insertBefore(targetP, pre.nextSibling);
-          }
-
-          const newRange = document.createRange();
-          newRange.setStart(targetP, 0);
-          newRange.collapse(true);
-          selection.removeAllRanges();
-          selection.addRange(newRange);
-          return;
-        }
-      }
-    }
-
-    if (e.key === "Backspace" || e.key === "Delete") {
-      const selection = window.getSelection();
-      if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const container = range.startContainer;
-        let element =
-          container.nodeType === Node.TEXT_NODE
-            ? container.parentElement
-            : container;
-
-        const img = element.tagName === "IMG" ? element : element.querySelector("img");
-        if (img && img.hasAttribute("data-pending-image")) {
-          e.preventDefault();
-          return;
-        }
-
-        if (range.startContainer === range.endContainer) {
-          const nextSibling =
-            range.endContainer.nodeType === Node.TEXT_NODE
-              ? range.endContainer.nextSibling
-              : range.endContainer.childNodes[range.endOffset];
-          const prevSibling =
-            range.startContainer.nodeType === Node.TEXT_NODE
-              ? range.startContainer.previousSibling
-              : range.startContainer.childNodes[range.startOffset - 1];
-
-          if (
-            (e.key === "Delete" &&
-              nextSibling &&
-              nextSibling.tagName === "IMG") ||
-            (e.key === "Backspace" &&
-              prevSibling &&
-              prevSibling.tagName === "IMG")
-          ) {
-            e.preventDefault();
-            return;
-          }
-        }
-      }
-    }
-
-    if (e.key === "Enter") {
-      const selection = window.getSelection();
-      if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const container = range.startContainer;
-
-        let element =
-          container.nodeType === Node.TEXT_NODE
-            ? container.parentElement
-            : container;
-
-        let blockquote = element.closest("blockquote");
-        if (blockquote) {
-          const currentText = element.textContent.trim();
-
-          if (currentText === "" || currentText === "\n") {
-            e.preventDefault();
-
-            const newP = document.createElement("p");
-            newP.innerHTML = "<br>";
-            blockquote.parentNode.insertBefore(newP, blockquote.nextSibling);
-
-            const newRange = document.createRange();
-            newRange.setStart(newP, 0);
-            newRange.collapse(true);
-            selection.removeAllRanges();
-            selection.addRange(newRange);
-          }
-          return;
-        }
-
-        let pre = element.closest("pre");
-        if (pre) {
-          e.preventDefault();
-
-          const newline = document.createTextNode('\n');
-
-          range.deleteContents();
-          range.insertNode(newline);
-
-          range.setStartAfter(newline);
-          range.collapse(true);
-
-          selection.removeAllRanges();
-          selection.addRange(range);
-
-          return;
-        }
-      }
-    }
-  };
-
-  const getPlaceholder = () => {
-    if (editorMode === "wysiwyg") {
-      return "내용을 입력하세요...\n\n툴바의 버튼을 사용하여 텍스트를 꾸밀 수 있습니다.";
-    } else if (editorMode === "markdown") {
-      return "마크다운 문법을 사용하여 내용을 작성하세요...\n\n예: **굵게**, *기울임*, # 제목";
-    } else {
-      return "HTML 코드를 직접 작성하세요...\n\n예: <p>문단</p>, <strong>굵게</strong>, <h1>제목</h1>";
-    }
-  };
-
-  const currentFormats =
-    editorMode === "wysiwyg"
-      ? wysiwygFormats
-      : editorMode === "markdown"
-      ? markdownFormats
-      : htmlFormats;
 
   return (
     <form className={styles.editorForm} onSubmit={handleSubmit}>
@@ -849,7 +193,7 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
           onChange={handleChange}
           placeholder="제목을 입력하세요"
           className={`${styles.titleInput} ${errors.title ? styles.error : ""}`}
-          disabled={isSubmitting}
+          disabled={isBusy}
         />
         {errors.title && (
           <span className={styles.errorMessage}>{errors.title}</span>
@@ -863,7 +207,7 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
             value={formData.categoryId}
             onChange={handleChange}
             className={styles.categorySelect}
-            disabled={isSubmitting}
+            disabled={isBusy}
           >
             <option value="">카테고리 선택</option>
             {flattenForSelect(categories).map((opt) => (
@@ -918,161 +262,22 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
                     : ""
                 }
                 className={styles.tagsInput}
-                disabled={isSubmitting}
+                disabled={isBusy}
               />
             </div>
           </div>
         </div>
       </div>
 
-      <EditorModeSelector
-        editorMode={editorMode}
-        onModeChange={handleModeChange}
-        fontSize={fontSize}
-        onFontSizeChange={setFontSize}
-      />
-
-      {editorMode === "wysiwyg" && (
-        <EditorToolbar
-          editorMode={editorMode}
-          formats={currentFormats}
-          showPreview={showPreview}
-          onTogglePreview={() => setShowPreview(!showPreview)}
-        />
-      )}
-
       <div className={styles.editorContainer}>
-        <div
-          ref={wysiwygRef}
-          className={`${styles.preview} ${styles.wysiwygPreview} ${
-            styles[`fontSize-${fontSize}`]
-          } ${errors.content ? styles.error : ""}`}
-          contentEditable={!isSubmitting}
-          suppressContentEditableWarning
-          style={{ display: editorMode === "wysiwyg" ? "block" : "none" }}
-          onInput={() => {
-            if (errors.content) {
-              setErrors((prev) => ({ ...prev, content: "" }));
-            }
-          }}
-          onKeyDown={handleWysiwygKeyDown}
-          onClick={(e) => {
-            const pre = e.target.closest("pre");
-            if (pre) {
-              e.preventDefault();
-              e.stopPropagation();
-              handleCodeBlockClick(pre);
-            }
-          }}
-          onPaste={(e) => {
-            e.preventDefault();
-            const text = e.clipboardData.getData("text/plain");
-
-            const selection = window.getSelection();
-            if (selection && selection.rangeCount > 0) {
-              const range = selection.getRangeAt(0);
-              const container = range.startContainer;
-              let element =
-                container.nodeType === Node.TEXT_NODE
-                  ? container.parentElement
-                  : container;
-              let pre = element.closest("pre");
-
-              if (pre) {
-                const textNode = document.createTextNode(text);
-
-                range.deleteContents();
-                range.insertNode(textNode);
-                range.setStartAfter(textNode);
-                range.setEndAfter(textNode);
-
-                selection.removeAllRanges();
-                selection.addRange(range);
-              } else {
-                const lines = text.split("\n");
-                const fragment = document.createDocumentFragment();
-
-                lines.forEach((line, index) => {
-                  fragment.appendChild(document.createTextNode(line));
-                  if (index < lines.length - 1) {
-                    fragment.appendChild(document.createElement("br"));
-                  }
-                });
-
-                range.deleteContents();
-                range.insertNode(fragment);
-
-                range.collapse(false);
-                selection.removeAllRanges();
-                selection.addRange(range);
-              }
-            }
-          }}
+        <PostBodyModeSwitcher
+          ref={bodyEditor}
+          initialHtml={initialData?.content || "<p></p>"}
+          prepareImage={prepareImage}
+          readOnly={isBusy}
+          onDraftChange={() => setErrors(current => current.content ? { ...current, content: "" } : current)}
         />
-
-        {editorMode !== "wysiwyg" && !showPreview && (
-          <div className={styles.formGroup}>
-            <textarea
-              ref={textareaRef}
-              name="content"
-              value={formData.content}
-              onChange={handleChange}
-              onKeyDown={(e) => {
-                if (e.key === "Tab") {
-                  e.preventDefault();
-                  const textarea = e.target;
-                  const start = textarea.selectionStart;
-                  const end = textarea.selectionEnd;
-                  const tabChar = "    ";
-
-                  if (start === end) {
-                    document.execCommand('insertText', false, tabChar);
-                    const newValue = textarea.value;
-                    setFormData((prev) => ({ ...prev, content: newValue }));
-                  } else {
-                    const value = textarea.value;
-                    const beforeSelection = value.substring(0, start);
-                    const afterSelection = value.substring(end);
-                    const lineStart = beforeSelection.lastIndexOf('\n') + 1;
-                    const fullSelectedText = value.substring(lineStart, end);
-
-                    const lines = fullSelectedText.split('\n');
-                    const indentedLines = lines.map(line => tabChar + line);
-                    const indentedText = indentedLines.join('\n');
-
-                    textarea.selectionStart = lineStart;
-                    textarea.selectionEnd = end;
-
-                    document.execCommand('insertText', false, indentedText);
-
-                    const newValue = textarea.value;
-                    setFormData((prev) => ({ ...prev, content: newValue }));
-                  }
-                }
-              }}
-              placeholder={getPlaceholder()}
-              className={`${styles.contentTextarea} ${styles.codeMode} ${
-                styles[`fontSize-${fontSize}`]
-              } ${errors.content ? styles.error : ""}`}
-              disabled={isSubmitting}
-            />
-            {errors.content && (
-              <span className={styles.errorMessage}>{errors.content}</span>
-            )}
-          </div>
-        )}
-
-        {editorMode !== "wysiwyg" && showPreview && (
-          <div
-            ref={previewRef}
-            className={`${styles.preview} ${styles[`fontSize-${fontSize}`]}`}
-            dangerouslySetInnerHTML={{ __html: renderPreview() }}
-          />
-        )}
-
-        {errors.content && editorMode === "wysiwyg" && (
-          <span className={styles.errorMessage}>{errors.content}</span>
-        )}
+        {errors.content && <span className={styles.errorMessage} role="alert">{errors.content}</span>}
       </div>
 
       <div className={styles.formGroup}>
@@ -1083,7 +288,7 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
             checked={formData.isPublic}
             onChange={handleChange}
             className={styles.checkbox}
-            disabled={isSubmitting}
+            disabled={isBusy}
           />
           <span>공개 설정</span>
         </label>
@@ -1093,19 +298,11 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
         <div className={styles.submitError}>{errors.submit}</div>
       )}
 
-      <input
-        ref={imageInputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: "none" }}
-        onChange={handleImageUpload}
-      />
-
       <div className={styles.buttonGroup}>
         <button
           type="button"
           className={styles.cancelButton}
-          disabled={isSubmitting}
+          disabled={isBusy}
           onClick={() => window.history.back()}
         >
           취소
@@ -1113,22 +310,11 @@ const PostEditor = ({ onSubmit, initialData = null, isEditing = false }) => {
         <button
           type="submit"
           className={styles.submitButton}
-          disabled={isSubmitting}
+          disabled={isBusy}
         >
           {isSubmitting ? "저장 중..." : isEditing ? "수정" : "발행"}
         </button>
       </div>
-
-      <CodeBlockModal
-        isOpen={codeModalOpen}
-        onClose={() => {
-          setCodeModalOpen(false);
-          setEditingCodeBlock(null);
-        }}
-        onSave={handleCodeModalSave}
-        initialCode={codeModalInitialCode}
-        initialLanguage={codeModalInitialLang}
-      />
     </form>
   );
 };
