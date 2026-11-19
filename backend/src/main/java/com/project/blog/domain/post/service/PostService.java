@@ -2,6 +2,7 @@ package com.project.blog.domain.post.service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -34,13 +35,14 @@ public class PostService {
 
     @Transactional
     public PostResDto createPost(PostReqDto reqDto, AuthenticatedUser authenticatedUser) {
+        String html = PostHtmlPolicy.validate(reqDto.getContent());
         Account author = authenticatedUser.getAccount();
         Category category = findCategoryById(reqDto.getCategoryId());
         List<Tag> tags = findOrCreateTags(reqDto.getTagNames(), author.getId());
 
         Post post = Post.builder()
             .title(reqDto.getTitle())
-            .content(reqDto.getContent())
+            .content(html)
             .author(author)
             .category(category)
             .tags(tags)
@@ -146,11 +148,15 @@ public class PostService {
             throw new BusinessException(ErrorCode.POST_UPDATE_FORBIDDEN);
         }
 
+        // 제목·공개 설정만 바꿀 때는 본문 원문을 유지한다.
+        if (!Objects.equals(post.getContent(), reqDto.getContent())) {
+            post.updateContent(PostHtmlPolicy.validate(reqDto.getContent()));
+        }
+
         Category category = findCategoryById(reqDto.getCategoryId());
         List<Tag> tags = findOrCreateTags(reqDto.getTagNames(), authenticatedUser.getAccount().getId());
 
         post.updateTitle(reqDto.getTitle());
-        post.updateContent(reqDto.getContent());
         post.updateCategory(category);
         post.updateTags(tags);
         if (reqDto.getIsPublic() != null) {
